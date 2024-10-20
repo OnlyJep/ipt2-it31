@@ -23,6 +23,7 @@ composer require laravel/passport
 composer require laravel/ui
 php artisan ui react
 npm install
+npm i react-router-dom
 copy .env.example .env
 php artisan key:generate
 ```
