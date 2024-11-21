@@ -1,0 +1,19 @@
+php artisan make:model User -c --api
+
+php artisan make:model User -mc --api
+
+php artisan make:seeder UserSeeder
+
+php artisan make:model User
+
+php artisan make:controller \Graph\GraphTrendIllnessController
+
+
+php artisan make:migration create_users_table
+
+php artisan migrate
+
+php artisan migrate --seed (if you have a seeder)
+
+
+php artisan passport:install
