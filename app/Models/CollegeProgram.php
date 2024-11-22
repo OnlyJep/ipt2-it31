@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class CollegeProgram extends Model
 {
     use HasFactory;
+
+    /**
+     * Get the classified sections for the college program.
+     */
+    public function classifiedSections()
+    {
+        return $this->hasMany(ClassifiedSection::class);
+    }
 }
