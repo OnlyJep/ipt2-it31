@@ -34,4 +34,13 @@ class ClassSchedule extends Model
     {
         return $this->hasMany(ClassSchedule::class);
     }
+
+
+        /**
+     * Get the semester academic year that owns the class schedule.
+     */
+    public function semesterAcademicYear()
+    {
+        return $this->belongsTo(SemesterAcademicYear::class);
+    }
 }

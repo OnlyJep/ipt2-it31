@@ -16,4 +16,12 @@ class Department extends Model
     {
         return $this->hasMany(AcademicProgram::class);
     }
+
+    /**
+     * Get the profiles for the department.
+     */
+    public function profiles()
+    {
+        return $this->hasMany(Profile::class);
+    }
 }

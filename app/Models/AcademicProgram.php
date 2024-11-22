@@ -37,4 +37,12 @@ class AcademicProgram extends Model
     {
         return $this->belongsTo(SubjectCurriculum::class);
     }
+
+        /**
+     * Get the profiles for the academic program.
+     */
+    public function profiles()
+    {
+        return $this->hasMany(Profile::class);
+    }
 }

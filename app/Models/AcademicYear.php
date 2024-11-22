@@ -9,12 +9,11 @@ class AcademicYear extends Model
 {
     use HasFactory;
 
-    /**
-     * Get the enlistments for the academic year.
+        /**
+     * Get the semester academic years for the academic year.
      */
-    public function enlistments()
+    public function semesterAcademicYears()
     {
-        return $this->hasMany(Enlistment::class);
+        return $this->hasMany(SemesterAcademicYear::class);
     }
-    
 }
