@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,11 +18,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
-        'username',
-        'role_id', // Add role_id to the fillable attributes
+        'status',
+        'role_id',
     ];
 
     /**
@@ -45,6 +46,8 @@ class User extends Authenticatable
 
     /**
      * Get the profile associated with the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function profile()
     {
@@ -52,10 +55,43 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the role that owns the user.
+     * Get the role associated with the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Determine if the user is a regular user.
+     *
+     * @return bool
+     */
+    public function isRegular()
+    {
+        return $this->status === 'regular';
+    }
+
+    /**
+     * Determine if the user is an irregular user.
+     *
+     * @return bool
+     */
+    public function isIrregular()
+    {
+        return $this->status === 'irregular';
+    }
+
+    /**
+     * Send a password reset notification.
+     *
+     * @param string $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
     }
 }

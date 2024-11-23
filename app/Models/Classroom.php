@@ -10,7 +10,16 @@ class Classroom extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['room_type', 'roomtag_id', 'building_id', 'floor_id'];
+
+    /**
      * Get the building that owns the classroom.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function building()
     {
@@ -19,6 +28,8 @@ class Classroom extends Model
 
     /**
      * Get the floor that owns the classroom.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function floor()
     {
@@ -27,6 +38,8 @@ class Classroom extends Model
 
     /**
      * Get the room tag that owns the classroom.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function roomTag()
     {
@@ -35,6 +48,8 @@ class Classroom extends Model
 
     /**
      * Get the classroom schedulings for the classroom.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function classroomSchedulings()
     {

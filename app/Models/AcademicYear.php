@@ -9,11 +9,20 @@ class AcademicYear extends Model
 {
     use HasFactory;
 
-        /**
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['academic_year'];
+
+    /**
      * Get the semester academic years for the academic year.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function semesterAcademicYears()
     {
-        return $this->hasMany(SemesterAcademicYear::class);
+        return $this->hasMany(SemesterAcademicYear::class, 'academicyear_id');
     }
 }

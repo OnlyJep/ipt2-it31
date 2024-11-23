@@ -10,18 +10,29 @@ class Building extends Model
     use HasFactory;
 
     /**
-     * Get the floor that owns the building.
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
-    public function floor()
-    {
-        return $this->belongsTo(Floor::class);
-    }
+    protected $fillable = ['building_name', 'floor_id'];
 
     /**
      * Get the classrooms for the building.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function classrooms()
     {
         return $this->hasMany(Classroom::class);
+    }
+
+    /**
+     * Get the floor that this building references (maximum floor).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function floor()
+    {
+        return $this->belongsTo(Floor::class);
     }
 }

@@ -10,7 +10,16 @@ class Role extends Model
     use HasFactory;
 
     /**
-     * Get the users for the role.
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['role_name']; // Allow mass assignment for role_name
+
+    /**
+     * Get the users associated with the role.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function users()
     {

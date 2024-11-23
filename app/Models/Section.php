@@ -5,15 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ClassifiedSection extends Model
+class Section extends Model
 {
     use HasFactory;
 
     /**
-     * Get the section that owns the classified section.
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
-    public function section()
+    protected $fillable = ['section_name'];
+
+    /**
+     * Get the classified sections for the section.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function classifiedSections()
     {
-        return $this->belongsTo(Section::class);
+        return $this->hasMany(ClassifiedSection::class);
     }
 }

@@ -10,7 +10,16 @@ class RoomTag extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['room_tag', 'room_tag_type'];
+
+    /**
      * Get the classrooms for the room tag.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function classrooms()
     {

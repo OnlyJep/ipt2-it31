@@ -10,7 +10,16 @@ class Department extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['department_name'];
+
+    /**
      * Get the academic programs for the department.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function academicPrograms()
     {
@@ -19,6 +28,8 @@ class Department extends Model
 
     /**
      * Get the profiles for the department.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function profiles()
     {
