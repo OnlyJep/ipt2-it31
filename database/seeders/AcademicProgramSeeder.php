@@ -15,7 +15,13 @@ class AcademicProgramSeeder extends Seeder
     public function run()
     {
         DB::table('academic_programs')->insert([
-           
-        ]); 
+            [
+                'subjectcurriculum_id' => 1, // Subject Curriculum ID
+                'program_department_id' => 1, // Program Department ID
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            
+        ]);
     }
 }

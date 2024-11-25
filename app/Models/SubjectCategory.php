@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AcademicProgram extends Model
+class SubjectCategory extends Model
 {
     use HasFactory, SoftDeletes;
 

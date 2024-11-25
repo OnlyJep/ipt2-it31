@@ -36,18 +36,18 @@ class CreateProfilesTable extends Migration
 
             // Foreign key attributes
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('academicprogram_id')->nullable();
+            $table->unsignedBigInteger('program_department_id')->nullable();
             $table->unsignedBigInteger('yearlevel_id')->nullable();
             $table->unsignedBigInteger('parent_info_id')->nullable();
             $table->unsignedBigInteger('department_id')->nullable(); // Add department_id column, nullable
 
             // Foreign key constraints
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('academicprogram_id')->references('id')->on('academic_programs')->onDelete('set null');
+            $table->foreign('program_department_id')->references('id')->on('college_program_departments')->onDelete('set null');
             $table->foreign('yearlevel_id')->references('id')->on('year_levels')->onDelete('set null');
             $table->foreign('parent_info_id')->references('id')->on('parent_infos')->onDelete('set null');
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('set null'); // Add foreign key constraint for department_id
-            $table->softDeletes();
+            $table->softDeletes()->nullable(); 
         });
     }
 

@@ -4,87 +4,88 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index()
     {
-        // Fetch all roles
         $roles = Role::all();
         return response()->json($roles);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
-        // Validate input
-        $request->validate([
-            'role_name' => 'required|string|max:50|unique:roles,role_name',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'role_name' => 'required|string|max:50|unique:roles,role_name',
+            ]);
 
-        // Create new role
-        $role = Role::create([
-            'role_name' => $request->role_name,
-        ]);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
 
-        return response()->json(['message' => 'Role created successfully', 'role' => $role], 201);
+            $role = Role::create(['role_name' => $request->role_name]);
+
+            return response()->json(['message' => 'Role created successfully', 'role' => $role], 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to create role', 'error' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show(Role $role)
     {
-        // Return a single role
         return response()->json($role);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, Role $role)
     {
-        // Validate input
-        $request->validate([
-            'role_name' => 'required|string|max:50|unique:roles,role_name,' . $role->id,
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'role_name' => 'required|string|max:50|unique:roles,role_name,' . $role->id,
+            ]);
 
-        // Update role
-        $role->update([
-            'role_name' => $request->role_name,
-        ]);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
 
-        return response()->json(['message' => 'Role updated successfully', 'role' => $role]);
+            $role->update(['role_name' => $request->role_name]);
+
+            return response()->json(['message' => 'Role updated successfully', 'role' => $role]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to update role', 'error' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy(Role $role)
     {
-        // Soft delete role
-        $role->delete();
+        try {
+            $role->delete(); // Soft delete
+            return response()->json(['message' => 'Role was successfully deleted'],200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to delete role', 'error' => $e->getMessage()], 500);
+        }
+    }
 
-        return response()->json(['message' => 'Role deleted successfully']);
+    public function restore($id)
+    {
+        try {
+            $role = Role::withTrashed()->findOrFail($id);
+            $role->restore();
+            return response()->json(['message' => 'Role restored successfully', 'role' => $role]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to restore role', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $role = Role::withTrashed()->findOrFail($id);
+            $role->forceDelete();
+            return response()->json(['message' => 'Role permanently deleted']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to permanently delete role', 'error' => $e->getMessage()], 500);
+        }
     }
 }

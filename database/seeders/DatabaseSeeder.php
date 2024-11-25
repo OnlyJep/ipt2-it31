@@ -34,10 +34,11 @@ class DatabaseSeeder extends Seeder
             ClassroomSchedulingSeeder::class,
             SectionSeeder::class,
             ClassifiedSectionSeeder::class,
+            CollegeProgramDepartmentSeeder::class,
             AcademicProgramSeeder::class,
             ParentInfoSeeder::class,
             ProfileSeeder::class,
-            CollegeProgramDepartmentSeeder::class,
+           
         ]);
     }
 }

@@ -4,61 +4,119 @@ namespace App\Http\Controllers;
 
 use App\Models\ParentInfo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ParentInfoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Display a listing of parent infos
     public function index()
     {
-        //
+        $parentInfos = ParentInfo::all();
+        return response()->json($parentInfos);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Store a newly created parent info in storage
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'father_first_name' => 'nullable|string|max:100',
+            'father_last_name' => 'nullable|string|max:50',
+            'father_middle_initial' => 'nullable|string|max:20',
+            'father_suffix' => 'nullable|string|max:20',
+            'father_occupation' => 'nullable|string|max:50',
+            'father_address' => 'nullable|string',
+            'father_contact_no' => 'nullable|string|max:20',
+            'mother_first_name' => 'nullable|string|max:100',
+            'mother_last_name' => 'nullable|string|max:50',
+            'mother_middle_initial' => 'nullable|string|max:20',
+            'mother_occupation' => 'nullable|string|max:50',
+            'mother_address' => 'nullable|string',
+            'mother_contact_no' => 'nullable|string|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $parentInfo = ParentInfo::create($request->all());
+        return response()->json($parentInfo, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\ParentInfo  $parentInfo
-     * @return \Illuminate\Http\Response
-     */
-    public function show(ParentInfo $parentInfo)
+    // Display the specified parent info
+    public function show($id)
     {
-        //
+        $parentInfo = ParentInfo::find($id);
+        if (!$parentInfo) {
+            return response()->json(['message' => 'Parent Info not found'], 404);
+        }
+        return response()->json($parentInfo);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ParentInfo  $parentInfo
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, ParentInfo $parentInfo)
+    // Update the specified parent info in storage
+    public function update(Request $request, $id)
     {
-        //
+        $parentInfo = ParentInfo::find($id);
+        if (!$parentInfo) {
+            return response()->json(['message' => 'Parent Info not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'father_first_name' => 'nullable|string|max:100',
+            'father_last_name' => 'nullable|string|max:50',
+            'father_middle_initial' => 'nullable|string|max:20',
+            'father_suffix' => 'nullable|string|max:20',
+            'father_occupation' => 'nullable|string|max:50',
+            'father_address' => 'nullable|string',
+            'father_contact_no' => 'nullable|string|max:20',
+            'mother_first_name' => 'nullable|string|max:100',
+            'mother_last_name' => 'nullable|string|max:50',
+            'mother_middle_initial' => 'nullable|string|max:20',
+            'mother_occupation' => 'nullable|string|max:50',
+            'mother_address' => 'nullable|string',
+            'mother_contact_no' => 'nullable|string|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $parentInfo->update($request->all());
+        return response()->json($parentInfo);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\ParentInfo  $parentInfo
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(ParentInfo $parentInfo)
+    // Remove the specified parent info from storage
+    public function destroy($id)
     {
-        //
+        $parentInfo = ParentInfo::find($id);
+        if (!$parentInfo) {
+            return response()->json(['message' => 'Parent Info not found'], 404);
+        }
+        
+        $parentInfo->delete();
+        return response()->json(['message' => 'Parent Info deleted successfully']);
+    }
+
+    // Restore the specified soft-deleted parent info
+    public function restore($id)
+    {
+        $parentInfo = ParentInfo::withTrashed()->find($id);
+        if (!$parentInfo) {
+            return response()->json(['message' => 'Parent Info not found'], 404);
+        }
+
+        $parentInfo->restore();
+        return response()->json(['message' => 'Parent Info restored successfully']);
+    }
+
+    // Permanently delete the specified parent info from storage
+    public function forceDelete($id)
+    {
+        $parentInfo = ParentInfo::withTrashed()->find($id);
+        if (!$parentInfo) {
+            return response()->json(['message' => 'Parent Info not found'], 404);
+        }
+
+        $parentInfo->forceDelete();
+        return response()->json(['message' => 'Parent Info permanently deleted successfully']);
     }
 }

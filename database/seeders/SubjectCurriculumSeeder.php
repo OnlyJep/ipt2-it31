@@ -20,6 +20,24 @@ class SubjectCurriculumSeeder extends Seeder
                 'curriculum_id' => 1, // Curriculum ID
                 'created_at' => now(),
                 'updated_at' => now(),
+            ], 
+            [
+                'subject_id' => 2, // Subject ID
+                'curriculum_id' => 2, // Curriculum ID
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'subject_id' => 3, // Subject ID
+                'curriculum_id' => 3, // Curriculum ID
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'subject_id' => 4, // Subject ID
+                'curriculum_id' => 4, // Curriculum ID
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 
