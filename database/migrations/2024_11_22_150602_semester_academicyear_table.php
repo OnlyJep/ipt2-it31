@@ -22,6 +22,7 @@ class SemesterAcademicyearTable extends Migration
             // Foreign key constraints
             $table->foreign('semester_id')->references('id')->on('semester')->onDelete('cascade');
             $table->foreign('academicyear_id')->references('id')->on('academic_year')->onDelete('cascade');
+            $table->softDeletes()->nullable(); 
         });
     }
 

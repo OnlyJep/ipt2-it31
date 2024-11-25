@@ -4,25 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Section extends Model
+class AcademicProgram extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['section_name'];
+    protected $guarded = [];
 
-    /**
-     * Get the classified sections for the section.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function classifiedSections()
     {
-        return $this->hasMany(ClassifiedSection::class);
+        return $this->hasMany(ClassifiedSection::class, 'classifiedsection_id');
     }
 }

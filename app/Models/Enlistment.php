@@ -4,78 +4,39 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Enlistment extends Model
+class AcademicProgram extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'profile_id',
-        'classschedules_id',
-    ];
+    protected $guarded = [];
 
-    /**
-     * Get the profile that owns the enlistment.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function profile()
     {
         return $this->belongsTo(Profile::class, 'profile_id');
     }
 
-    /**
-     * Get the class schedule that owns the enlistment.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function classSchedule()
     {
         return $this->belongsTo(ClassSchedule::class, 'classschedules_id');
     }
 
-    /**
-     * Get the academic year that owns the enlistment.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+
     public function academicYear()
     {
-        return $this->belongsTo(AcademicYear::class);
+        return $this->belongsTo(AcademicYear::class, 'academicyear_id');
     }
 
-    /**
-     * Get the semester academic years for the enlistment.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function semesterAcademicYears()
-    {
-        return $this->hasMany(SemesterAcademicYear::class);
-    }
 
-    /**
-     * Get the enrollment tracking records for the enlistment.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function enrollmentTrackings()
     {
-        return $this->hasMany(EnrollmentTracking::class);
+        return $this->hasMany(EnrollmentTracking::class, 'enrollmenttracking_id');
     }
 
-    /**
-     * Get the assignment tracking records for the enlistment.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function assignmentTrackings()
     {
-        return $this->hasMany(AssignmentTracking::class);
+        return $this->hasMany(AssignmentTracking::class,'assignmenttracking_id');
     }
 }

@@ -17,9 +17,9 @@ class CreateSemesterTable extends Migration
             $table->id(); // Add id column
             $table->string('semester_period', 20); // Add semester_period column
             $table->timestamps(); // Add created_at and updated_at columns
+            $table->softDeletes()->nullable(); 
         });
     }
-
     /**
      * Reverse the migrations.
      *

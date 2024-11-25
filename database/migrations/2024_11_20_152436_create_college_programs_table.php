@@ -18,6 +18,7 @@ class CreateCollegeProgramsTable extends Migration
             $table->string('college_programs', 100); // Add college_programs column
             $table->enum('study_type', ['undergraduate', 'graduate', 'diploma']); // Add study_type column
             $table->timestamps(); // Add created_at and updated_at columns
+            $table->softDeletes()->nullable(); 
         });
     }
 

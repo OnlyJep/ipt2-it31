@@ -4,35 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Department extends Model
+class AcademicYear extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['department_name'];
 
-    /**
-     * Get the academic programs for the department.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+    protected $guarded = [];
+
+
     public function academicPrograms()
     {
-        return $this->hasMany(AcademicProgram::class);
+        return $this->hasMany(AcademicProgram::class, 'academicprogram_id');
     }
 
-    /**
-     * Get the profiles for the department.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function profiles()
     {
-        return $this->hasMany(Profile::class);
+        return $this->hasMany(Profile::class, 'profile_id');
     }
 }

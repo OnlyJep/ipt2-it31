@@ -23,9 +23,10 @@ class CreateClassroomSchedulingTable extends Migration
             ]); // Add day_of_week column
             $table->unsignedBigInteger('classroom_id'); // Add classroom_id column
             $table->timestamps(); // Add created_at and updated_at columns
-
+           
             // Foreign key constraint
             $table->foreign('classroom_id')->references('id')->on('classrooms')->onDelete('cascade'); // Add foreign key constraint for classroom_id
+            $table->softDeletes()->nullable(); 
         });
     }
 

@@ -17,6 +17,7 @@ class CreateYearLevelsTable extends Migration
             $table->id(); // Add id column
             $table->string('year_level', 20); // Add year_level column
             $table->timestamps();
+            $table->softDeletes()->nullable(); 
         });
     }
 

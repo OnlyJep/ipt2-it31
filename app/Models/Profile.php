@@ -9,11 +9,7 @@ class Profile extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -21,7 +17,6 @@ class Profile extends Model
         'suffix',
         'age',
         'address',
-        'section',
         'school_email',
         'sex',
         'phone_number',
@@ -31,7 +26,7 @@ class Profile extends Model
         'photo_path',
         'emer_full_name',
         'relationship',
-        'contact_no',
+        'emer_contact_no',
         'date_of_birth',
         'user_id',
         'academicprogram_id',
@@ -40,93 +35,55 @@ class Profile extends Model
         'department_id',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array<string, string>
-     */
+
     protected $casts = [
         'admission_date' => 'date',
         'date_of_birth' => 'date',
     ];
 
-    /**
-     * Get the user that owns the profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the academic program that owns the profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function academicProgram()
+    public function college_program_department()
     {
-        return $this->belongsTo(AcademicProgram::class, 'academicprogram_id');
+        return $this->belongsTo(CollegeProgramDepartment::class, 'program_department_id');
     }
 
-    /**
-     * Get the year level that owns the profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+
     public function yearLevel()
     {
         return $this->belongsTo(YearLevel::class, 'yearlevel_id');
     }
 
-    /**
-     * Get the parent info that owns the profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function parentInfo()
     {
         return $this->belongsTo(ParentInfo::class, 'parent_info_id');
     }
 
-    /**
-     * Get the department that owns the profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-    /**
-     * Get the class schedules for the profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function classSchedules()
     {
-        return $this->hasMany(ClassSchedule::class);
+        return $this->hasMany(ClassSchedule::class, 'classschedules_id');
     }
 
-    /**
-     * Get the enlistments for the profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function enlistments()
     {
-        return $this->hasMany(Enlistment::class);
+        return $this->hasMany(Enlistment::class, 'enlistment_id');
     }
 
-    /**
-     * Get the notifications for the profile.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function notifications()
     {
-        return $this->hasMany(Notification::class);
+        return $this->hasMany(Notification::class, 'notification_id');
     }
 }

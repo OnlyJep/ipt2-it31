@@ -4,25 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Role extends Model
+class AcademicProgram extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['role_name']; // Allow mass assignment for role_name
+    protected $guarded = [];
 
-    /**
-     * Get the users associated with the role.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'user_id');
     }
 }

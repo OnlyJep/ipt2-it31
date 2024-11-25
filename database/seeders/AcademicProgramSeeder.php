@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class AcademicProgramSeeder extends Seeder
 {
@@ -13,6 +14,8 @@ class AcademicProgramSeeder extends Seeder
      */
     public function run()
     {
-        //
+        DB::table('academic_programs')->insert([
+           
+        ]); 
     }
 }

@@ -4,35 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class YearLevel extends Model
+class AcademicProgram extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['year_level'];
+    protected $guarded = [];
 
-    /**
-     * Get the profiles for the year level.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function profiles()
     {
         return $this->hasMany(Profile::class, 'yearlevel_id');
     }
 
-    /**
-     * Get the classified sections for the year level.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function classifiedSections()
     {
-        return $this->hasMany(ClassifiedSection::class);
+        return $this->hasMany(ClassifiedSection::class, 'classifiedsection_id');
+    }
+
+    public function year_levels()
+    {
+        return $this->hasMany(YearLevel::class, 'yearlevel_id');
     }
 }

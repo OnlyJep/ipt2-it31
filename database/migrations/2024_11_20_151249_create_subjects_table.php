@@ -20,10 +20,10 @@ class CreateSubjectsTable extends Migration
             $table->string('classification', 50); // Add classification column
             $table->integer('units'); // Add units column
             $table->text('subject_description')->nullable(); // Add subject_description column, nullable
-            $table->integer('course_year'); // Add course_year column
             $table->boolean('availability'); // Add availability column
             $table->unsignedBigInteger('subjectcategory_id'); // Add subjectcategory_id column
             $table->timestamps(); // Add created_at and updated_at columns
+            $table->softDeletes()->nullable(); 
 
             // Foreign key constraint
             $table->foreign('subjectcategory_id')->references('id')->on('subject_category')->onDelete('cascade'); // Add foreign key constraint

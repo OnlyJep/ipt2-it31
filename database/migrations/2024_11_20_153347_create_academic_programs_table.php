@@ -15,15 +15,14 @@ class CreateAcademicProgramsTable extends Migration
     {
         Schema::create('academic_programs', function (Blueprint $table) {
             $table->id(); // Add id column
-            $table->unsignedBigInteger('collegeprogram_id'); // Add collegeprogram_id column
-            $table->unsignedBigInteger('department_id'); // Add department_id column
             $table->unsignedBigInteger('subjectcurriculum_id'); // Add subjectcurriculum_id column
+            $table->unsignedBigInteger('program_department_id'); // Add program_department_id column
             $table->timestamps(); // Add created_at and updated_at columns
+            $table->softDeletes()->nullable(); 
 
             // Foreign key constraints
-            $table->foreign('collegeprogram_id')->references('id')->on('college_programs')->onDelete('cascade'); // Add foreign key constraint for collegeprogram_id
-            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade'); // Add foreign key constraint for department_id
             $table->foreign('subjectcurriculum_id')->references('id')->on('subject_curriculums')->onDelete('cascade'); // Add foreign key constraint for subjectcurriculum_id
+            $table->foreign('program_department_id')->references('id')->on('college_program_departments')->onDelete('cascade'); // Add foreign key constraint for program_department_id
         });
     }
 

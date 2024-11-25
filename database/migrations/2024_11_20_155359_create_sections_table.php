@@ -17,6 +17,7 @@ class CreateSectionsTable extends Migration
             $table->id(); // Add id column
             $table->string('section_name', 50); // Add section_name column
             $table->timestamps(); // Add created_at and updated_at columns
+            $table->softDeletes()->nullable(); 
         });
     }
 

@@ -32,6 +32,7 @@ class CreateClassSchedulesTable extends Migration
             $table->foreign('academicprogram_id')->references('id')->on('academic_programs')->onDelete('cascade'); // Add foreign key constraint for academicprogram_id
             $table->foreign('classroomscheduling_id')->references('id')->on('classroom_scheduling')->onDelete('cascade'); // Add foreign key constraint for classroomscheduling_id
             $table->foreign('profile_id')->references('id')->on('profiles')->onDelete('set null'); // Add foreign key constraint for profile_id
+            $table->softDeletes()->nullable(); 
         });
     }
 

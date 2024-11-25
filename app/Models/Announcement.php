@@ -4,25 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Announcement extends Model
+class AcademicYear extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'announcement',
-    ];
 
-    /**
-     * Get the notifications for the announcement.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+    protected $guarded = [];
+
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'announcement_id');

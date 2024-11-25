@@ -22,6 +22,7 @@ class CreateAssignmentTrackingTable extends Migration
             // Foreign key constraints
             $table->foreign('classschedule_id')->references('id')->on('classroom_scheduling')->onDelete('cascade'); // Add foreign key constraint for scheduling_id
             $table->foreign('enlistment_id')->references('id')->on('enlistments')->onDelete('cascade'); // Add foreign key constraint for enlistment_id
+            $table->softDeletes()->nullable(); 
         });
     }
 

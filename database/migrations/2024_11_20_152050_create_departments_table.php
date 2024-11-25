@@ -17,6 +17,7 @@ class CreateDepartmentsTable extends Migration
             $table->id(); // Add id column
             $table->string('department_name', 100); // Add department_name column
             $table->timestamps(); // Add created_at and updated_at columns
+            $table->softDeletes()->nullable(); 
         });
     }
 

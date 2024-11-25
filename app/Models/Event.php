@@ -4,27 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Event extends Model
+class AcademicProgram extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'event_name',
-        'date',
-        'time',
-    ];
+    protected $guarded = [];
 
-    /**
-     * Get the notifications for the event.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'event_id');

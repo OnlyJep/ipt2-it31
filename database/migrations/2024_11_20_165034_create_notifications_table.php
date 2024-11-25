@@ -28,6 +28,7 @@ class CreateNotificationsTable extends Migration
             $table->foreign('enrollmenttracking_id')->references('id')->on('enrollment_tracking')->onDelete('cascade');
             $table->foreign('assignmenttracking_id')->references('id')->on('assignment_tracking')->onDelete('cascade');
             $table->foreign('profile_id')->references('id')->on('profiles')->onDelete('cascade');
+            $table->softDeletes()->nullable(); 
         });
     }
 

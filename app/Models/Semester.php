@@ -4,25 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Semester extends Model
+class AcademicProgram extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['semester_period'];
+    protected $guarded = [];
 
-    /**
-     * Get the semester academic years for the semester.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function semesterAcademicYears()
     {
-        return $this->hasMany(SemesterAcademicYear::class, 'semester_id');
+        return $this->hasMany(SemesterAcademicYear::class, 'semeacadyear_id');
     }
 }

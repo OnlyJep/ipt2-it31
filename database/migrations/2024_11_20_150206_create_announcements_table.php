@@ -17,6 +17,7 @@ class CreateAnnouncementsTable extends Migration
             $table->id(); // Add id column
             $table->text('announcement'); // Add announcement column
             $table->timestamps();
+            $table->softDeletes()->nullable(); 
         });
     }
 

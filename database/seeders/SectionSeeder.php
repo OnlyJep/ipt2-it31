@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class SectionSeeder extends Seeder
 {
@@ -13,6 +14,8 @@ class SectionSeeder extends Seeder
      */
     public function run()
     {
-        //
+        DB::table('sections')->insert([
+            ['section_name' => 'IT-31', 'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
 }

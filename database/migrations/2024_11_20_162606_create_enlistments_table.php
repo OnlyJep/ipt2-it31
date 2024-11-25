@@ -26,6 +26,7 @@ class CreateEnlistmentsTable extends Migration
             $table->foreign('classschedules_id')->references('id')->on('class_schedules')->onDelete('cascade'); // Add foreign key constraint for classschedules_id
             $table->foreign('academic_year')->references('id')->on('academic_year')->onDelete('cascade'); // Add foreign key constraint for academic_year
             $table->foreign('semester_id')->references('id')->on('semester')->onDelete('cascade'); // Add foreign key constraint for semester_id
+            $table->softDeletes()->nullable(); 
         });
     }
 

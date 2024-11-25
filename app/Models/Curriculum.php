@@ -4,34 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Curriculum extends Model
+class AcademicYear extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'objective',
-        'curriculum_type',
-        'resources',
-        'prerequisite',
-        'assessment',
-        'method',
-        'content',
-        'number_of_hours',
-    ];
 
-    /**
-     * Get the subject curriculums for the curriculum.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+    protected $guarded = [];
+
     public function subjectCurriculums()
     {
-        return $this->hasMany(SubjectCurriculum::class, 'curriculum_id');
+        return $this->hasMany(SubjectCurriculum::class, 'subjectcurriculum_id');
     }
 }

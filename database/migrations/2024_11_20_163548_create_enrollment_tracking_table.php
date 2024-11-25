@@ -20,6 +20,7 @@ class CreateEnrollmentTrackingTable extends Migration
 
             // Foreign key constraint
             $table->foreign('enlistment_id')->references('id')->on('enlistments')->onDelete('cascade'); // Add foreign key constraint for enlistment_id
+            $table->softDeletes()->nullable(); 
         });
     }
 

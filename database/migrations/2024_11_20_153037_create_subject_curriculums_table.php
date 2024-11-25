@@ -18,6 +18,7 @@ class CreateSubjectCurriculumsTable extends Migration
             $table->unsignedBigInteger('subject_id'); // Add subject_id column
             $table->unsignedBigInteger('curriculum_id'); // Add curriculum_id column
             $table->timestamps(); // Add created_at and updated_at columns
+            $table->softDeletes()->nullable(); 
 
             // Foreign key constraints
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade'); // Add foreign key constraint for subject_id

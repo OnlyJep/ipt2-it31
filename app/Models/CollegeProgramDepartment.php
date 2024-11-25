@@ -13,14 +13,23 @@ class AcademicYear extends Model
 
     protected $guarded = [];
 
-
-    public function classifiedSections()
+    public function collegeprogram()
     {
-        return $this->hasMany(ClassifiedSection::class, 'classifiedsection_id');
+        return $this->belongsTo(CollegeProgram::class, 'collegeprogram_id');
     }
 
-    public function academicPrograms()
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    public function academicprograms()
     {
         return $this->hasMany(AcademicProgram::class, 'academicprogram_id');
+    }
+
+    public function profile()
+    {
+        return $this->hasMany(Profile::class, 'profile_id');
     }
 }

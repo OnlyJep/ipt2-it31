@@ -4,35 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Floor extends Model
+class AcademicProgram extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['floor_level'];
+    protected $guarded = [];
 
-    /**
-     * Get the buildings for the floor.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+
     public function buildings()
     {
-        return $this->hasMany(Building::class);
+        return $this->hasMany(Building::class,'building_id');
     }
 
-    /**
-     * Get the classrooms for the floor.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function classrooms()
     {
-        return $this->hasMany(Classroom::class);
+        return $this->hasMany(Classroom::class, 'classroom_id');
     }
 }

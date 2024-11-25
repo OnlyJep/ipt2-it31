@@ -24,6 +24,7 @@ class CreateCurriculumsTable extends Migration
             $table->text('content'); // Add content column
             $table->integer('number_of_hours'); // Add number_of_hours column
             $table->timestamps(); // Add created_at and updated_at columns
+            $table->softDeletes()->nullable(); 
         });
     }
 
