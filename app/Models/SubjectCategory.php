@@ -10,6 +10,8 @@ class SubjectCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'subject_category'; // Specify the table name
+
     protected $guarded = [];
 
     public function subjects()

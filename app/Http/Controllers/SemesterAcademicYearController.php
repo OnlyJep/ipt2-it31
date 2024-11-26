@@ -4,61 +4,107 @@ namespace App\Http\Controllers;
 
 use App\Models\SemesterAcademicYear;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SemesterAcademicYearController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Display a listing of semester academic years
     public function index()
     {
-        //
+        $semesterAcademicYears = SemesterAcademicYear::all();
+        return response()->json($semesterAcademicYears);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Store a newly created semester academic year in storage
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'semester_id' => 'required|exists:semesters,id',
+            'academicyear_id' => 'required|exists:academic_year,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $semesterAcademicYear = SemesterAcademicYear::create($request->all());
+        return response()->json(['message' => 'Semester Academic Year created successfully', 'semesterAcademicYear' => $semesterAcademicYear], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\SemesterAcademicYear  $semesterAcademicYear
-     * @return \Illuminate\Http\Response
-     */
-    public function show(SemesterAcademicYear $semesterAcademicYear)
+    // Display the specified semester academic year
+    public function show($id)
     {
-        //
+        $semesterAcademicYear = SemesterAcademicYear::withTrashed()->find($id);
+        if (!$semesterAcademicYear) {
+            return response()->json(['message' => 'Semester Academic Year not found'], 404);
+        }
+        return response()->json($semesterAcademicYear);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SemesterAcademicYear  $semesterAcademicYear
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, SemesterAcademicYear $semesterAcademicYear)
+    // Update the specified semester academic year in storage
+    public function update(Request $request, $id)
     {
-        //
+        $semesterAcademicYear = SemesterAcademicYear::withTrashed()->find($id);
+        if (!$semesterAcademicYear) {
+            return response()->json(['message' => 'Semester Academic Year not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'semester_id' => 'required|exists:semesters,id',
+            'academicyear_id' => 'required|exists:academic_year,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $semesterAcademicYear->update($request->all());
+        return response()->json(['message' => 'Semester Academic Year updated successfully', 'semesterAcademicYear' => $semesterAcademicYear]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\SemesterAcademicYear  $semesterAcademicYear
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(SemesterAcademicYear $semesterAcademicYear)
+    // Remove the specified semester academic year from storage
+    public function destroy($id)
     {
-        //
+        $semesterAcademicYear = SemesterAcademicYear::find($id);
+        if (!$semesterAcademicYear) {
+            return response()->json(['message' => 'Semester Academic Year not found'], 404);
+        }
+        
+        $semesterAcademicYear->delete();
+        return response()->json(['message' => 'Semester Academic Year deleted successfully']);
+    }
+
+    // Restore the specified soft-deleted semester academic year
+    public function restore($id)
+    {
+        $semesterAcademicYear = SemesterAcademicYear::withTrashed()->find($id);
+        if (!$semesterAcademicYear) {
+            return response()->json(['message' => 'Semester Academic Year not found'], 404);
+        }
+
+        $semesterAcademicYear->restore();
+        return response()->json(['message' => 'Semester Academic Year restored successfully']);
+    }
+
+    // Permanently delete the specified semester academic year from storage
+    public function forceDelete($id)
+    {
+        $semesterAcademicYear = SemesterAcademicYear::withTrashed()->find($id);
+        if (!$semesterAcademicYear) {
+            return response()->json(['message' => 'Semester Academic Year not found'], 404);
+        }
+
+        $semesterAcademicYear->forceDelete();
+        return response()->json(['message' => 'Semester Academic Year permanently deleted successfully']);
+    }
+
+    // Retrieve all soft-deleted semester academic years
+    public function getDeletedSemesterAcademicYears()
+    {
+        $deletedSemesterAcademicYears = SemesterAcademicYear::onlyTrashed()->get();
+        if ($deletedSemesterAcademicYears->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted semester academic years found'], 404);
+        }
+        return response()->json($deletedSemesterAcademicYears);
     }
 }

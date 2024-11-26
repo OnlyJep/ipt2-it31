@@ -11,7 +11,7 @@ class Floor extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'floors';
 
     public function buildings()
     {

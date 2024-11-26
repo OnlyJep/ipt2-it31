@@ -12,7 +12,7 @@ class ClassifiedSection extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'classified_sections';
     public function section()
     {
         return $this->belongsTo(Section::class, 'section_id');

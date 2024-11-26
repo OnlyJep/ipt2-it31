@@ -12,7 +12,7 @@ class AssignmentTracking extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'assignment_tracking';
 
     public function classSchedule()
     {

@@ -12,7 +12,7 @@ class CollegeProgramDepartment extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'college_program_departments';
     public function collegeprogram()
     {
         return $this->belongsTo(CollegeProgram::class, 'collegeprogram_id');

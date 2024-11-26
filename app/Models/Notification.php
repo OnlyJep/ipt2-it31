@@ -11,7 +11,8 @@ class Notification extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'notifications';
+    
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');

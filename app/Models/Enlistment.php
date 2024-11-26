@@ -11,7 +11,7 @@ class Enlistment extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'enlistments';
     public function profile()
     {
         return $this->belongsTo(Profile::class, 'profile_id');

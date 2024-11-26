@@ -11,7 +11,7 @@ class Section extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'sections';
 
     public function classifiedSections()
     {

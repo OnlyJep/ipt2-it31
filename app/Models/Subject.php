@@ -11,6 +11,7 @@ class Subject extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+    protected $table = 'subjects';
 
     public function subjectCurriculums()
     {

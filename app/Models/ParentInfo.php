@@ -11,7 +11,7 @@ class ParentInfo extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'parent_infos';
 
     public function profile()
     {

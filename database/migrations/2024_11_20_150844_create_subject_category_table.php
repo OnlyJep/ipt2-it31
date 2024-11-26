@@ -19,7 +19,6 @@ class CreateSubjectCategoryTable extends Migration
             $table->unsignedBigInteger('yearlevel_id'); // Add yearlevel_id column
             $table->timestamps(); // Add created_at and updated_at columns
             $table->softDeletes()->nullable(); 
-
             $table->foreign('yearlevel_id')->references('id')->on('year_levels')->onDelete('cascade'); // Add foreign key constraint for yearlevel_id
             
         });

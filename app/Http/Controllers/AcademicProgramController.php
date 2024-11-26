@@ -4,61 +4,107 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademicProgram;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AcademicProgramController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Display a listing of academic programs
     public function index()
     {
-        //
+        $academicPrograms = AcademicProgram::all();
+        return response()->json($academicPrograms);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Store a newly created academic program in storage
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'subjectcurriculum_id' => 'required|exists:subject_curriculums,id',
+            'program_department_id' => 'required|exists:college_program_departments,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $academicProgram = AcademicProgram::create($request->all());
+        return response()->json(['message' => 'Academic Program created successfully', 'academicProgram' => $academicProgram], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\AcademicProgram  $academicProgram
-     * @return \Illuminate\Http\Response
-     */
-    public function show(AcademicProgram $academicProgram)
+    // Display the specified academic program
+    public function show($id)
     {
-        //
+        $academicProgram = AcademicProgram::withTrashed()->find($id);
+        if (!$academicProgram) {
+            return response()->json(['message' => 'Academic Program not found'], 404);
+        }
+        return response()->json($academicProgram);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\AcademicProgram  $academicProgram
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, AcademicProgram $academicProgram)
+    // Update the specified academic program in storage
+    public function update(Request $request, $id)
     {
-        //
+        $academicProgram = AcademicProgram::withTrashed()->find($id);
+        if (!$academicProgram) {
+            return response()->json(['message' => 'Academic Program not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'subjectcurriculum_id' => 'required|exists:subject_curriculums,id',
+            'program_department_id' => 'required|exists:college_program_departments,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $academicProgram->update($request->all());
+        return response()->json(['message' => 'Academic Program updated successfully', 'academicProgram' => $academicProgram]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\AcademicProgram  $academicProgram
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(AcademicProgram $academicProgram)
+    // Remove the specified academic program from storage
+    public function destroy($id)
     {
-        //
+        $academicProgram = AcademicProgram::find($id);
+        if (!$academicProgram) {
+            return response()->json(['message' => 'Academic Program not found'], 404);
+        }
+        
+        $academicProgram->delete();
+        return response()->json(['message' => 'Academic Program deleted successfully']);
+    }
+
+    // Restore the specified soft-deleted academic program
+    public function restore($id)
+    {
+        $academicProgram = AcademicProgram::withTrashed()->find($id);
+        if (!$academicProgram) {
+            return response()->json(['message' => 'Academic Program not found'], 404);
+        }
+
+        $academicProgram->restore();
+        return response()->json(['message' => 'Academic Program restored successfully']);
+    }
+
+    // Permanently delete the specified academic program from storage
+    public function forceDelete($id)
+    {
+        $academicProgram = AcademicProgram::withTrashed()->find($id);
+        if (!$academicProgram) {
+            return response()->json(['message' => 'Academic Program not found'], 404);
+        }
+
+        $academicProgram->forceDelete();
+        return response()->json(['message' => 'Academic Program permanently deleted successfully']);
+    }
+
+    // Retrieve all soft-deleted academic programs
+    public function getDeletedAcademicPrograms()
+    {
+        $deletedAcademicPrograms = AcademicProgram::onlyTrashed()->get();
+        if ($deletedAcademicPrograms->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted academic programs found'], 404);
+        }
+        return response()->json($deletedAcademicPrograms);
     }
 }

@@ -11,7 +11,7 @@ class EnrollmentTracking extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'enrollment_tracking';
 
     public function enlistment()
     {

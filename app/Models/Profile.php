@@ -35,7 +35,7 @@ class Profile extends Model
         'parent_info_id',
         'department_id',
     ];
-
+    protected $table = 'profiles';
 
     protected $casts = [
         'admission_date' => 'date',

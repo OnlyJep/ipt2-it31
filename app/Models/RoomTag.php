@@ -11,7 +11,7 @@ class Roomtag extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    
 
     public function classrooms()
     {

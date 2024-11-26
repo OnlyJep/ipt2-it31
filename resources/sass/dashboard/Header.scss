@@ -1,0 +1,55 @@
+.header {
+    height: 80px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0 20px;
+    position: relative; // To properly position the pseudo-element
+
+    .header-content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #333333; // Use a color that contrasts well with the background
+        }
+    }
+
+    // Create the blue line with the animation
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: #3f7afc; // Blue line below the header
+        overflow: hidden;
+
+        // Add the reflection effect as a white gradient animation
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%; // Start from outside of the blue line
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+            animation: reflectLight 3s infinite linear; // Infinite animation with a 3s duration
+        }
+    }
+
+    @keyframes reflectLight {
+        0% {
+            left: -100%;
+        }
+        100% {
+            left: 100%;
+        }
+    }
+}

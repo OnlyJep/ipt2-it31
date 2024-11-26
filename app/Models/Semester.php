@@ -11,7 +11,8 @@ class Semester extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'semester';
+    
     public function semesterAcademicYears()
     {
         return $this->hasMany(SemesterAcademicYear::class, 'semeacadyear_id');

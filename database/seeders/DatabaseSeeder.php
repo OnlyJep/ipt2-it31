@@ -38,6 +38,13 @@ class DatabaseSeeder extends Seeder
             AcademicProgramSeeder::class,
             ParentInfoSeeder::class,
             ProfileSeeder::class,
+            ClassScheduleSeeder::class,
+            EnlistmentSeeder::class,
+            EnrollmentTrackingSeeder::class,
+            AnnouncementSeeder::class,
+            EventSeeder::class,
+            AssignmentTrackingSeeder::class,
+            NotificationSeeder::class,
            
         ]);
     }

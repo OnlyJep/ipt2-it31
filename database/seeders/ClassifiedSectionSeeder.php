@@ -15,8 +15,7 @@ class ClassifiedSectionSeeder extends Seeder
     public function run()
     {
         DB::table('classified_sections')->insert([
-            ['section_id' => 1, 'collegeprogram_id' => 1, 'yearlevel_id' => 3, 'created_at' => now(), 'updated_at' => now()],
-
+            ['section_id' => 1, 'collegeprogram_id' => 1, 'yearlevel_id' => 3, 'created_at' => now()],
         ]);
     }
 }

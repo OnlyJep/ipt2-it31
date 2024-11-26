@@ -12,7 +12,7 @@ class AcademicYear extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'academic_year';
     public function semesterAcademicYears()
     {
         return $this->hasMany(SemesterAcademicYear::class, 'academicyear_id');

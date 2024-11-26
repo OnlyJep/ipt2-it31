@@ -44,7 +44,6 @@ class ClassroomSchedulingSeeder extends Seeder
                         'time_end' => $endTime,
                         'day_of_week' => $day,
                         'created_at' => now(),
-                        'updated_at' => now()
                     ];
 
                     $startTime = $endTime; // Update the start time for the next session

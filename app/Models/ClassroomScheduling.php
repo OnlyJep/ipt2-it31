@@ -12,7 +12,7 @@ class ClassroomScheduling extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'classroom_scheduling';
 
     public function classroom()
     {

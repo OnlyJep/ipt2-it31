@@ -11,7 +11,7 @@ class SubjectCurriculum extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'subject_curriculums';
     public function curriculum()
     {
         return $this->belongsTo(Curriculum::class, 'curriculum_id');

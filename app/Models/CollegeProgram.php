@@ -12,7 +12,7 @@ class CollegeProgram extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'college_programs';
 
     public function classifiedSections()
     {

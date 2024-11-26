@@ -11,7 +11,7 @@ class AcademicProgram extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-    
+    protected $table = 'academic_programs';
  
     public function college_program_department()
     {

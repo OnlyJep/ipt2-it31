@@ -4,61 +4,107 @@ namespace App\Http\Controllers;
 
 use App\Models\CollegeProgramDepartment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CollegeProgramDepartmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Display a listing of college program departments
     public function index()
     {
-        //
+        $collegeProgramDepartments = CollegeProgramDepartment::all();
+        return response()->json($collegeProgramDepartments);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Store a newly created college program department in storage
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'department_id' => 'required|exists:departments,id',
+            'collegeprogram_id' => 'required|exists:college_programs,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $collegeProgramDepartment = CollegeProgramDepartment::create($request->all());
+        return response()->json(['message' => 'College Program Department created successfully', 'collegeProgramDepartment' => $collegeProgramDepartment], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\CollegeProgramDepartment  $collegeProgramDepartment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(CollegeProgramDepartment $collegeProgramDepartment)
+    // Display the specified college program department
+    public function show($id)
     {
-        //
+        $collegeProgramDepartment = CollegeProgramDepartment::withTrashed()->find($id);
+        if (!$collegeProgramDepartment) {
+            return response()->json(['message' => 'College Program Department not found'], 404);
+        }
+        return response()->json($collegeProgramDepartment);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\CollegeProgramDepartment  $collegeProgramDepartment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, CollegeProgramDepartment $collegeProgramDepartment)
+    // Update the specified college program department in storage
+    public function update(Request $request, $id)
     {
-        //
+        $collegeProgramDepartment = CollegeProgramDepartment::withTrashed()->find($id);
+        if (!$collegeProgramDepartment) {
+            return response()->json(['message' => 'College Program Department not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'department_id' => 'required|exists:departments,id',
+            'collegeprogram_id' => 'required|exists:college_programs,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $collegeProgramDepartment->update($request->all());
+        return response()->json(['message' => 'College Program Department updated successfully', 'collegeProgramDepartment' => $collegeProgramDepartment]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\CollegeProgramDepartment  $collegeProgramDepartment
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(CollegeProgramDepartment $collegeProgramDepartment)
+    // Remove the specified college program department from storage
+    public function destroy($id)
     {
-        //
+        $collegeProgramDepartment = CollegeProgramDepartment::find($id);
+        if (!$collegeProgramDepartment) {
+            return response()->json(['message' => 'College Program Department not found'], 404);
+        }
+        
+        $collegeProgramDepartment->delete();
+        return response()->json(['message' => 'College Program Department deleted successfully']);
+    }
+
+    // Restore the specified soft-deleted college program department
+    public function restore($id)
+    {
+        $collegeProgramDepartment = CollegeProgramDepartment::withTrashed()->find($id);
+        if (!$collegeProgramDepartment) {
+            return response()->json(['message' => 'College Program Department not found'], 404);
+        }
+
+        $collegeProgramDepartment->restore();
+        return response()->json(['message' => 'College Program Department restored successfully']);
+    }
+
+    // Permanently delete the specified college program department from storage
+    public function forceDelete($id)
+    {
+        $collegeProgramDepartment = CollegeProgramDepartment::withTrashed()->find($id);
+        if (!$collegeProgramDepartment) {
+            return response()->json(['message' => 'College Program Department not found'], 404);
+        }
+
+        $collegeProgramDepartment->forceDelete();
+        return response()->json(['message' => 'College Program Department permanently deleted successfully']);
+    }
+
+    // Retrieve all soft-deleted college program departments
+    public function getDeletedCollegeProgramDepartments()
+    {
+        $deletedCollegeProgramDepartments = CollegeProgramDepartment::onlyTrashed()->get();
+        if ($deletedCollegeProgramDepartments->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted college program departments found'], 404);
+        }
+        return response()->json($deletedCollegeProgramDepartments);
     }
 }

@@ -45,7 +45,7 @@ class ParentInfoController extends Controller
     // Display the specified parent info
     public function show($id)
     {
-        $parentInfo = ParentInfo::find($id);
+        $parentInfo = ParentInfo::withTrashed()->find($id);
         if (!$parentInfo) {
             return response()->json(['message' => 'Parent Info not found'], 404);
         }
@@ -55,7 +55,7 @@ class ParentInfoController extends Controller
     // Update the specified parent info in storage
     public function update(Request $request, $id)
     {
-        $parentInfo = ParentInfo::find($id);
+        $parentInfo = ParentInfo::withTrashed()->find($id);
         if (!$parentInfo) {
             return response()->json(['message' => 'Parent Info not found'], 404);
         }
@@ -118,5 +118,15 @@ class ParentInfoController extends Controller
 
         $parentInfo->forceDelete();
         return response()->json(['message' => 'Parent Info permanently deleted successfully']);
+    }
+
+    // Retrieve all soft-deleted parent infos
+    public function getDeletedParentInfos()
+    {
+        $deletedParentInfos = ParentInfo::onlyTrashed()->get();
+        if ($deletedParentInfos->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted parent infos found'], 404);
+        }
+        return response()->json($deletedParentInfos);
     }
 }

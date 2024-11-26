@@ -1,10 +1,10 @@
-php artisan make:model SemesterAcademicYear -c --api
+php artisan make:model CollegeProgramDepartment -c --api
 
-php artisan make:model SemesterAcademicYear -mc --api
+php artisan make:model CollegeProgramDepartment -mc --api
 
-php artisan make:seeder SemesterAcademicYearSeeder
+php artisan make:seeder CollegeProgramDepartmentSeeder
 
-php artisan make:model SemesterAcademicYear
+php artisan make:model CollegeProgramDepartment
 
 php artisan make:controller \Graph\GraphTrendIllnessController
 

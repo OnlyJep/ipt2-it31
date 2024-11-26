@@ -12,7 +12,7 @@ class Department extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'departments';
 
     public function academicPrograms()
     {

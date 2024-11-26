@@ -11,7 +11,7 @@ class YearLevel extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
-
+    protected $table = 'year_levels';
 
     public function profiles()
     {

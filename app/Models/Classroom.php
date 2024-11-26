@@ -12,7 +12,7 @@ class Classroom extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'classrooms';
 
     public function building()
     {

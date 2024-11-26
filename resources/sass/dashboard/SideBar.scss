@@ -1,0 +1,112 @@
+.sidebar {
+    width: 250px;
+    height: 100%;
+    background-color: #131f73;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    position: fixed;
+    left: -250px; // Hide the sidebar by default on smaller screens
+    top: 0;
+    transition: left 0.3s ease; // Smooth transition for opening/closing
+    z-index: 1000;
+
+    &.open {
+        left: 0; // Show sidebar when toggled open
+    }
+
+    .logo {
+        text-align: center;
+        padding: 8px 0;
+
+        img {
+            max-width: 200px;
+        }
+    }
+
+    .separator {
+        height: 1px;
+        background-color: white;
+        margin: 8px 0;
+    }
+
+    .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        .nav-item {
+            .nav-link {
+                display: block;
+                padding: 10px 20px;
+                color: white;
+                text-decoration: none;
+                background: rgba(0, 60, 120, 0.2);
+                border-radius: 5px;
+                text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                font-size: 14px;
+                position: relative;
+
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    color: white !important;
+                    text-decoration: none !important;
+                }
+
+                &.active {
+                    font-weight: bold;
+                    background-color: rgba(255, 255, 255, 0.2);
+                    color: #ffffff;
+                }
+
+                /* Vertical line resembling a scrollbar (using ::after pseudo-element) */
+                &:hover::after,
+                &.active::after {
+                    content: "";
+                    position: absolute;
+                    top: 5px;
+                    bottom: 5px;
+                    right: 10px;
+                    width: 2px;
+                    background-color: white;
+                }
+            }
+        }
+    }
+}
+
+/* Menu Toggle Button */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #131f73;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1100;
+
+    @media (max-width: 768px) {
+        display: block; // Show toggle button on mobile screens
+    }
+}
+
+/* Media Query for Small Screens */
+@media (max-width: 768px) {
+    .sidebar {
+        left: -250px; // Initially hidden on mobile
+        width: 250px;
+
+        &.open {
+            left: 0; // Slide in the sidebar when open class is added
+        }
+    }
+
+    body.sidebar-open {
+        overflow: hidden; // Prevent scrolling when the sidebar is open
+    }
+}

@@ -54,9 +54,9 @@ class ProfileController extends Controller
     // Display the specified profile
     public function show($id)
     {
-        $profile = Profile::find($id);
+        $profile = Profile::withTrashed()->where('id', $id)->first();
         if (!$profile) {
-            return response()->json(['message' => 'Profile not found'], 404);
+            return response()->json(['message' => 'Profile nott found'], 404);
         }
         return response()->json($profile);
     }
@@ -64,7 +64,7 @@ class ProfileController extends Controller
     // Update the specified profile in storage
     public function update(Request $request, $id)
     {
-        $profile = Profile::find($id);
+        $profile = Profile::withTrashed()->where('id', $id)->first();
         if (!$profile) {
             return response()->json(['message' => 'Profile not found'], 404);
         }
@@ -102,7 +102,7 @@ class ProfileController extends Controller
         return response()->json($profile);
     }
 
-    // Remove the specified profile from storage
+    // Soft delete the specified profile
     public function destroy($id)
     {
         $profile = Profile::find($id);
@@ -117,24 +117,35 @@ class ProfileController extends Controller
     // Restore the specified soft-deleted profile
     public function restore($id)
     {
-        $profile = Profile::withTrashed()->find($id);
+        $profile = Profile::withTrashed()->where('id', $id)->first();
         if (!$profile) {
             return response()->json(['message' => 'Profile not found'], 404);
         }
 
         $profile->restore();
-        return response()->json(['message' => 'Profile restored successfully']);
+        return response()->json(['message' => 'Profile restored successfully', 'profile' => $profile]);
     }
 
     // Permanently delete the specified profile from storage
     public function forceDelete($id)
     {
-        $profile = Profile::withTrashed()->find($id);
+        $profile = Profile::withTrashed()->where('id', $id)->first();
         if (!$profile) {
             return response()->json(['message' => 'Profile not found'], 404);
         }
 
         $profile->forceDelete();
         return response()->json(['message' => 'Profile permanently deleted successfully']);
+    }
+
+    // Retrieve all soft-deleted profiles
+    public function getDeletedProfiles()
+    {
+        // Direct query using the Eloquent builder to retrieve soft-deleted profiles
+        $deletedProfiles = Profile::onlyTrashed()->get();
+        if ($deletedProfiles->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted profiles found'], 404);
+        }
+        return response()->json($deletedProfiles);
     }
 }

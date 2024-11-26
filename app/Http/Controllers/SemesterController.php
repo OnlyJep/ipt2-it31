@@ -4,61 +4,105 @@ namespace App\Http\Controllers;
 
 use App\Models\Semester;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SemesterController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Display a listing of semesters
     public function index()
     {
-        //
+        $semesters = Semester::all();
+        return response()->json($semesters);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Store a newly created semester in storage
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'semester_period' => 'required|string|max:20',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $semester = Semester::create($request->all());
+        return response()->json(['message' => 'Semester created successfully', 'semester' => $semester], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Semester  $semester
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Semester $semester)
+    // Display the specified semester
+    public function show($id)
     {
-        //
+        $semester = Semester::withTrashed()->find($id);
+        if (!$semester) {
+            return response()->json(['message' => 'Semester not found'], 404);
+        }
+        return response()->json($semester);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Semester  $semester
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Semester $semester)
+    // Update the specified semester in storage
+    public function update(Request $request, $id)
     {
-        //
+        $semester = Semester::withTrashed()->find($id);
+        if (!$semester) {
+            return response()->json(['message' => 'Semester not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'semester_period' => 'required|string|max:20',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $semester->update($request->all());
+        return response()->json(['message' => 'Semester updated successfully', 'semester' => $semester]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Semester  $semester
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Semester $semester)
+    // Remove the specified semester from storage
+    public function destroy($id)
     {
-        //
+        $semester = Semester::find($id);
+        if (!$semester) {
+            return response()->json(['message' => 'Semester not found'], 404);
+        }
+        
+        $semester->delete();
+        return response()->json(['message' => 'Semester deleted successfully']);
+    }
+
+    // Restore the specified soft-deleted semester
+    public function restore($id)
+    {
+        $semester = Semester::withTrashed()->find($id);
+        if (!$semester) {
+            return response()->json(['message' => 'Semester not found'], 404);
+        }
+
+        $semester->restore();
+        return response()->json(['message' => 'Semester restored successfully']);
+    }
+
+    // Permanently delete the specified semester from storage
+    public function forceDelete($id)
+    {
+        $semester = Semester::withTrashed()->find($id);
+        if (!$semester) {
+            return response()->json(['message' => 'Semester not found'], 404);
+        }
+
+        $semester->forceDelete();
+        return response()->json(['message' => 'Semester permanently deleted successfully']);
+    }
+
+    // Retrieve all soft-deleted semesters
+    public function getDeletedSemesters()
+    {
+        $deletedSemesters = Semester::onlyTrashed()->get();
+        if ($deletedSemesters->isEmpty()) {
+            return response()->json(['message' => 'No soft-deleted semesters found'], 404);
+        }
+        return response()->json($deletedSemesters);
     }
 }

@@ -12,7 +12,7 @@ class Announcement extends Model
 
 
     protected $guarded = [];
-
+    protected $table = 'announcements';
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'announcement_id');
