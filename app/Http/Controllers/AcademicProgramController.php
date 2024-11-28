@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class AcademicProgramController extends Controller
 {
     // Display a listing of academic programs
-    public function index()
+    public function index(Request $request)
     {
-        $academicPrograms = AcademicProgram::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $academicPrograms = AcademicProgram::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $academicPrograms = AcademicProgram::withTrashed()->get();
+        } else {
+            $academicPrograms = AcademicProgram::all();
+        }
+
+        if ($academicPrograms->isEmpty()) {
+            return response()->json(['message' => 'No academic programs found'], 404);
+        }
+
         return response()->json($academicPrograms);
     }
 
@@ -62,7 +75,7 @@ class AcademicProgramController extends Controller
         return response()->json(['message' => 'Academic Program updated successfully', 'academicProgram' => $academicProgram]);
     }
 
-    // Remove the specified academic program from storage
+    // Soft delete the specified academic program
     public function destroy($id)
     {
         $academicProgram = AcademicProgram::find($id);
@@ -84,27 +97,5 @@ class AcademicProgramController extends Controller
 
         $academicProgram->restore();
         return response()->json(['message' => 'Academic Program restored successfully']);
-    }
-
-    // Permanently delete the specified academic program from storage
-    public function forceDelete($id)
-    {
-        $academicProgram = AcademicProgram::withTrashed()->find($id);
-        if (!$academicProgram) {
-            return response()->json(['message' => 'Academic Program not found'], 404);
-        }
-
-        $academicProgram->forceDelete();
-        return response()->json(['message' => 'Academic Program permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted academic programs
-    public function getDeletedAcademicPrograms()
-    {
-        $deletedAcademicPrograms = AcademicProgram::onlyTrashed()->get();
-        if ($deletedAcademicPrograms->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted academic programs found'], 404);
-        }
-        return response()->json($deletedAcademicPrograms);
     }
 }

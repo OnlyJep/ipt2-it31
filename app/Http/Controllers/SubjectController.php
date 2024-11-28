@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class SubjectController extends Controller
 {
     // Display a listing of subjects
-    public function index()
+    public function index(Request $request)
     {
-        $subjects = Subject::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $subjects = Subject::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $subjects = Subject::withTrashed()->get();
+        } else {
+            $subjects = Subject::all();
+        }
+
+        if ($subjects->isEmpty()) {
+            return response()->json(['message' => 'No subjects found'], 404);
+        }
+
         return response()->json($subjects);
     }
 
@@ -25,7 +38,7 @@ class SubjectController extends Controller
             'units' => 'required|integer|min:0',
             'subject_description' => 'nullable|string',
             'availability' => 'required|boolean',
-            'subjectcategory_id' => 'required|exists:subject_categories,id',
+            'subjectcategory_id' => 'required|exists:subject_category,id',
         ]);
 
         if ($validator->fails()) {
@@ -61,7 +74,7 @@ class SubjectController extends Controller
             'units' => 'required|integer|min:0',
             'subject_description' => 'nullable|string',
             'availability' => 'required|boolean',
-            'subjectcategory_id' => 'required|exists:subject_categories,id',
+            'subjectcategory_id' => 'required|exists:subject_category,id',
         ]);
 
         if ($validator->fails()) {
@@ -72,7 +85,7 @@ class SubjectController extends Controller
         return response()->json(['message' => 'Subject updated successfully', 'subject' => $subject]);
     }
 
-    // Remove the specified subject from storage
+    // Soft delete the specified subject
     public function destroy($id)
     {
         $subject = Subject::find($id);
@@ -94,27 +107,5 @@ class SubjectController extends Controller
 
         $subject->restore();
         return response()->json(['message' => 'Subject restored successfully']);
-    }
-
-    // Permanently delete the specified subject from storage
-    public function forceDelete($id)
-    {
-        $subject = Subject::withTrashed()->find($id);
-        if (!$subject) {
-            return response()->json(['message' => 'Subject not found'], 404);
-        }
-
-        $subject->forceDelete();
-        return response()->json(['message' => 'Subject permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted subjects
-    public function getDeletedSubjects()
-    {
-        $deletedSubjects = Subject::onlyTrashed()->get();
-        if ($deletedSubjects->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted subjects found'], 404);
-        }
-        return response()->json($deletedSubjects);
     }
 }

@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class SubjectCategoryController extends Controller
 {
     // Display a listing of subject categories
-    public function index()
+    public function index(Request $request)
     {
-        $subjectCategories = SubjectCategory::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $subjectCategories = SubjectCategory::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $subjectCategories = SubjectCategory::withTrashed()->get();
+        } else {
+            $subjectCategories = SubjectCategory::all();
+        }
+
+        if ($subjectCategories->isEmpty()) {
+            return response()->json(['message' => 'No subject categories found'], 404);
+        }
+
         return response()->json($subjectCategories);
     }
 
@@ -62,7 +75,7 @@ class SubjectCategoryController extends Controller
         return response()->json(['message' => 'Subject Category updated successfully', 'subjectCategory' => $subjectCategory]);
     }
 
-    // Remove the specified subject category from storage
+    // Soft delete the specified subject category
     public function destroy($id)
     {
         $subjectCategory = SubjectCategory::find($id);
@@ -84,27 +97,5 @@ class SubjectCategoryController extends Controller
 
         $subjectCategory->restore();
         return response()->json(['message' => 'Subject Category restored successfully']);
-    }
-
-    // Permanently delete the specified subject category from storage
-    public function forceDelete($id)
-    {
-        $subjectCategory = SubjectCategory::withTrashed()->find($id);
-        if (!$subjectCategory) {
-            return response()->json(['message' => 'Subject Category not found'], 404);
-        }
-
-        $subjectCategory->forceDelete();
-        return response()->json(['message' => 'Subject Category permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted subject categories
-    public function getDeletedSubjectCategories()
-    {
-        $deletedSubjectCategories = SubjectCategory::onlyTrashed()->get();
-        if ($deletedSubjectCategories->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted subject categories found'], 404);
-        }
-        return response()->json($deletedSubjectCategories);
     }
 }

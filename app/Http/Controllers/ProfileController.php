@@ -9,13 +9,26 @@ use Illuminate\Support\Facades\Validator;
 class ProfileController extends Controller
 {
     // Display a listing of profiles
-    public function index()
+    public function index(Request $request)
     {
-        $profiles = Profile::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $profiles = Profile::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $profiles = Profile::withTrashed()->get();
+        } else {
+            $profiles = Profile::all();
+        }
+
+        if ($profiles->isEmpty()) {
+            return response()->json(['message' => 'No profiles found'], 404);
+        }
+
         return response()->json($profiles);
     }
 
-    // Store a newly created profile in storage
+    // Create a new profile in storage
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -25,7 +38,7 @@ class ProfileController extends Controller
             'suffix' => 'nullable|string|max:20',
             'age' => 'nullable|integer|min:0',
             'address' => 'nullable|string',
-            'school_email' => 'nullable|email|unique:profiles|max:50',
+            'school_email' => 'nullable|email|unique:profiles,school_email|max:50',
             'sex' => 'nullable|string|max:20',
             'phone_number' => 'nullable|string|max:20',
             'admission_date' => 'nullable|date',
@@ -51,20 +64,10 @@ class ProfileController extends Controller
         return response()->json($profile, 201);
     }
 
-    // Display the specified profile
-    public function show($id)
-    {
-        $profile = Profile::withTrashed()->where('id', $id)->first();
-        if (!$profile) {
-            return response()->json(['message' => 'Profile nott found'], 404);
-        }
-        return response()->json($profile);
-    }
-
-    // Update the specified profile in storage
+    // Update an existing profile in storage
     public function update(Request $request, $id)
     {
-        $profile = Profile::withTrashed()->where('id', $id)->first();
+        $profile = Profile::withTrashed()->find($id);
         if (!$profile) {
             return response()->json(['message' => 'Profile not found'], 404);
         }
@@ -99,6 +102,16 @@ class ProfileController extends Controller
         }
 
         $profile->update($request->all());
+        return response()->json($profile, 200);
+    }
+
+    // Display the specified profile
+    public function show($id)
+    {
+        $profile = Profile::withTrashed()->find($id);
+        if (!$profile) {
+            return response()->json(['message' => 'Profile not found'], 404);
+        }
         return response()->json($profile);
     }
 
@@ -117,35 +130,12 @@ class ProfileController extends Controller
     // Restore the specified soft-deleted profile
     public function restore($id)
     {
-        $profile = Profile::withTrashed()->where('id', $id)->first();
+        $profile = Profile::withTrashed()->find($id);
         if (!$profile) {
             return response()->json(['message' => 'Profile not found'], 404);
         }
 
         $profile->restore();
-        return response()->json(['message' => 'Profile restored successfully', 'profile' => $profile]);
-    }
-
-    // Permanently delete the specified profile from storage
-    public function forceDelete($id)
-    {
-        $profile = Profile::withTrashed()->where('id', $id)->first();
-        if (!$profile) {
-            return response()->json(['message' => 'Profile not found'], 404);
-        }
-
-        $profile->forceDelete();
-        return response()->json(['message' => 'Profile permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted profiles
-    public function getDeletedProfiles()
-    {
-        // Direct query using the Eloquent builder to retrieve soft-deleted profiles
-        $deletedProfiles = Profile::onlyTrashed()->get();
-        if ($deletedProfiles->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted profiles found'], 404);
-        }
-        return response()->json($deletedProfiles);
+        return response()->json(['message' => 'Profile restored successfully']);
     }
 }

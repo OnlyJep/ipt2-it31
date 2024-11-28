@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class CollegeProgramController extends Controller
 {
     // Display a listing of college programs
-    public function index()
+    public function index(Request $request)
     {
-        $collegePrograms = CollegeProgram::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $collegePrograms = CollegeProgram::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $collegePrograms = CollegeProgram::withTrashed()->get();
+        } else {
+            $collegePrograms = CollegeProgram::all();
+        }
+
+        if ($collegePrograms->isEmpty()) {
+            return response()->json(['message' => 'No college programs found'], 404);
+        }
+
         return response()->json($collegePrograms);
     }
 
@@ -62,7 +75,7 @@ class CollegeProgramController extends Controller
         return response()->json(['message' => 'College Program updated successfully', 'collegeProgram' => $collegeProgram]);
     }
 
-    // Remove the specified college program from storage
+    // Soft delete the specified college program
     public function destroy($id)
     {
         $collegeProgram = CollegeProgram::find($id);
@@ -84,27 +97,5 @@ class CollegeProgramController extends Controller
 
         $collegeProgram->restore();
         return response()->json(['message' => 'College Program restored successfully']);
-    }
-
-    // Permanently delete the specified college program from storage
-    public function forceDelete($id)
-    {
-        $collegeProgram = CollegeProgram::withTrashed()->find($id);
-        if (!$collegeProgram) {
-            return response()->json(['message' => 'College Program not found'], 404);
-        }
-
-        $collegeProgram->forceDelete();
-        return response()->json(['message' => 'College Program permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted college programs
-    public function getDeletedCollegePrograms()
-    {
-        $deletedCollegePrograms = CollegeProgram::onlyTrashed()->get();
-        if ($deletedCollegePrograms->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted college programs found'], 404);
-        }
-        return response()->json($deletedCollegePrograms);
     }
 }

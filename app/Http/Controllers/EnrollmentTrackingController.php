@@ -84,18 +84,6 @@ class EnrollmentTrackingController extends Controller
         return response()->json(['message' => 'Enrollment Tracking restored successfully']);
     }
 
-    // Permanently delete the specified enrollment tracking from storage
-    public function forceDelete($id)
-    {
-        $enrollmentTracking = EnrollmentTracking::withTrashed()->find($id);
-        if (!$enrollmentTracking) {
-            return response()->json(['message' => 'Enrollment Tracking not found'], 404);
-        }
-
-        $enrollmentTracking->forceDelete();
-        return response()->json(['message' => 'Enrollment Tracking permanently deleted successfully']);
-    }
-
     // Retrieve all soft-deleted enrollment trackings
     public function getDeletedEnrollmentTrackings()
     {

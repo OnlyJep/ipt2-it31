@@ -84,17 +84,6 @@ class SemesterController extends Controller
         return response()->json(['message' => 'Semester restored successfully']);
     }
 
-    // Permanently delete the specified semester from storage
-    public function forceDelete($id)
-    {
-        $semester = Semester::withTrashed()->find($id);
-        if (!$semester) {
-            return response()->json(['message' => 'Semester not found'], 404);
-        }
-
-        $semester->forceDelete();
-        return response()->json(['message' => 'Semester permanently deleted successfully']);
-    }
 
     // Retrieve all soft-deleted semesters
     public function getDeletedSemesters()

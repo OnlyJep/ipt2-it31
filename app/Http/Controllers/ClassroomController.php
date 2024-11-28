@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class ClassroomController extends Controller
 {
     // Display a listing of classrooms
-    public function index()
+    public function index(Request $request)
     {
-        $classrooms = Classroom::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $classrooms = Classroom::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $classrooms = Classroom::withTrashed()->get();
+        } else {
+            $classrooms = Classroom::all();
+        }
+
+        if ($classrooms->isEmpty()) {
+            return response()->json(['message' => 'No classrooms found'], 404);
+        }
+
         return response()->json($classrooms);
     }
 
@@ -88,27 +101,5 @@ class ClassroomController extends Controller
 
         $classroom->restore();
         return response()->json(['message' => 'Classroom restored successfully']);
-    }
-
-    // Permanently delete the specified classroom from storage
-    public function forceDelete($id)
-    {
-        $classroom = Classroom::withTrashed()->find($id);
-        if (!$classroom) {
-            return response()->json(['message' => 'Classroom not found'], 404);
-        }
-
-        $classroom->forceDelete();
-        return response()->json(['message' => 'Classroom permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted classrooms
-    public function getDeletedClassrooms()
-    {
-        $deletedClassrooms = Classroom::onlyTrashed()->get();
-        if ($deletedClassrooms->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted classrooms found'], 404);
-        }
-        return response()->json($deletedClassrooms);
     }
 }

@@ -5,37 +5,43 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $roles = Role::all();
-        return response()->json($roles);
+        try {
+            // Check if the query parameter 'deleted' is set to true
+            $showDeleted = $request->query('deleted', false);
+
+            if ($showDeleted) {
+                // Retrieve only soft-deleted roles
+                $roles = Role::onlyTrashed()->get();
+            } else {
+                // Retrieve all non-deleted roles
+                $roles = Role::all();
+            }
+
+            if ($roles->isEmpty()) {
+                return response()->json(['message' => 'No roles found'], 404);
+            }
+
+            return response()->json($roles);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to retrieve roles', 'error' => $e->getMessage()], 500);
+        }
     }
 
     public function store(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'role_name' => 'required|string|max:50|unique:roles,role_name',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
-
-            $role = Role::create(['role_name' => $request->role_name]);
-
-            return response()->json(['message' => 'Role created successfully', 'role' => $role], 201);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to create role', 'error' => $e->getMessage()], 500);
-        }
+        // Delegate to the saveRole method without an ID for creation
+        return $this->saveRole($request);
     }
 
     public function show($id)
     {
-        $role = Role::withTrashed()->where('id', $id)->first();
+        $role = Role::withTrashed()->find($id);
         if (!$role) {
             return response()->json(['message' => 'Role not found'], 404);
         }
@@ -44,26 +50,8 @@ class RoleController extends Controller
 
     public function update(Request $request, $id)
     {
-        try {
-            $role = Role::withTrashed()->where('id', $id)->first();
-            if (!$role) {
-                return response()->json(['message' => 'Role not found'], 404);
-            }
-
-            $validator = Validator::make($request->all(), [
-                'role_name' => 'required|string|max:50|unique:roles,role_name,' . $role->id,
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
-
-            $role->update(['role_name' => $request->role_name]);
-
-            return response()->json(['message' => 'Role updated successfully', 'role' => $role]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to update role', 'error' => $e->getMessage()], 500);
-        }
+        // Delegate to the saveRole method with an ID for updating
+        return $this->saveRole($request, $id);
     }
 
     public function destroy($id)
@@ -83,7 +71,10 @@ class RoleController extends Controller
     public function restore($id)
     {
         try {
-            $role = Role::withTrashed()->findOrFail($id);
+            $role = Role::withTrashed()->find($id);
+            if (!$role) {
+                return response()->json(['message' => 'Role not found'], 404);
+            }
             $role->restore();
             return response()->json(['message' => 'Role restored successfully', 'role' => $role]);
         } catch (\Exception $e) {
@@ -91,24 +82,46 @@ class RoleController extends Controller
         }
     }
 
-    public function forceDelete($id)
+    // Private method to handle both creation and updating of roles
+    private function saveRole(Request $request, $id = null)
     {
         try {
-            $role = Role::withTrashed()->findOrFail($id);
-            $role->forceDelete();
-            return response()->json(['message' => 'Role permanently deleted']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to permanently delete role', 'error' => $e->getMessage()], 500);
-        }
-    }
+            if ($id) {
+                // Update existing role
+                $role = Role::withTrashed()->find($id);
+                if (!$role) {
+                    return response()->json(['message' => 'Role not found'], 404);
+                }
+            } else {
+                // Create new role
+                $role = new Role();
+            }
 
-    // Retrieve all soft-deleted roles
-    public function getDeletedRoles()
-    {
-        $deletedRoles = Role::onlyTrashed()->get();
-        if ($deletedRoles->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted roles found'], 404);
+            // Validation rules
+            $validator = Validator::make($request->all(), [
+                'role_name' => [
+                    'required',
+                    'string',
+                    'max:50',
+                    Rule::unique('roles')->ignore($role->id ?? null),
+                ],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // Assign and save the role name
+            $role->role_name = $request->role_name;
+            $role->save();
+
+            $message = $id ? 'Role updated successfully' : 'Role created successfully';
+            $statusCode = $id ? 200 : 201;
+
+            return response()->json(['message' => $message, 'role' => $role], $statusCode);
+        } catch (\Exception $e) {
+            $message = $id ? 'Failed to update role' : 'Failed to create role';
+            return response()->json(['message' => $message, 'error' => $e->getMessage()], 500);
         }
-        return response()->json($deletedRoles);
     }
 }

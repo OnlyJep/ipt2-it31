@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class SubjectCurriculumController extends Controller
 {
     // Display a listing of subject curriculums
-    public function index()
+    public function index(Request $request)
     {
-        $subjectCurriculums = SubjectCurriculum::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $subjectCurriculums = SubjectCurriculum::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $subjectCurriculums = SubjectCurriculum::withTrashed()->get();
+        } else {
+            $subjectCurriculums = SubjectCurriculum::all();
+        }
+
+        if ($subjectCurriculums->isEmpty()) {
+            return response()->json(['message' => 'No subject curriculums found'], 404);
+        }
+
         return response()->json($subjectCurriculums);
     }
 
@@ -62,7 +75,7 @@ class SubjectCurriculumController extends Controller
         return response()->json(['message' => 'Subject Curriculum updated successfully', 'subjectCurriculum' => $subjectCurriculum]);
     }
 
-    // Remove the specified subject curriculum from storage
+    // Soft delete the specified subject curriculum
     public function destroy($id)
     {
         $subjectCurriculum = SubjectCurriculum::find($id);
@@ -84,27 +97,5 @@ class SubjectCurriculumController extends Controller
 
         $subjectCurriculum->restore();
         return response()->json(['message' => 'Subject Curriculum restored successfully']);
-    }
-
-    // Permanently delete the specified subject curriculum from storage
-    public function forceDelete($id)
-    {
-        $subjectCurriculum = SubjectCurriculum::withTrashed()->find($id);
-        if (!$subjectCurriculum) {
-            return response()->json(['message' => 'Subject Curriculum not found'], 404);
-        }
-
-        $subjectCurriculum->forceDelete();
-        return response()->json(['message' => 'Subject Curriculum permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted subject curriculums
-    public function getDeletedSubjectCurriculums()
-    {
-        $deletedSubjectCurriculums = SubjectCurriculum::onlyTrashed()->get();
-        if ($deletedSubjectCurriculums->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted subject curriculums found'], 404);
-        }
-        return response()->json($deletedSubjectCurriculums);
     }
 }

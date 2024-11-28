@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class CurriculumController extends Controller
 {
     // Display a listing of curriculums
-    public function index()
+    public function index(Request $request)
     {
-        $curriculums = Curriculum::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $curriculums = Curriculum::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $curriculums = Curriculum::withTrashed()->get();
+        } else {
+            $curriculums = Curriculum::all();
+        }
+
+        if ($curriculums->isEmpty()) {
+            return response()->json(['message' => 'No curriculums found'], 404);
+        }
+
         return response()->json($curriculums);
     }
 
@@ -74,7 +87,7 @@ class CurriculumController extends Controller
         return response()->json(['message' => 'Curriculum updated successfully', 'curriculum' => $curriculum]);
     }
 
-    // Remove the specified curriculum from storage
+    // Soft delete the specified curriculum
     public function destroy($id)
     {
         $curriculum = Curriculum::find($id);
@@ -96,27 +109,5 @@ class CurriculumController extends Controller
 
         $curriculum->restore();
         return response()->json(['message' => 'Curriculum restored successfully']);
-    }
-
-    // Permanently delete the specified curriculum from storage
-    public function forceDelete($id)
-    {
-        $curriculum = Curriculum::withTrashed()->find($id);
-        if (!$curriculum) {
-            return response()->json(['message' => 'Curriculum not found'], 404);
-        }
-
-        $curriculum->forceDelete();
-        return response()->json(['message' => 'Curriculum permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted curriculums
-    public function getDeletedCurriculums()
-    {
-        $deletedCurriculums = Curriculum::onlyTrashed()->get();
-        if ($deletedCurriculums->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted curriculums found'], 404);
-        }
-        return response()->json($deletedCurriculums);
     }
 }

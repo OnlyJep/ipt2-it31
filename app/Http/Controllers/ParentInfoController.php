@@ -9,13 +9,26 @@ use Illuminate\Support\Facades\Validator;
 class ParentInfoController extends Controller
 {
     // Display a listing of parent infos
-    public function index()
+    public function index(Request $request)
     {
-        $parentInfos = ParentInfo::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $parentInfos = ParentInfo::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $parentInfos = ParentInfo::withTrashed()->get();
+        } else {
+            $parentInfos = ParentInfo::all();
+        }
+
+        if ($parentInfos->isEmpty()) {
+            return response()->json(['message' => 'No parent infos found'], 404);
+        }
+
         return response()->json($parentInfos);
     }
 
-    // Store a newly created parent info in storage
+    // Create a new parent info in storage
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -42,17 +55,7 @@ class ParentInfoController extends Controller
         return response()->json($parentInfo, 201);
     }
 
-    // Display the specified parent info
-    public function show($id)
-    {
-        $parentInfo = ParentInfo::withTrashed()->find($id);
-        if (!$parentInfo) {
-            return response()->json(['message' => 'Parent Info not found'], 404);
-        }
-        return response()->json($parentInfo);
-    }
-
-    // Update the specified parent info in storage
+    // Update an existing parent info in storage
     public function update(Request $request, $id)
     {
         $parentInfo = ParentInfo::withTrashed()->find($id);
@@ -81,10 +84,20 @@ class ParentInfoController extends Controller
         }
 
         $parentInfo->update($request->all());
+        return response()->json($parentInfo, 200);
+    }
+
+    // Display the specified parent info
+    public function show($id)
+    {
+        $parentInfo = ParentInfo::withTrashed()->find($id);
+        if (!$parentInfo) {
+            return response()->json(['message' => 'Parent Info not found'], 404);
+        }
         return response()->json($parentInfo);
     }
 
-    // Remove the specified parent info from storage
+    // Soft delete the specified parent info
     public function destroy($id)
     {
         $parentInfo = ParentInfo::find($id);
@@ -106,27 +119,5 @@ class ParentInfoController extends Controller
 
         $parentInfo->restore();
         return response()->json(['message' => 'Parent Info restored successfully']);
-    }
-
-    // Permanently delete the specified parent info from storage
-    public function forceDelete($id)
-    {
-        $parentInfo = ParentInfo::withTrashed()->find($id);
-        if (!$parentInfo) {
-            return response()->json(['message' => 'Parent Info not found'], 404);
-        }
-
-        $parentInfo->forceDelete();
-        return response()->json(['message' => 'Parent Info permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted parent infos
-    public function getDeletedParentInfos()
-    {
-        $deletedParentInfos = ParentInfo::onlyTrashed()->get();
-        if ($deletedParentInfos->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted parent infos found'], 404);
-        }
-        return response()->json($deletedParentInfos);
     }
 }

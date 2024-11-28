@@ -15,6 +15,6 @@ class AcademicYear extends Model
     protected $table = 'academic_year';
     public function semesterAcademicYears()
     {
-        return $this->hasMany(SemesterAcademicYear::class, 'academicyear_id');
+        return $this->hasMany(SemesterAcademicYear::class, 'semacad_year_id');
     }
 }

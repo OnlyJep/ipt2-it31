@@ -3062,7 +3062,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   stripBasename: () => (/* binding */ stripBasename)
 /* harmony export */ });
 /**
- * @remix-run/router v1.21.0
+ * @remix-run/router v1.20.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -3575,7 +3575,7 @@ function convertRoutesToDataRoutes(routes, mapRouteProperties, parentPath, manif
 /**
  * Matches the given routes to a location and returns the match data.
  *
- * @see https://reactrouter.com/v6/utils/match-routes
+ * @see https://reactrouter.com/utils/match-routes
  */
 function matchRoutes(routes, locationArg, basename) {
   if (basename === void 0) {
@@ -3800,7 +3800,7 @@ function matchRouteBranch(branch, pathname, allowPartial) {
 /**
  * Returns a path with params interpolated.
  *
- * @see https://reactrouter.com/v6/utils/generate-path
+ * @see https://reactrouter.com/utils/generate-path
  */
 function generatePath(originalPath, params) {
   if (params === void 0) {
@@ -3840,7 +3840,7 @@ function generatePath(originalPath, params) {
  * Performs pattern matching on a URL pathname and returns information about
  * the match.
  *
- * @see https://reactrouter.com/v6/utils/match-path
+ * @see https://reactrouter.com/utils/match-path
  */
 function matchPath(pattern, pathname) {
   if (typeof pattern === "string") {
@@ -3952,7 +3952,7 @@ function stripBasename(pathname, basename) {
 /**
  * Returns a resolved path object relative to the given pathname.
  *
- * @see https://reactrouter.com/v6/utils/resolve-path
+ * @see https://reactrouter.com/utils/resolve-path
  */
 function resolvePath(to, fromPathname) {
   if (fromPathname === void 0) {
@@ -4106,9 +4106,6 @@ const normalizeHash = hash => !hash || hash === "#" ? "" : hash.startsWith("#") 
 /**
  * This is a shortcut for creating `application/json` responses. Converts `data`
  * to JSON and sets the `Content-Type` header.
- *
- * @deprecated The `json` method is deprecated in favor of returning raw objects.
- * This method will be removed in v7.
  */
 const json = function json(data, init) {
   if (init === void 0) {
@@ -4277,10 +4274,6 @@ function unwrapTrackedPromise(value) {
   }
   return value._data;
 }
-/**
- * @deprecated The `defer` method is deprecated in favor of returning raw
- * objects. This method will be removed in v7.
- */
 const defer = function defer(data, init) {
   if (init === void 0) {
     init = {};
@@ -8138,10 +8131,10 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
-/***/ "./resources/js/components/dashboard/Header.js":
-/*!*****************************************************!*\
-  !*** ./resources/js/components/dashboard/Header.js ***!
-  \*****************************************************/
+/***/ "./resources/js/components/public/dashboard/components/Header.js":
+/*!***********************************************************************!*\
+  !*** ./resources/js/components/public/dashboard/components/Header.js ***!
+  \***********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -8157,10 +8150,7 @@ var Header = function Header() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("header", {
     className: "header",
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-      className: "header-content",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h1", {
-        children: "Notification & Profile"
-      })
+      className: "header-content"
     })
   });
 };
@@ -8168,10 +8158,10 @@ var Header = function Header() {
 
 /***/ }),
 
-/***/ "./resources/js/components/dashboard/MainDashboard.js":
-/*!************************************************************!*\
-  !*** ./resources/js/components/dashboard/MainDashboard.js ***!
-  \************************************************************/
+/***/ "./resources/js/components/public/dashboard/components/MainDashboard.js":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/public/dashboard/components/MainDashboard.js ***!
+  \******************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -8181,8 +8171,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var _SideBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SideBar */ "./resources/js/components/dashboard/SideBar.js");
-/* harmony import */ var _Header__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Header */ "./resources/js/components/dashboard/Header.js");
+/* harmony import */ var _SideBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SideBar */ "./resources/js/components/public/dashboard/components/SideBar.js");
+/* harmony import */ var _Header__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Header */ "./resources/js/components/public/dashboard/components/Header.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
 
@@ -8208,10 +8198,10 @@ var MainDashboard = function MainDashboard() {
 
 /***/ }),
 
-/***/ "./resources/js/components/dashboard/SideBar.js":
-/*!******************************************************!*\
-  !*** ./resources/js/components/dashboard/SideBar.js ***!
-  \******************************************************/
+/***/ "./resources/js/components/public/dashboard/components/SideBar.js":
+/*!************************************************************************!*\
+  !*** ./resources/js/components/public/dashboard/components/SideBar.js ***!
+  \************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -8221,11 +8211,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
-/* harmony import */ var _SideBarLogo__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SideBarLogo */ "./resources/js/components/dashboard/SideBarLogo.js");
-/* harmony import */ var _SideBarTexture__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SideBarTexture */ "./resources/js/components/dashboard/SideBarTexture.js");
+/* harmony import */ var _SideBarLogo__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SideBarLogo */ "./resources/js/components/public/dashboard/components/SideBarLogo.js");
+/* harmony import */ var _SideBarTexture__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SideBarTexture */ "./resources/js/components/public/dashboard/components/SideBarTexture.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-// src/components/SideBar/SideBar.js
-
 
 
 
@@ -8236,7 +8224,7 @@ var SideBar = function SideBar() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_SideBarLogo__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
       className: "separator"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("ul", {
-      className: "nav-list",
+      className: "nav-list flex-grow-1",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("li", {
         className: "nav-item",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.NavLink, {
@@ -8320,10 +8308,10 @@ var SideBar = function SideBar() {
 
 /***/ }),
 
-/***/ "./resources/js/components/dashboard/SideBarLogo.js":
-/*!**********************************************************!*\
-  !*** ./resources/js/components/dashboard/SideBarLogo.js ***!
-  \**********************************************************/
+/***/ "./resources/js/components/public/dashboard/components/SideBarLogo.js":
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/public/dashboard/components/SideBarLogo.js ***!
+  \****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -8341,7 +8329,7 @@ var SideBarLogo = function SideBarLogo() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
     className: "logo",
     children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-      src: (__webpack_require__(/*! ../../../../public/images/sidebarlogo.svg */ "./public/images/sidebarlogo.svg")["default"]),
+      src: (__webpack_require__(/*! ../../../../../../public/images/sidebarlogo.svg */ "./public/images/sidebarlogo.svg")["default"]),
       alt: "Sidebar Logo"
     })
   });
@@ -8350,10 +8338,10 @@ var SideBarLogo = function SideBarLogo() {
 
 /***/ }),
 
-/***/ "./resources/js/components/dashboard/SideBarTexture.js":
-/*!*************************************************************!*\
-  !*** ./resources/js/components/dashboard/SideBarTexture.js ***!
-  \*************************************************************/
+/***/ "./resources/js/components/public/dashboard/components/SideBarTexture.js":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/public/dashboard/components/SideBarTexture.js ***!
+  \*******************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -8373,7 +8361,7 @@ var SideBarTexture = function SideBarTexture(_ref) {
     width: '250px',
     height: '100vh',
     backgroundColor: '#131f73',
-    backgroundImage: "url(".concat((__webpack_require__(/*! ../../../../public/images/sidebartexture.svg */ "./public/images/sidebartexture.svg")["default"]), ")"),
+    backgroundImage: "url(".concat((__webpack_require__(/*! ../../../../../../public/images/sidebartexture.svg */ "./public/images/sidebartexture.svg")["default"]), ")"),
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     display: 'flex',
@@ -8405,9 +8393,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
-/* harmony import */ var _dashboard_Header__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../dashboard/Header */ "./resources/js/components/dashboard/Header.js");
-/* harmony import */ var _dashboard_MainDashboard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../dashboard/MainDashboard */ "./resources/js/components/dashboard/MainDashboard.js");
-/* harmony import */ var _dashboard_SideBar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../dashboard/SideBar */ "./resources/js/components/dashboard/SideBar.js");
+/* harmony import */ var _public_dashboard_components_Header__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../public/dashboard/components/Header */ "./resources/js/components/public/dashboard/components/Header.js");
+/* harmony import */ var _public_dashboard_components_MainDashboard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../public/dashboard/components/MainDashboard */ "./resources/js/components/public/dashboard/components/MainDashboard.js");
+/* harmony import */ var _public_dashboard_components_SideBar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../public/dashboard/components/SideBar */ "./resources/js/components/public/dashboard/components/SideBar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
 
@@ -8415,6 +8403,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+//import UserLogin from "./../public/loginportal/components/UserLogin"; // Import UserLogin component
 
 function Routers() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_6__.BrowserRouter, {
@@ -8426,14 +8415,17 @@ function Routers() {
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Route, {
         path: "/dashboard",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_dashboard_MainDashboard__WEBPACK_IMPORTED_MODULE_3__["default"], {})
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_public_dashboard_components_MainDashboard__WEBPACK_IMPORTED_MODULE_3__["default"], {})
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Route, {
         path: "/header",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_dashboard_Header__WEBPACK_IMPORTED_MODULE_2__["default"], {})
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_public_dashboard_components_Header__WEBPACK_IMPORTED_MODULE_2__["default"], {})
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Route, {
         path: "/sidebar",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_dashboard_SideBar__WEBPACK_IMPORTED_MODULE_4__["default"], {})
-      })]
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_public_dashboard_components_SideBar__WEBPACK_IMPORTED_MODULE_4__["default"], {})
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_7__.Route, {
+        path: "/login",
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(UserLogin, {})
+      }), " "]
     })
   });
 }
@@ -58944,7 +58936,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @remix-run/router */ "./node_modules/@remix-run/router/dist/router.js");
 /**
- * React Router DOM v6.28.0
+ * React Router DOM v6.27.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -59519,7 +59511,6 @@ function RouterProvider(_ref) {
   let routerFuture = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => ({
     v7_relativeSplatPath: router.future.v7_relativeSplatPath
   }), [router.future.v7_relativeSplatPath]);
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_logV6DeprecationWarnings)(future, router.future), [future, router.future]);
   // The fragment and {null} here are important!  We need them to keep React 18's
   // useId happy when we are server-rendering since we may have a <script> here
   // containing the hydrated server-side staticContext (from StaticRouterProvider).
@@ -59585,7 +59576,6 @@ function BrowserRouter(_ref4) {
     v7_startTransition && startTransitionImpl ? startTransitionImpl(() => setStateImpl(newState)) : setStateImpl(newState);
   }, [setStateImpl, v7_startTransition]);
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => history.listen(setState), [history, setState]);
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_logV6DeprecationWarnings)(future), [future]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.Router, {
     basename: basename,
     children: children,
@@ -59625,7 +59615,6 @@ function HashRouter(_ref5) {
     v7_startTransition && startTransitionImpl ? startTransitionImpl(() => setStateImpl(newState)) : setStateImpl(newState);
   }, [setStateImpl, v7_startTransition]);
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => history.listen(setState), [history, setState]);
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_logV6DeprecationWarnings)(future), [future]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.Router, {
     basename: basename,
     children: children,
@@ -59659,7 +59648,6 @@ function HistoryRouter(_ref6) {
     v7_startTransition && startTransitionImpl ? startTransitionImpl(() => setStateImpl(newState)) : setStateImpl(newState);
   }, [setStateImpl, v7_startTransition]);
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => history.listen(setState), [history, setState]);
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_logV6DeprecationWarnings)(future), [future]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.Router, {
     basename: basename,
     children: children,
@@ -59917,7 +59905,7 @@ var DataRouterStateHook;
 })(DataRouterStateHook || (DataRouterStateHook = {}));
 // Internal hooks
 function getDataRouterConsoleError(hookName) {
-  return hookName + " must be used within a data router.  See https://reactrouter.com/v6/routers/picking-a-router.";
+  return hookName + " must be used within a data router.  See https://reactrouter.com/routers/picking-a-router.";
 }
 function useDataRouterContext(hookName) {
   let ctx = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_DataRouterContext);
@@ -60430,7 +60418,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   UNSAFE_LocationContext: () => (/* binding */ LocationContext),
 /* harmony export */   UNSAFE_NavigationContext: () => (/* binding */ NavigationContext),
 /* harmony export */   UNSAFE_RouteContext: () => (/* binding */ RouteContext),
-/* harmony export */   UNSAFE_logV6DeprecationWarnings: () => (/* binding */ logV6DeprecationWarnings),
 /* harmony export */   UNSAFE_mapRouteProperties: () => (/* binding */ mapRouteProperties),
 /* harmony export */   UNSAFE_useRouteId: () => (/* binding */ useRouteId),
 /* harmony export */   UNSAFE_useRoutesImpl: () => (/* binding */ useRoutesImpl),
@@ -60475,7 +60462,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _remix_run_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @remix-run/router */ "./node_modules/@remix-run/router/dist/router.js");
 /**
- * React Router v6.28.0
+ * React Router v6.27.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -60553,7 +60540,7 @@ if (true) {
  * Returns the full href for the given "to" value. This is useful for building
  * custom links that are also accessible and preserve right-click behavior.
  *
- * @see https://reactrouter.com/v6/hooks/use-href
+ * @see https://reactrouter.com/hooks/use-href
  */
 function useHref(to, _temp) {
   let {
@@ -60592,7 +60579,7 @@ function useHref(to, _temp) {
 /**
  * Returns true if this component is a descendant of a `<Router>`.
  *
- * @see https://reactrouter.com/v6/hooks/use-in-router-context
+ * @see https://reactrouter.com/hooks/use-in-router-context
  */
 function useInRouterContext() {
   return react__WEBPACK_IMPORTED_MODULE_0__.useContext(LocationContext) != null;
@@ -60606,7 +60593,7 @@ function useInRouterContext() {
  * "routing" in your app, and we'd like to know what your use case is. We may
  * be able to provide something higher-level to better suit your needs.
  *
- * @see https://reactrouter.com/v6/hooks/use-location
+ * @see https://reactrouter.com/hooks/use-location
  */
 function useLocation() {
   !useInRouterContext() ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, // TODO: This error is probably because they somehow have 2 versions of the
@@ -60619,7 +60606,7 @@ function useLocation() {
  * Returns the current navigation action which describes how the router came to
  * the current location, either by a pop, push, or replace on the history stack.
  *
- * @see https://reactrouter.com/v6/hooks/use-navigation-type
+ * @see https://reactrouter.com/hooks/use-navigation-type
  */
 function useNavigationType() {
   return react__WEBPACK_IMPORTED_MODULE_0__.useContext(LocationContext).navigationType;
@@ -60630,7 +60617,7 @@ function useNavigationType() {
  * This is useful for components that need to know "active" state, e.g.
  * `<NavLink>`.
  *
- * @see https://reactrouter.com/v6/hooks/use-match
+ * @see https://reactrouter.com/hooks/use-match
  */
 function useMatch(pattern) {
   !useInRouterContext() ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, // TODO: This error is probably because they somehow have 2 versions of the
@@ -60663,7 +60650,7 @@ function useIsomorphicLayoutEffect(cb) {
  * Returns an imperative method for changing the location. Used by `<Link>`s, but
  * may also be used by other elements to change the location.
  *
- * @see https://reactrouter.com/v6/hooks/use-navigate
+ * @see https://reactrouter.com/hooks/use-navigate
  */
 function useNavigate() {
   let {
@@ -60727,7 +60714,7 @@ const OutletContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createCont
 /**
  * Returns the context (if provided) for the child route at this level of the route
  * hierarchy.
- * @see https://reactrouter.com/v6/hooks/use-outlet-context
+ * @see https://reactrouter.com/hooks/use-outlet-context
  */
 function useOutletContext() {
   return react__WEBPACK_IMPORTED_MODULE_0__.useContext(OutletContext);
@@ -60737,7 +60724,7 @@ function useOutletContext() {
  * Returns the element for the child route at this level of the route
  * hierarchy. Used internally by `<Outlet>` to render child routes.
  *
- * @see https://reactrouter.com/v6/hooks/use-outlet
+ * @see https://reactrouter.com/hooks/use-outlet
  */
 function useOutlet(context) {
   let outlet = react__WEBPACK_IMPORTED_MODULE_0__.useContext(RouteContext).outlet;
@@ -60753,7 +60740,7 @@ function useOutlet(context) {
  * Returns an object of key/value pairs of the dynamic params from the current
  * URL that were matched by the route path.
  *
- * @see https://reactrouter.com/v6/hooks/use-params
+ * @see https://reactrouter.com/hooks/use-params
  */
 function useParams() {
   let {
@@ -60766,7 +60753,7 @@ function useParams() {
 /**
  * Resolves the pathname of the given `to` value against the current location.
  *
- * @see https://reactrouter.com/v6/hooks/use-resolved-path
+ * @see https://reactrouter.com/hooks/use-resolved-path
  */
 function useResolvedPath(to, _temp2) {
   let {
@@ -60791,7 +60778,7 @@ function useResolvedPath(to, _temp2) {
  * elements in the tree must render an `<Outlet>` to render their child route's
  * element.
  *
- * @see https://reactrouter.com/v6/hooks/use-routes
+ * @see https://reactrouter.com/hooks/use-routes
  */
 function useRoutes(routes, locationArg) {
   return useRoutesImpl(routes, locationArg);
@@ -61166,7 +61153,7 @@ var DataRouterStateHook = /*#__PURE__*/function (DataRouterStateHook) {
   return DataRouterStateHook;
 }(DataRouterStateHook || {});
 function getDataRouterConsoleError(hookName) {
-  return hookName + " must be used within a data router.  See https://reactrouter.com/v6/routers/picking-a-router.";
+  return hookName + " must be used within a data router.  See https://reactrouter.com/routers/picking-a-router.";
 }
 function useDataRouterContext(hookName) {
   let ctx = react__WEBPACK_IMPORTED_MODULE_0__.useContext(DataRouterContext);
@@ -61396,42 +61383,11 @@ function useNavigateStable() {
   }, [router, id]);
   return navigate;
 }
-const alreadyWarned$1 = {};
-function warningOnce(key, cond, message) {
-  if (!cond && !alreadyWarned$1[key]) {
-    alreadyWarned$1[key] = true;
-     true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(false, message) : 0;
-  }
-}
-
 const alreadyWarned = {};
-function warnOnce(key, message) {
-  if (!alreadyWarned[message]) {
-    alreadyWarned[message] = true;
-    console.warn(message);
-  }
-}
-const logDeprecation = (flag, msg, link) => warnOnce(flag, "\u26A0\uFE0F React Router Future Flag Warning: " + msg + ". " + ("You can use the `" + flag + "` future flag to opt-in early. ") + ("For more information, see " + link + "."));
-function logV6DeprecationWarnings(renderFuture, routerFuture) {
-  if (!(renderFuture != null && renderFuture.v7_startTransition)) {
-    logDeprecation("v7_startTransition", "React Router will begin wrapping state updates in `React.startTransition` in v7", "https://reactrouter.com/v6/upgrading/future#v7_starttransition");
-  }
-  if (!(renderFuture != null && renderFuture.v7_relativeSplatPath) && (!routerFuture || !routerFuture.v7_relativeSplatPath)) {
-    logDeprecation("v7_relativeSplatPath", "Relative route resolution within Splat routes is changing in v7", "https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath");
-  }
-  if (routerFuture) {
-    if (!routerFuture.v7_fetcherPersist) {
-      logDeprecation("v7_fetcherPersist", "The persistence behavior of fetchers is changing in v7", "https://reactrouter.com/v6/upgrading/future#v7_fetcherpersist");
-    }
-    if (!routerFuture.v7_normalizeFormMethod) {
-      logDeprecation("v7_normalizeFormMethod", "Casing of `formMethod` fields is being normalized to uppercase in v7", "https://reactrouter.com/v6/upgrading/future#v7_normalizeformmethod");
-    }
-    if (!routerFuture.v7_partialHydration) {
-      logDeprecation("v7_partialHydration", "`RouterProvider` hydration behavior is changing in v7", "https://reactrouter.com/v6/upgrading/future#v7_partialhydration");
-    }
-    if (!routerFuture.v7_skipActionErrorRevalidation) {
-      logDeprecation("v7_skipActionErrorRevalidation", "The revalidation behavior after 4xx/5xx `action` responses is changing in v7", "https://reactrouter.com/v6/upgrading/future#v7_skipactionerrorrevalidation");
-    }
+function warningOnce(key, cond, message) {
+  if (!cond && !alreadyWarned[key]) {
+    alreadyWarned[key] = true;
+     true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(false, message) : 0;
   }
 }
 
@@ -61511,7 +61467,6 @@ function RouterProvider(_ref) {
     static: false,
     basename
   }), [router, navigator, basename]);
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => logV6DeprecationWarnings(future, router.future), [router, future]);
 
   // The fragment and {null} here are important!  We need them to keep React 18's
   // useId happy when we are server-rendering since we may have a <script> here
@@ -61548,7 +61503,7 @@ function DataRoutes(_ref2) {
 /**
  * A `<Router>` that stores all entries in memory.
  *
- * @see https://reactrouter.com/v6/router-components/memory-router
+ * @see https://reactrouter.com/router-components/memory-router
  */
 function MemoryRouter(_ref3) {
   let {
@@ -61578,7 +61533,6 @@ function MemoryRouter(_ref3) {
     v7_startTransition && startTransitionImpl ? startTransitionImpl(() => setStateImpl(newState)) : setStateImpl(newState);
   }, [setStateImpl, v7_startTransition]);
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => history.listen(setState), [history, setState]);
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => logV6DeprecationWarnings(future), [future]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Router, {
     basename: basename,
     children: children,
@@ -61595,7 +61549,7 @@ function MemoryRouter(_ref3) {
  * able to use hooks. In functional components, we recommend you use the
  * `useNavigate` hook instead.
  *
- * @see https://reactrouter.com/v6/components/navigate
+ * @see https://reactrouter.com/components/navigate
  */
 function Navigate(_ref4) {
   let {
@@ -61634,7 +61588,7 @@ function Navigate(_ref4) {
 /**
  * Renders the child route's element, if there is one.
  *
- * @see https://reactrouter.com/v6/components/outlet
+ * @see https://reactrouter.com/components/outlet
  */
 function Outlet(props) {
   return useOutlet(props.context);
@@ -61642,7 +61596,7 @@ function Outlet(props) {
 /**
  * Declares an element that should be rendered at a certain URL path.
  *
- * @see https://reactrouter.com/v6/components/route
+ * @see https://reactrouter.com/components/route
  */
 function Route(_props) {
    true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "A <Route> is only ever to be used as the child of <Routes> element, " + "never rendered directly. Please wrap your <Route> in a <Routes>.") : 0 ;
@@ -61654,7 +61608,7 @@ function Route(_props) {
  * router that is more specific to your environment such as a `<BrowserRouter>`
  * in web browsers or a `<StaticRouter>` for server rendering.
  *
- * @see https://reactrouter.com/v6/router-components/router
+ * @see https://reactrouter.com/router-components/router
  */
 function Router(_ref5) {
   let {
@@ -61720,7 +61674,7 @@ function Router(_ref5) {
  * A container for a nested tree of `<Route>` elements that renders the branch
  * that best matches the current location.
  *
- * @see https://reactrouter.com/v6/components/routes
+ * @see https://reactrouter.com/components/routes
  */
 function Routes(_ref6) {
   let {
@@ -61861,7 +61815,7 @@ function ResolveAwait(_ref8) {
  * either a `<Route>` element or an array of them. Used internally by
  * `<Routes>` to create a route config from its children.
  *
- * @see https://reactrouter.com/v6/utils/create-routes-from-children
+ * @see https://reactrouter.com/utils/create-routes-from-children
  */
 function createRoutesFromChildren(children, parentPath) {
   if (parentPath === void 0) {

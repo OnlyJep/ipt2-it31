@@ -84,18 +84,6 @@ class AcademicYearController extends Controller
         return response()->json(['message' => 'Academic Year restored successfully']);
     }
 
-    // Permanently delete the specified academic year from storage
-    public function forceDelete($id)
-    {
-        $academicYear = AcademicYear::withTrashed()->find($id);
-        if (!$academicYear) {
-            return response()->json(['message' => 'Academic Year not found'], 404);
-        }
-
-        $academicYear->forceDelete();
-        return response()->json(['message' => 'Academic Year permanently deleted successfully']);
-    }
-
     // Retrieve all soft-deleted academic years
     public function getDeletedAcademicYears()
     {

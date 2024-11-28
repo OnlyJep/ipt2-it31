@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class ClassroomSchedulingController extends Controller
 {
     // Display a listing of classroom schedules
-    public function index()
+    public function index(Request $request)
     {
-        $classroomSchedules = ClassroomScheduling::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $classroomSchedules = ClassroomScheduling::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $classroomSchedules = ClassroomScheduling::withTrashed()->get();
+        } else {
+            $classroomSchedules = ClassroomScheduling::all();
+        }
+
+        if ($classroomSchedules->isEmpty()) {
+            return response()->json(['message' => 'No classroom schedules found'], 404);
+        }
+
         return response()->json($classroomSchedules);
     }
 
@@ -88,27 +101,5 @@ class ClassroomSchedulingController extends Controller
 
         $classroomSchedule->restore();
         return response()->json(['message' => 'Classroom Schedule restored successfully']);
-    }
-
-    // Permanently delete the specified classroom schedule from storage
-    public function forceDelete($id)
-    {
-        $classroomSchedule = ClassroomScheduling::withTrashed()->find($id);
-        if (!$classroomSchedule) {
-            return response()->json(['message' => 'Classroom Schedule not found'], 404);
-        }
-
-        $classroomSchedule->forceDelete();
-        return response()->json(['message' => 'Classroom Schedule permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted classroom schedules
-    public function getDeletedClassroomSchedules()
-    {
-        $deletedClassroomSchedules = ClassroomScheduling::onlyTrashed()->get();
-        if ($deletedClassroomSchedules->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted classroom schedules found'], 404);
-        }
-        return response()->json($deletedClassroomSchedules);
     }
 }

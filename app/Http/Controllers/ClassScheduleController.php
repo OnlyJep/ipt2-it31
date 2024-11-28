@@ -96,17 +96,6 @@ class ClassScheduleController extends Controller
         return response()->json(['message' => 'Class Schedule restored successfully']);
     }
 
-    // Permanently delete the specified class schedule from storage
-    public function forceDelete($id)
-    {
-        $classSchedule = ClassSchedule::withTrashed()->find($id);
-        if (!$classSchedule) {
-            return response()->json(['message' => 'Class Schedule not found'], 404);
-        }
-
-        $classSchedule->forceDelete();
-        return response()->json(['message' => 'Class Schedule permanently deleted successfully']);
-    }
 
     // Retrieve all soft-deleted class schedules
     public function getDeletedClassSchedules()

@@ -10,11 +10,12 @@ class Semester extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+
     protected $table = 'semester';
+    protected $guarded = [];
     
     public function semesterAcademicYears()
     {
-        return $this->hasMany(SemesterAcademicYear::class, 'semeacadyear_id');
+        return $this->hasMany(SemesterAcademicYear::class, 'semacad_year_id');
     }
 }

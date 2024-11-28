@@ -5,25 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     // Display a listing of users
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $users = User::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $users = User::withTrashed()->get();
+        } else {
+            $users = User::all();
+        }
+
+        if ($users->isEmpty()) {
+            return response()->json(['message' => 'No users found'], 404);
+        }
+
         return response()->json($users);
     }
 
-    // Store a newly created user in storage
+    // Create a new user in storage
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:100|unique:users,username',
-            'email' => 'nullable|email|unique:users,email|max:100',
+            'username' => 'required|string|max:50|unique:users,username',
+            'email' => 'required|email|unique:users,email|max:100',
             'password' => 'required|string|min:8',
-            'status' => 'required|in:regular,irregular',
+            'status' => 'nullable|string|in:regular,irregular',
             'role_id' => 'required|exists:roles,id',
         ]);
 
@@ -31,11 +43,32 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $data = $request->all();
-        $data['password'] = Hash::make($request->password);
+        $user = User::create($request->all());
+        return response()->json($user, 201);
+    }
 
-        $user = User::create($data);
-        return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
+    // Update an existing user in storage
+    public function update(Request $request, $id)
+    {
+        $user = User::withTrashed()->find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|max:50|unique:users,username,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id . '|max:100',
+            'password' => 'nullable|string|min:8',
+            'status' => 'nullable|string|in:regular,irregular',
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user->update($request->all());
+        return response()->json($user, 200);
     }
 
     // Display the specified user
@@ -48,38 +81,7 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    // Update the specified user in storage
-    public function update(Request $request, $id)
-    {
-        $user = User::withTrashed()->find($id);
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:100|unique:users,username,' . $user->id,
-            'email' => 'nullable|email|unique:users,email,' . $user->id . '|max:100',
-            'password' => 'nullable|string|min:8',
-            'status' => 'required|in:regular,irregular',
-            'role_id' => 'required|exists:roles,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $data = $request->all();
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        } else {
-            unset($data['password']);
-        }
-
-        $user->update($data);
-        return response()->json(['message' => 'User updated successfully', 'user' => $user]);
-    }
-
-    // Remove the specified user from storage
+    // Soft delete the specified user
     public function destroy($id)
     {
         $user = User::find($id);
@@ -101,27 +103,5 @@ class UserController extends Controller
 
         $user->restore();
         return response()->json(['message' => 'User restored successfully']);
-    }
-
-    // Permanently delete the specified user from storage
-    public function forceDelete($id)
-    {
-        $user = User::withTrashed()->find($id);
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        $user->forceDelete();
-        return response()->json(['message' => 'User permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted users
-    public function getDeletedUsers()
-    {
-        $deletedUsers = User::onlyTrashed()->get();
-        if ($deletedUsers->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted users found'], 404);
-        }
-        return response()->json($deletedUsers);
     }
 }

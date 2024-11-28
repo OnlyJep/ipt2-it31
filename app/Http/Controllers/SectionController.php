@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class SectionController extends Controller
 {
     // Display a listing of sections
-    public function index()
+    public function index(Request $request)
     {
-        $sections = Section::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $sections = Section::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $sections = Section::withTrashed()->get();
+        } else {
+            $sections = Section::all();
+        }
+
+        if ($sections->isEmpty()) {
+            return response()->json(['message' => 'No sections found'], 404);
+        }
+
         return response()->json($sections);
     }
 
@@ -60,7 +73,7 @@ class SectionController extends Controller
         return response()->json(['message' => 'Section updated successfully', 'section' => $section]);
     }
 
-    // Remove the specified section from storage
+    // Soft delete the specified section
     public function destroy($id)
     {
         $section = Section::find($id);
@@ -82,27 +95,5 @@ class SectionController extends Controller
 
         $section->restore();
         return response()->json(['message' => 'Section restored successfully']);
-    }
-
-    // Permanently delete the specified section from storage
-    public function forceDelete($id)
-    {
-        $section = Section::withTrashed()->find($id);
-        if (!$section) {
-            return response()->json(['message' => 'Section not found'], 404);
-        }
-
-        $section->forceDelete();
-        return response()->json(['message' => 'Section permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted sections
-    public function getDeletedSections()
-    {
-        $deletedSections = Section::onlyTrashed()->get();
-        if ($deletedSections->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted sections found'], 404);
-        }
-        return response()->json($deletedSections);
     }
 }

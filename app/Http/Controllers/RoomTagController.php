@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class RoomTagController extends Controller
 {
     // Display a listing of room tags
-    public function index()
+    public function index(Request $request)
     {
-        $roomTags = Roomtag::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $roomTags = Roomtag::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $roomTags = Roomtag::withTrashed()->get();
+        } else {
+            $roomTags = Roomtag::all();
+        }
+
+        if ($roomTags->isEmpty()) {
+            return response()->json(['message' => 'No room tags found'], 404);
+        }
+
         return response()->json($roomTags);
     }
 
@@ -84,18 +97,6 @@ class RoomTagController extends Controller
 
         $roomTag->restore();
         return response()->json(['message' => 'Room Tag restored successfully']);
-    }
-
-    // Permanently delete the specified room tag from storage
-    public function forceDelete($id)
-    {
-        $roomTag = Roomtag::withTrashed()->find($id);
-        if (!$roomTag) {
-            return response()->json(['message' => 'Room Tag not found'], 404);
-        }
-
-        $roomTag->forceDelete();
-        return response()->json(['message' => 'Room Tag permanently deleted successfully']);
     }
 
     // Retrieve all soft-deleted room tags

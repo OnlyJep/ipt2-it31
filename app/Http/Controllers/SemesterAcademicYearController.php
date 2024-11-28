@@ -19,7 +19,7 @@ class SemesterAcademicYearController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'semester_id' => 'required|exists:semesters,id',
+            'semester_id' => 'required|exists:semester,id',
             'academicyear_id' => 'required|exists:academic_year,id',
         ]);
 
@@ -50,7 +50,7 @@ class SemesterAcademicYearController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'semester_id' => 'required|exists:semesters,id',
+            'semester_id' => 'required|exists:semester,id',
             'academicyear_id' => 'required|exists:academic_year,id',
         ]);
 
@@ -86,17 +86,6 @@ class SemesterAcademicYearController extends Controller
         return response()->json(['message' => 'Semester Academic Year restored successfully']);
     }
 
-    // Permanently delete the specified semester academic year from storage
-    public function forceDelete($id)
-    {
-        $semesterAcademicYear = SemesterAcademicYear::withTrashed()->find($id);
-        if (!$semesterAcademicYear) {
-            return response()->json(['message' => 'Semester Academic Year not found'], 404);
-        }
-
-        $semesterAcademicYear->forceDelete();
-        return response()->json(['message' => 'Semester Academic Year permanently deleted successfully']);
-    }
 
     // Retrieve all soft-deleted semester academic years
     public function getDeletedSemesterAcademicYears()

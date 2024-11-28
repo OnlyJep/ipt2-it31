@@ -84,18 +84,6 @@ class AnnouncementController extends Controller
         return response()->json(['message' => 'Announcement restored successfully']);
     }
 
-    // Permanently delete the specified announcement from storage
-    public function forceDelete($id)
-    {
-        $announcement = Announcement::withTrashed()->find($id);
-        if (!$announcement) {
-            return response()->json(['message' => 'Announcement not found'], 404);
-        }
-
-        $announcement->forceDelete();
-        return response()->json(['message' => 'Announcement permanently deleted successfully']);
-    }
-
     // Retrieve all soft-deleted announcements
     public function getDeletedAnnouncements()
     {

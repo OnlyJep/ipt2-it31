@@ -88,17 +88,6 @@ class EventController extends Controller
         return response()->json(['message' => 'Event restored successfully']);
     }
 
-    // Permanently delete the specified event from storage
-    public function forceDelete($id)
-    {
-        $event = Event::withTrashed()->find($id);
-        if (!$event) {
-            return response()->json(['message' => 'Event not found'], 404);
-        }
-
-        $event->forceDelete();
-        return response()->json(['message' => 'Event permanently deleted successfully']);
-    }
 
     // Retrieve all soft-deleted events
     public function getDeletedEvents()

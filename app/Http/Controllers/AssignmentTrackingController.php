@@ -86,17 +86,6 @@ class AssignmentTrackingController extends Controller
         return response()->json(['message' => 'Assignment Tracking restored successfully']);
     }
 
-    // Permanently delete the specified assignment tracking from storage
-    public function forceDelete($id)
-    {
-        $assignmentTracking = AssignmentTracking::withTrashed()->find($id);
-        if (!$assignmentTracking) {
-            return response()->json(['message' => 'Assignment Tracking not found'], 404);
-        }
-
-        $assignmentTracking->forceDelete();
-        return response()->json(['message' => 'Assignment Tracking permanently deleted successfully']);
-    }
 
     // Retrieve all soft-deleted assignment trackings
     public function getDeletedAssignmentTrackings()

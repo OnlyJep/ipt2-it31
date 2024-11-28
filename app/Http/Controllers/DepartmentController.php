@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class DepartmentController extends Controller
 {
     // Display a listing of departments
-    public function index()
+    public function index(Request $request)
     {
-        $departments = Department::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $departments = Department::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $departments = Department::withTrashed()->get();
+        } else {
+            $departments = Department::all();
+        }
+
+        if ($departments->isEmpty()) {
+            return response()->json(['message' => 'No departments found'], 404);
+        }
+
         return response()->json($departments);
     }
 
@@ -60,7 +73,7 @@ class DepartmentController extends Controller
         return response()->json(['message' => 'Department updated successfully', 'department' => $department]);
     }
 
-    // Remove the specified department from storage
+    // Soft delete the specified department
     public function destroy($id)
     {
         $department = Department::find($id);
@@ -82,27 +95,5 @@ class DepartmentController extends Controller
 
         $department->restore();
         return response()->json(['message' => 'Department restored successfully']);
-    }
-
-    // Permanently delete the specified department from storage
-    public function forceDelete($id)
-    {
-        $department = Department::withTrashed()->find($id);
-        if (!$department) {
-            return response()->json(['message' => 'Department not found'], 404);
-        }
-
-        $department->forceDelete();
-        return response()->json(['message' => 'Department permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted departments
-    public function getDeletedDepartments()
-    {
-        $deletedDepartments = Department::onlyTrashed()->get();
-        if ($deletedDepartments->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted departments found'], 404);
-        }
-        return response()->json($deletedDepartments);
     }
 }

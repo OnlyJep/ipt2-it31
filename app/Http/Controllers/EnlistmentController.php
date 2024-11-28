@@ -22,7 +22,7 @@ class EnlistmentController extends Controller
             'profile_id' => 'required|exists:profiles,id',
             'classschedules_id' => 'required|exists:class_schedules,id',
             'academicyear_id' => 'required|exists:academic_year,id',
-            'semester_id' => 'required|exists:semesters,id',
+            'semester_id' => 'required|exists:semester,id',
         ]);
 
         if ($validator->fails()) {
@@ -55,7 +55,7 @@ class EnlistmentController extends Controller
             'profile_id' => 'required|exists:profiles,id',
             'classschedules_id' => 'required|exists:class_schedules,id',
             'academicyear_id' => 'required|exists:academic_year,id',
-            'semester_id' => 'required|exists:semesters,id',
+            'semester_id' => 'required|exists:semester,id',
         ]);
 
         if ($validator->fails()) {
@@ -90,17 +90,6 @@ class EnlistmentController extends Controller
         return response()->json(['message' => 'Enlistment restored successfully']);
     }
 
-    // Permanently delete the specified enlistment from storage
-    public function forceDelete($id)
-    {
-        $enlistment = Enlistment::withTrashed()->find($id);
-        if (!$enlistment) {
-            return response()->json(['message' => 'Enlistment not found'], 404);
-        }
-
-        $enlistment->forceDelete();
-        return response()->json(['message' => 'Enlistment permanently deleted successfully']);
-    }
 
     // Retrieve all soft-deleted enlistments
     public function getDeletedEnlistments()

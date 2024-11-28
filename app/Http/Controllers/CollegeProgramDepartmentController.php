@@ -86,18 +86,6 @@ class CollegeProgramDepartmentController extends Controller
         return response()->json(['message' => 'College Program Department restored successfully']);
     }
 
-    // Permanently delete the specified college program department from storage
-    public function forceDelete($id)
-    {
-        $collegeProgramDepartment = CollegeProgramDepartment::withTrashed()->find($id);
-        if (!$collegeProgramDepartment) {
-            return response()->json(['message' => 'College Program Department not found'], 404);
-        }
-
-        $collegeProgramDepartment->forceDelete();
-        return response()->json(['message' => 'College Program Department permanently deleted successfully']);
-    }
-
     // Retrieve all soft-deleted college program departments
     public function getDeletedCollegeProgramDepartments()
     {

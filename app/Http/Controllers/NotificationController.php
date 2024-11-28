@@ -21,7 +21,7 @@ class NotificationController extends Controller
         $validator = Validator::make($request->all(), [
             'event_id' => 'nullable|exists:events,id',
             'announcement_id' => 'nullable|exists:announcements,id',
-            'enrollmenttracking_id' => 'nullable|exists:enrollment_trackings,id',
+            'enrollmenttracking_id' => 'nullable|exists:enrollment_tracking,id',
             'assignmenttracking_id' => 'nullable|exists:assignment_tracking,id',
             'profile_id' => 'nullable|exists:profiles,id',
         ]);
@@ -55,7 +55,7 @@ class NotificationController extends Controller
         $validator = Validator::make($request->all(), [
             'event_id' => 'nullable|exists:events,id',
             'announcement_id' => 'nullable|exists:announcements,id',
-            'enrollmenttracking_id' => 'nullable|exists:enrollment_trackings,id',
+            'enrollmenttracking_id' => 'nullable|exists:enrollment_tracking,id',
             'assignmenttracking_id' => 'nullable|exists:assignment_tracking,id',
             'profile_id' => 'nullable|exists:profiles,id',
         ]);
@@ -90,18 +90,6 @@ class NotificationController extends Controller
 
         $notification->restore();
         return response()->json(['message' => 'Notification restored successfully']);
-    }
-
-    // Permanently delete the specified notification from storage
-    public function forceDelete($id)
-    {
-        $notification = Notification::withTrashed()->find($id);
-        if (!$notification) {
-            return response()->json(['message' => 'Notification not found'], 404);
-        }
-
-        $notification->forceDelete();
-        return response()->json(['message' => 'Notification permanently deleted successfully']);
     }
 
     // Retrieve all soft-deleted notifications

@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class ClassifiedSectionController extends Controller
 {
     // Display a listing of classified sections
-    public function index()
+    public function index(Request $request)
     {
-        $classifiedSections = ClassifiedSection::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $classifiedSections = ClassifiedSection::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $classifiedSections = ClassifiedSection::withTrashed()->get();
+        } else {
+            $classifiedSections = ClassifiedSection::all();
+        }
+
+        if ($classifiedSections->isEmpty()) {
+            return response()->json(['message' => 'No classified sections found'], 404);
+        }
+
         return response()->json($classifiedSections);
     }
 
@@ -86,27 +99,5 @@ class ClassifiedSectionController extends Controller
 
         $classifiedSection->restore();
         return response()->json(['message' => 'Classified Section restored successfully']);
-    }
-
-    // Permanently delete the specified classified section from storage
-    public function forceDelete($id)
-    {
-        $classifiedSection = ClassifiedSection::withTrashed()->find($id);
-        if (!$classifiedSection) {
-            return response()->json(['message' => 'Classified Section not found'], 404);
-        }
-
-        $classifiedSection->forceDelete();
-        return response()->json(['message' => 'Classified Section permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted classified sections
-    public function getDeletedClassifiedSections()
-    {
-        $deletedClassifiedSections = ClassifiedSection::onlyTrashed()->get();
-        if ($deletedClassifiedSections->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted classified sections found'], 404);
-        }
-        return response()->json($deletedClassifiedSections);
     }
 }

@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class FloorController extends Controller
 {
     // Display a listing of floors
-    public function index()
+    public function index(Request $request)
     {
-        $floors = Floor::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $floors = Floor::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $floors = Floor::withTrashed()->get();
+        } else {
+            $floors = Floor::all();
+        }
+
+        if ($floors->isEmpty()) {
+            return response()->json(['message' => 'No floors found'], 404);
+        }
+
         return response()->json($floors);
     }
 
@@ -82,18 +95,6 @@ class FloorController extends Controller
 
         $floor->restore();
         return response()->json(['message' => 'Floor restored successfully']);
-    }
-
-    // Permanently delete the specified floor from storage
-    public function forceDelete($id)
-    {
-        $floor = Floor::withTrashed()->find($id);
-        if (!$floor) {
-            return response()->json(['message' => 'Floor not found'], 404);
-        }
-
-        $floor->forceDelete();
-        return response()->json(['message' => 'Floor permanently deleted successfully']);
     }
 
     // Retrieve all soft-deleted floors

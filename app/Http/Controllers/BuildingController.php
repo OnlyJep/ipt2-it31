@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class BuildingController extends Controller
 {
     // Display a listing of buildings
-    public function index()
+    public function index(Request $request)
     {
-        $buildings = Building::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $buildings = Building::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $buildings = Building::withTrashed()->get();
+        } else {
+            $buildings = Building::all();
+        }
+
+        if ($buildings->isEmpty()) {
+            return response()->json(['message' => 'No buildings found'], 404);
+        }
+
         return response()->json($buildings);
     }
 
@@ -84,27 +97,5 @@ class BuildingController extends Controller
 
         $building->restore();
         return response()->json(['message' => 'Building restored successfully']);
-    }
-
-    // Permanently delete the specified building from storage
-    public function forceDelete($id)
-    {
-        $building = Building::withTrashed()->find($id);
-        if (!$building) {
-            return response()->json(['message' => 'Building not found'], 404);
-        }
-
-        $building->forceDelete();
-        return response()->json(['message' => 'Building permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted buildings
-    public function getDeletedBuildings()
-    {
-        $deletedBuildings = Building::onlyTrashed()->get();
-        if ($deletedBuildings->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted buildings found'], 404);
-        }
-        return response()->json($deletedBuildings);
     }
 }

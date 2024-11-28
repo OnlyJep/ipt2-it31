@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class YearLevelController extends Controller
 {
     // Display a listing of year levels
-    public function index()
+    public function index(Request $request)
     {
-        $yearLevels = YearLevel::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $yearLevels = YearLevel::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $yearLevels = YearLevel::withTrashed()->get();
+        } else {
+            $yearLevels = YearLevel::all();
+        }
+
+        if ($yearLevels->isEmpty()) {
+            return response()->json(['message' => 'No year levels found'], 404);
+        }
+
         return response()->json($yearLevels);
     }
 
@@ -67,7 +80,7 @@ class YearLevelController extends Controller
         if (!$yearLevel) {
             return response()->json(['message' => 'Year Level not found'], 404);
         }
-        
+
         $yearLevel->delete();
         return response()->json(['message' => 'Year Level deleted successfully']);
     }
@@ -82,27 +95,5 @@ class YearLevelController extends Controller
 
         $yearLevel->restore();
         return response()->json(['message' => 'Year Level restored successfully']);
-    }
-
-    // Permanently delete the specified year level from storage
-    public function forceDelete($id)
-    {
-        $yearLevel = YearLevel::withTrashed()->find($id);
-        if (!$yearLevel) {
-            return response()->json(['message' => 'Year Level not found'], 404);
-        }
-
-        $yearLevel->forceDelete();
-        return response()->json(['message' => 'Year Level permanently deleted successfully']);
-    }
-
-    // Retrieve all soft-deleted year levels
-    public function getDeletedYearLevels()
-    {
-        $deletedYearLevels = YearLevel::onlyTrashed()->get();
-        if ($deletedYearLevels->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted year levels found'], 404);
-        }
-        return response()->json($deletedYearLevels);
     }
 }
