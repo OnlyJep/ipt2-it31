@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class NotificationController extends Controller
 {
     // Display a listing of notifications
-    public function index()
+    public function index(Request $request)
     {
-        $notifications = Notification::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $notifications = Notification::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $notifications = Notification::withTrashed()->get();
+        } else {
+            $notifications = Notification::all();
+        }
+
+        if ($notifications->isEmpty()) {
+            return response()->json(['message' => 'No notifications found'], 404);
+        }
+
         return response()->json($notifications);
     }
 
@@ -90,15 +103,5 @@ class NotificationController extends Controller
 
         $notification->restore();
         return response()->json(['message' => 'Notification restored successfully']);
-    }
-
-    // Retrieve all soft-deleted notifications
-    public function getDeletedNotifications()
-    {
-        $deletedNotifications = Notification::onlyTrashed()->get();
-        if ($deletedNotifications->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted notifications found'], 404);
-        }
-        return response()->json($deletedNotifications);
     }
 }

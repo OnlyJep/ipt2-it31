@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class ClassScheduleController extends Controller
 {
     // Display a listing of class schedules
-    public function index()
+    public function index(Request $request)
     {
-        $classSchedules = ClassSchedule::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $classSchedules = ClassSchedule::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $classSchedules = ClassSchedule::withTrashed()->get();
+        } else {
+            $classSchedules = ClassSchedule::all();
+        }
+
+        if ($classSchedules->isEmpty()) {
+            return response()->json(['message' => 'No class schedules found'], 404);
+        }
+
         return response()->json($classSchedules);
     }
 
@@ -94,16 +107,5 @@ class ClassScheduleController extends Controller
 
         $classSchedule->restore();
         return response()->json(['message' => 'Class Schedule restored successfully']);
-    }
-
-
-    // Retrieve all soft-deleted class schedules
-    public function getDeletedClassSchedules()
-    {
-        $deletedClassSchedules = ClassSchedule::onlyTrashed()->get();
-        if ($deletedClassSchedules->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted class schedules found'], 404);
-        }
-        return response()->json($deletedClassSchedules);
     }
 }

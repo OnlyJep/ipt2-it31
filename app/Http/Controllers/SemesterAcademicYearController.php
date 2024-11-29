@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class SemesterAcademicYearController extends Controller
 {
     // Display a listing of semester academic years
-    public function index()
+    public function index(Request $request)
     {
-        $semesterAcademicYears = SemesterAcademicYear::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $semesterAcademicYears = SemesterAcademicYear::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $semesterAcademicYears = SemesterAcademicYear::withTrashed()->get();
+        } else {
+            $semesterAcademicYears = SemesterAcademicYear::all();
+        }
+
+        if ($semesterAcademicYears->isEmpty()) {
+            return response()->json(['message' => 'No semester academic years found'], 404);
+        }
+
         return response()->json($semesterAcademicYears);
     }
 
@@ -84,16 +97,5 @@ class SemesterAcademicYearController extends Controller
 
         $semesterAcademicYear->restore();
         return response()->json(['message' => 'Semester Academic Year restored successfully']);
-    }
-
-
-    // Retrieve all soft-deleted semester academic years
-    public function getDeletedSemesterAcademicYears()
-    {
-        $deletedSemesterAcademicYears = SemesterAcademicYear::onlyTrashed()->get();
-        if ($deletedSemesterAcademicYears->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted semester academic years found'], 404);
-        }
-        return response()->json($deletedSemesterAcademicYears);
     }
 }

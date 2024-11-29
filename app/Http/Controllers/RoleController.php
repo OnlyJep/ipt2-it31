@@ -9,36 +9,36 @@ use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
 {
+    // Display a listing of roles
     public function index(Request $request)
     {
-        try {
-            // Check if the query parameter 'deleted' is set to true
-            $showDeleted = $request->query('deleted', false);
+        $deleted = $request->query('deleted', 'false');
 
-            if ($showDeleted) {
-                // Retrieve only soft-deleted roles
-                $roles = Role::onlyTrashed()->get();
-            } else {
-                // Retrieve all non-deleted roles
-                $roles = Role::all();
-            }
-
-            if ($roles->isEmpty()) {
-                return response()->json(['message' => 'No roles found'], 404);
-            }
-
-            return response()->json($roles);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to retrieve roles', 'error' => $e->getMessage()], 500);
+        if ($deleted === 'only') {
+            // Retrieve only soft-deleted roles
+            $roles = Role::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            // Retrieve all roles, including soft-deleted ones
+            $roles = Role::withTrashed()->get();
+        } else {
+            // Retrieve only non-deleted roles
+            $roles = Role::all();
         }
+
+        if ($roles->isEmpty()) {
+            return response()->json(['message' => 'No roles found'], 404);
+        }
+
+        return response()->json($roles);
     }
 
+    // Store a newly created role
     public function store(Request $request)
     {
-        // Delegate to the saveRole method without an ID for creation
         return $this->saveRole($request);
     }
 
+    // Display the specified role
     public function show($id)
     {
         $role = Role::withTrashed()->find($id);
@@ -48,12 +48,13 @@ class RoleController extends Controller
         return response()->json($role);
     }
 
+    // Update the specified role
     public function update(Request $request, $id)
     {
-        // Delegate to the saveRole method with an ID for updating
         return $this->saveRole($request, $id);
     }
 
+    // Remove the specified role from storage (soft delete)
     public function destroy($id)
     {
         try {
@@ -68,6 +69,7 @@ class RoleController extends Controller
         }
     }
 
+    // Restore the specified soft-deleted role
     public function restore($id)
     {
         try {

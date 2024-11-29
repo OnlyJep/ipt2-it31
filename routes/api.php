@@ -36,7 +36,7 @@ use App\Http\Controllers\YearLevelController;
 
 // Wrap all routes inside an authentication middleware group
 Route::middleware('auth:sanctum')->group(function () {
-
+    
     // Roles
     Route::apiResource('roles', RoleController::class);
     Route::post('roles/{id}/restore', [RoleController::class, 'restore']);

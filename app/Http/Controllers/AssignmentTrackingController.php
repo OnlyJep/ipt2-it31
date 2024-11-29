@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class AssignmentTrackingController extends Controller
 {
     // Display a listing of assignment trackings
-    public function index()
+    public function index(Request $request)
     {
-        $assignmentTrackings = AssignmentTracking::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $assignmentTrackings = AssignmentTracking::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $assignmentTrackings = AssignmentTracking::withTrashed()->get();
+        } else {
+            $assignmentTrackings = AssignmentTracking::all();
+        }
+
+        if ($assignmentTrackings->isEmpty()) {
+            return response()->json(['message' => 'No assignment trackings found'], 404);
+        }
+
         return response()->json($assignmentTrackings);
     }
 
@@ -84,16 +97,5 @@ class AssignmentTrackingController extends Controller
 
         $assignmentTracking->restore();
         return response()->json(['message' => 'Assignment Tracking restored successfully']);
-    }
-
-
-    // Retrieve all soft-deleted assignment trackings
-    public function getDeletedAssignmentTrackings()
-    {
-        $deletedAssignmentTrackings = AssignmentTracking::onlyTrashed()->get();
-        if ($deletedAssignmentTrackings->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted assignment trackings found'], 404);
-        }
-        return response()->json($deletedAssignmentTrackings);
     }
 }

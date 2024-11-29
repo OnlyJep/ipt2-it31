@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class SemesterController extends Controller
 {
     // Display a listing of semesters
-    public function index()
+    public function index(Request $request)
     {
-        $semesters = Semester::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $semesters = Semester::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $semesters = Semester::withTrashed()->get();
+        } else {
+            $semesters = Semester::all();
+        }
+
+        if ($semesters->isEmpty()) {
+            return response()->json(['message' => 'No semesters found'], 404);
+        }
+
         return response()->json($semesters);
     }
 
@@ -82,16 +95,5 @@ class SemesterController extends Controller
 
         $semester->restore();
         return response()->json(['message' => 'Semester restored successfully']);
-    }
-
-
-    // Retrieve all soft-deleted semesters
-    public function getDeletedSemesters()
-    {
-        $deletedSemesters = Semester::onlyTrashed()->get();
-        if ($deletedSemesters->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted semesters found'], 404);
-        }
-        return response()->json($deletedSemesters);
     }
 }

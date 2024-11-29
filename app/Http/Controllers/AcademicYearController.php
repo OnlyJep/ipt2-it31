@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class AcademicYearController extends Controller
 {
     // Display a listing of academic years
-    public function index()
+    public function index(Request $request)
     {
-        $academicYears = AcademicYear::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $academicYears = AcademicYear::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $academicYears = AcademicYear::withTrashed()->get();
+        } else {
+            $academicYears = AcademicYear::all();
+        }
+
+        if ($academicYears->isEmpty()) {
+            return response()->json(['message' => 'No academic years found'], 404);
+        }
+
         return response()->json($academicYears);
     }
 
@@ -82,15 +95,5 @@ class AcademicYearController extends Controller
 
         $academicYear->restore();
         return response()->json(['message' => 'Academic Year restored successfully']);
-    }
-
-    // Retrieve all soft-deleted academic years
-    public function getDeletedAcademicYears()
-    {
-        $deletedAcademicYears = AcademicYear::onlyTrashed()->get();
-        if ($deletedAcademicYears->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted academic years found'], 404);
-        }
-        return response()->json($deletedAcademicYears);
     }
 }

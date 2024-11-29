@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class EnrollmentTrackingController extends Controller
 {
     // Display a listing of enrollment trackings
-    public function index()
+    public function index(Request $request)
     {
-        $enrollmentTrackings = EnrollmentTracking::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $enrollmentTrackings = EnrollmentTracking::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $enrollmentTrackings = EnrollmentTracking::withTrashed()->get();
+        } else {
+            $enrollmentTrackings = EnrollmentTracking::all();
+        }
+
+        if ($enrollmentTrackings->isEmpty()) {
+            return response()->json(['message' => 'No enrollment trackings found'], 404);
+        }
+
         return response()->json($enrollmentTrackings);
     }
 
@@ -67,7 +80,7 @@ class EnrollmentTrackingController extends Controller
         if (!$enrollmentTracking) {
             return response()->json(['message' => 'Enrollment Tracking not found'], 404);
         }
-        
+
         $enrollmentTracking->delete();
         return response()->json(['message' => 'Enrollment Tracking deleted successfully']);
     }
@@ -82,15 +95,5 @@ class EnrollmentTrackingController extends Controller
 
         $enrollmentTracking->restore();
         return response()->json(['message' => 'Enrollment Tracking restored successfully']);
-    }
-
-    // Retrieve all soft-deleted enrollment trackings
-    public function getDeletedEnrollmentTrackings()
-    {
-        $deletedEnrollmentTrackings = EnrollmentTracking::onlyTrashed()->get();
-        if ($deletedEnrollmentTrackings->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted enrollment trackings found'], 404);
-        }
-        return response()->json($deletedEnrollmentTrackings);
     }
 }

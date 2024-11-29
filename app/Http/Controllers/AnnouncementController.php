@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class AnnouncementController extends Controller
 {
     // Display a listing of announcements
-    public function index()
+    public function index(Request $request)
     {
-        $announcements = Announcement::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $announcements = Announcement::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $announcements = Announcement::withTrashed()->get();
+        } else {
+            $announcements = Announcement::all();
+        }
+
+        if ($announcements->isEmpty()) {
+            return response()->json(['message' => 'No announcements found'], 404);
+        }
+
         return response()->json($announcements);
     }
 
@@ -82,15 +95,5 @@ class AnnouncementController extends Controller
 
         $announcement->restore();
         return response()->json(['message' => 'Announcement restored successfully']);
-    }
-
-    // Retrieve all soft-deleted announcements
-    public function getDeletedAnnouncements()
-    {
-        $deletedAnnouncements = Announcement::onlyTrashed()->get();
-        if ($deletedAnnouncements->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted announcements found'], 404);
-        }
-        return response()->json($deletedAnnouncements);
     }
 }

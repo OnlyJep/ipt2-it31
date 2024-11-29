@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class EventController extends Controller
 {
     // Display a listing of events
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $events = Event::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $events = Event::withTrashed()->get();
+        } else {
+            $events = Event::all();
+        }
+
+        if ($events->isEmpty()) {
+            return response()->json(['message' => 'No events found'], 404);
+        }
+
         return response()->json($events);
     }
 
@@ -86,16 +99,5 @@ class EventController extends Controller
 
         $event->restore();
         return response()->json(['message' => 'Event restored successfully']);
-    }
-
-
-    // Retrieve all soft-deleted events
-    public function getDeletedEvents()
-    {
-        $deletedEvents = Event::onlyTrashed()->get();
-        if ($deletedEvents->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted events found'], 404);
-        }
-        return response()->json($deletedEvents);
     }
 }

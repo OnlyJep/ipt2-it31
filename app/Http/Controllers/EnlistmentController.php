@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class EnlistmentController extends Controller
 {
     // Display a listing of enlistments
-    public function index()
+    public function index(Request $request)
     {
-        $enlistments = Enlistment::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $enlistments = Enlistment::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $enlistments = Enlistment::withTrashed()->get();
+        } else {
+            $enlistments = Enlistment::all();
+        }
+
+        if ($enlistments->isEmpty()) {
+            return response()->json(['message' => 'No enlistments found'], 404);
+        }
+
         return response()->json($enlistments);
     }
 
@@ -73,7 +86,7 @@ class EnlistmentController extends Controller
         if (!$enlistment) {
             return response()->json(['message' => 'Enlistment not found'], 404);
         }
-        
+
         $enlistment->delete();
         return response()->json(['message' => 'Enlistment deleted successfully']);
     }
@@ -88,16 +101,5 @@ class EnlistmentController extends Controller
 
         $enlistment->restore();
         return response()->json(['message' => 'Enlistment restored successfully']);
-    }
-
-
-    // Retrieve all soft-deleted enlistments
-    public function getDeletedEnlistments()
-    {
-        $deletedEnlistments = Enlistment::onlyTrashed()->get();
-        if ($deletedEnlistments->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted enlistments found'], 404);
-        }
-        return response()->json($deletedEnlistments);
     }
 }

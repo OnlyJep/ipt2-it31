@@ -9,9 +9,22 @@ use Illuminate\Support\Facades\Validator;
 class CollegeProgramDepartmentController extends Controller
 {
     // Display a listing of college program departments
-    public function index()
+    public function index(Request $request)
     {
-        $collegeProgramDepartments = CollegeProgramDepartment::all();
+        $deleted = $request->query('deleted', 'false');
+
+        if ($deleted === 'only') {
+            $collegeProgramDepartments = CollegeProgramDepartment::onlyTrashed()->get();
+        } elseif ($deleted === 'true') {
+            $collegeProgramDepartments = CollegeProgramDepartment::withTrashed()->get();
+        } else {
+            $collegeProgramDepartments = CollegeProgramDepartment::all();
+        }
+
+        if ($collegeProgramDepartments->isEmpty()) {
+            return response()->json(['message' => 'No college program departments found'], 404);
+        }
+
         return response()->json($collegeProgramDepartments);
     }
 
@@ -84,15 +97,5 @@ class CollegeProgramDepartmentController extends Controller
 
         $collegeProgramDepartment->restore();
         return response()->json(['message' => 'College Program Department restored successfully']);
-    }
-
-    // Retrieve all soft-deleted college program departments
-    public function getDeletedCollegeProgramDepartments()
-    {
-        $deletedCollegeProgramDepartments = CollegeProgramDepartment::onlyTrashed()->get();
-        if ($deletedCollegeProgramDepartments->isEmpty()) {
-            return response()->json(['message' => 'No soft-deleted college program departments found'], 404);
-        }
-        return response()->json($deletedCollegeProgramDepartments);
     }
 }
