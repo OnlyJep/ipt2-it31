@@ -26,7 +26,7 @@ class CreateProfilesTable extends Migration
             $table->string('phone_number', 20)->nullable();
             $table->date('admission_date')->nullable();
             $table->enum('marital_status', ['single', 'married', 'divorced', 'widowed'])->nullable();
-            $table->enum('religion', ['catholic', 'muslim', 'protestant', 'hindu', 'buddhist', 'other'])->nullable();
+            $table->string('religion', 100)->nullable();
             $table->text('photo_path')->nullable();
             $table->string('emer_full_name', 100)->nullable();
             $table->string('relationship', 50)->nullable();

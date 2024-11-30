@@ -24,12 +24,13 @@
         "sass-loader": "^11.0.1"
     },
     "dependencies": {
-        "@ant-design/icons": "^5.5.1",
+        "@ant-design/icons": "^5.5.2",
         "ant": "^0.0.0",
         "antd": "^5.22.2",
         "dom": "^0.0.3",
         "less": "^4.2.1",
         "less-loader": "^12.2.0",
+        "react-responsive": "^10.0.0",
         "react-router": "^6.27.0",
         "react-router-dom": "^6.28.0"
     }

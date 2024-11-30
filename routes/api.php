@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
+// Import all controllers
 use App\Http\Controllers\AcademicProgramController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AnnouncementController;
@@ -34,9 +36,11 @@ use App\Http\Controllers\SubjectCurriculumController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YearLevelController;
 
-// Wrap all routes inside an authentication middleware group
+// Define the login route outside of the auth middleware
+Route::post('login', [AuthController::class, 'login']); // Login route
+
+// Wrap all other routes inside an authentication middleware group
 Route::middleware('auth:sanctum')->group(function () {
-    
     // Roles
     Route::apiResource('roles', RoleController::class);
     Route::post('roles/{id}/restore', [RoleController::class, 'restore']);
@@ -156,6 +160,4 @@ Route::middleware('auth:sanctum')->group(function () {
     // Notifications
     Route::apiResource('notification', NotificationController::class);
     Route::post('notification/{id}/restore', [NotificationController::class, 'restore']);
-
 });
-

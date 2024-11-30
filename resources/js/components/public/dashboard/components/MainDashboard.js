@@ -1,40 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import { Layout, theme } from "antd";
-import SideBar from "./SideBar";  // Custom Sidebar
-import Header from "./Header";    // Custom Header
+import SideBar from "./SideBar"; // Custom Sidebar
+import Header from "./Header"; // Custom Header
+import MobileSidebarToggle from './MobileSidebarToggle'; // Import mobile sidebar toggle component
 
 const { Sider, Content } = Layout;
 
-const MainDashboard = () => {
+const MainDashboard = ({ children }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken(); // Dynamic theme styling
 
+  // State for Sidebar collapse (desktop view)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarVisible, setMobileSidebarVisible] = useState(false); // State for mobile sidebar visibility
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed); // Toggle sidebar visibility for desktop
+  };
+
+  const toggleMobileSidebar = () => {
+    setMobileSidebarVisible(!mobileSidebarVisible); // Toggle sidebar visibility for mobile
+  };
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      {/* Sidebar - Reusable SideBar Component */}
+      {/* Sidebar for larger screens */}
       <Sider
+        width={250}
         breakpoint="lg"
         collapsedWidth="0"
-        onBreakpoint={(broken) => {
-          console.log(broken);
+        collapsed={sidebarCollapsed} // Handle collapse state for desktop
+        onCollapse={(collapsed) => setSidebarCollapsed(collapsed)} // Update collapse state
+        style={{
+          position: "fixed", // Keep the sidebar fixed on larger screens
+          height: "100vh",
+          zIndex: 1,
         }}
-        onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
-        }}
-        width={250} // Adjust the width of the sidebar if needed
-        
       >
-        <SideBar /> {/* Rendering the custom SideBar component here */}
+        <SideBar userRole="superadmin" />
       </Sider>
 
       {/* Main Layout */}
-      <Layout>
-        {/* Header - Reusable Header Component */}
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        
+      <Layout style={{ marginLeft: sidebarCollapsed ? 0 : 250, transition: 'margin-left 0.3s' }}>
+        {/* Mobile Sidebar Toggle Button */}
+        <MobileSidebarToggle 
+          userRole="superadmin" 
+          mobileSidebarVisible={mobileSidebarVisible} 
+          toggleMobileSidebar={toggleMobileSidebar} 
+        />
+
+        {/* Header */}
+        <Header 
+          style={{ padding: 0, background: colorBgContainer }} 
+          toggleSidebar={toggleSidebar} 
+          toggleMobileSidebar={toggleMobileSidebar}
+        />
+
         {/* Content Area */}
-        <Content style={{ margin: "24px 16px 0" }}>
+        <Content style={{ margin: "24px 16px 0", paddingTop: '80px' }}> {/* Add padding-top to push content down */}
           <div
             style={{
               padding: 24,
@@ -43,12 +67,9 @@ const MainDashboard = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-            {/* Main Dashboard Content */}
-            <h1>Main Dashboard Content</h1>
-            {/* You can add more dynamic content here */}
+            {children} {/* Render children here */}
           </div>
         </Content>
-
       </Layout>
     </Layout>
   );
