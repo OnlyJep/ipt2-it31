@@ -48,6 +48,10 @@
       cursor: pointer;
     }
   }
+  
+  .ant-layout-content {
+    padding: 24px 16px; /* Top and bottom padding = 24px, Left and right padding = 16px */
+  }
 
   /* Media Queries for Mobile */
   @media only screen and (max-width: 991px) {

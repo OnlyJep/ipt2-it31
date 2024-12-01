@@ -1,62 +1,167 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Layout, Form, Input, Button, Row, Col, Divider, Upload, message, Avatar, Select, Spin, Descriptions } from 'antd';
+import { Layout, Button, Row, Col, Divider, Upload, message, Avatar, Spin, Form } from 'antd';
 import { UserOutlined, PlusOutlined } from '@ant-design/icons';
 import MainDashboard from '../dashboard/components/MainDashboard';
+import ProfileForm from './components/ProfileForm';
 
 const { Content } = Layout;
-const { Option } = Select;
 
 const ProfilePageDashboard = () => {
-    const [isEditing, setIsEditing] = useState(true); // Toggle between edit and view mode
-    const [form] = Form.useForm();
+    const [isEditing, setIsEditing] = useState(false); // Default to view mode
+    const [form] = Form.useForm(); // Initialize form instance
     const [userData, setUserData] = useState(null); // State to hold user data
-    const [isLoading, setIsLoading] = useState(false); // State to manage loading
+    const [profileData, setProfileData] = useState(null); // State to hold profile data
+    const [isLoading, setIsLoading] = useState(true); // State to manage loading
     const [isUploading, setIsUploading] = useState(false); // State for photo upload progress
+    const [uploadMessage, setUploadMessage] = useState(''); // Message state for upload success/error
 
-    // Fetch user data when component mounts
+    // Fetch user data and profile data when component mounts
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchProfileData = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get('/api/user/profile');
-                setUserData(response.data);
-                form.setFieldsValue(response.data); // Populate form with user data
+                // Get profile_id directly from localStorage
+                const profileId = localStorage.getItem('profile_id');
+                if (!profileId) {
+                    message.error('Profile ID not found. Please log in again.');
+                    return;
+                }
+
+                const token = localStorage.getItem('auth_token');
+                if (!token) {
+                    message.error('No token found. Please log in.');
+                    return;
+                }
+
+                // Fetch profile data using the profile_id from localStorage
+                const response = await axios.get(`/api/profiles/${profileId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                setProfileData(response.data); // Set the profile data
+                setUserData(response.data); // Assuming user data includes profile info as well
+
+                // Map the profile data to form fields
+                form.setFieldsValue({
+                    firstname: response.data.first_name,
+                    middleinitial: response.data.middle_initial,
+                    lastname: response.data.last_name,
+                    sex: response.data.sex,
+                    maritalStatus: response.data.marital_status,
+                    religion: response.data.religion,
+                    age: response.data.age,
+                    phoneNumber: response.data.phone_number,
+                    address: response.data.address,
+                });
+
             } catch (error) {
-                message.error('Failed to load user data');
+                console.error(error); // Log the error for debugging
+                message.error('Failed to load profile data');
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchUserData();
-    }, [form]);
+        fetchProfileData();
+    }, [form]); // Trigger when the component is mounted
 
     // Handle profile save
     const handleSave = async () => {
         try {
-            setIsEditing(false); // Switch to view mode
-            const values = await form.validateFields();
-            const response = await axios.put('/api/user/profile', values); // API call to save user data
-            message.success('Profile saved successfully!');
+            const values = await form.validateFields(); // Get form values
+            const token = localStorage.getItem('auth_token'); // Get the token
+            const profileId = localStorage.getItem('profile_id'); // Retrieve profile_id from localStorage
+        
+            if (!profileId) {
+                message.error('Profile ID not found in localStorage');
+                return;
+            }
+    
+            // Map frontend fields to backend fields
+            const mappedValues = {
+                first_name: values.firstname,
+                middle_initial: values.middleinitial,
+                last_name: values.lastname,
+                sex: values.sex,
+                marital_status: values.maritalStatus,
+                religion: values.religion,
+                age: values.age,
+                phone_number: values.phoneNumber,
+                address: values.address,
+            };
+    
+            // Send the PUT request to update the profile
+            const response = await axios.put(`/api/profiles/${profileId}`, mappedValues, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+    
+            // On success, show success message
+            message.success('Profile updated successfully');
+            setIsEditing(false); // Switch to view mode after saving
         } catch (error) {
-            message.error('Failed to save profile');
+            console.error(error);
+            message.error('Failed to update profile');
         }
     };
-
+    
     // Toggle edit mode
     const handleEdit = () => {
         setIsEditing(true); // Switch to edit mode
     };
 
-    // Handle photo upload
-    const handlePhotoChange = (info) => {
-        if (info.file.status === 'done') {
-            const photoUrl = info.file.response?.url; // Assuming the API returns a URL for the uploaded photo
-            form.setFieldsValue({ photo: photoUrl }); // Set the photo URL in form
+    const handleUpload = async (file) => {
+        try {
+            const profileId = localStorage.getItem('profile_id');  // Get profile ID from localStorage
+            if (!profileId) {
+                message.error('Profile ID not found in localStorage');
+                return;
+            }
+    
+            const formData = new FormData();
+            formData.append('photo', file);  // Ensure the file is under 'photo' field
+            formData.append('profile_id', profileId);  // Add profile_id as well
+    
+            const response = await axios.put(`/api/profiles/${profileId}/upload-photo`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    
+            // Handle the response (e.g., update UI with the new photo path)
+            setProfileData((prevState) => ({
+                ...prevState,
+                photo_path: response.data.photo_path,
+            }));
+    
+            setUploadMessage('Profile photo updated successfully');
+        } catch (error) {
+            console.error(error);
+            setUploadMessage('Failed to upload photo');
+        } finally {
+            setIsUploading(false);
         }
     };
-
+    
+    
+    const ProfilePage = ({ userData }) => {
+        // If there's no photo_path, show a default image
+        const photoUrl = userData?.photo_path ? `/${userData.photo_path}` : '/path/to/default/photo.jpg';
+    
+        return (
+            <div>
+                <h2>User Profile</h2>
+                <img src={photoUrl} alt="Profile" />
+                {/* Other profile info */}
+            </div>
+        );
+    };
+    
     // Show loading spinner while data is being fetched
     if (isLoading) {
         return (
@@ -70,16 +175,16 @@ const ProfilePageDashboard = () => {
         <MainDashboard>
             <Content style={{ padding: '20px' }}>
                 <div style={{ maxHeight: 'calc(100vh - 80px)', overflowY: 'auto' }}>
-                <Row justify="space-between" align="middle" style={{ marginBottom: '20px' }}>
-    <Col>
-        <h2>Account</h2>
-    </Col>
-    <Col style={{ marginRight: '20px' }}> {/* Adjusting margin to move button away from scrollbar */}
-        <Button onClick={isEditing ? handleSave : handleEdit} type="primary">
-            {isEditing ? 'Save Info' : 'Edit Info'}
-        </Button>
-    </Col>
-</Row>
+                    <Row justify="space-between" align="middle" style={{ marginBottom: '20px' }}>
+                        <Col>
+                            <h2>Account</h2>
+                        </Col>
+                        <Col style={{ marginRight: '20px' }}>
+                            <Button onClick={isEditing ? handleSave : handleEdit} type="primary">
+                                {isEditing ? 'Save Info' : 'Edit Info'}
+                            </Button>
+                        </Col>
+                    </Row>
 
                     <Divider />
 
@@ -92,20 +197,19 @@ const ProfilePageDashboard = () => {
 
                     <Row justify="start" gutter={[16, 16]} style={{ marginBottom: '40px' }}>
                         <Col xs={24} sm={8} md={6} lg={4} style={{ textAlign: 'center' }}>
-                            {/* Avatar */}
                             <Avatar
                                 size={150}
-                                src={userData?.photo}
+                                src={profileData?.photo_path ? `/storage/${profileData.photo_path}` : undefined}
                                 icon={<UserOutlined />}
                                 style={{ marginBottom: '20px' }}
                             />
                             <Upload
                                 name="photo"
                                 showUploadList={false}
-                                action="/api/upload/photo"
-                                onChange={handlePhotoChange}
-                                beforeUpload={() => false}
-                                accept="image/*"
+                                beforeUpload={(file) => {
+                                    handleUpload(file);
+                                    return false; // Prevent auto upload
+                                }}
                             >
                                 <Button
                                     icon={<PlusOutlined />}
@@ -116,101 +220,15 @@ const ProfilePageDashboard = () => {
                                     {isUploading ? 'Uploading...' : 'Add Photo'}
                                 </Button>
                             </Upload>
+                            {uploadMessage && (
+                                <div style={{ marginTop: '10px', color: uploadMessage.includes('successfully') ? 'green' : 'red' }}>
+                                    {uploadMessage}
+                                </div>
+                            )}
                         </Col>
 
-                        {/* Personal Information Form or Descriptions */}
                         <Col xs={24} sm={16} md={18} lg={16} xl={14}>
-                            {isEditing ? (
-                                <Form form={form} layout="vertical">
-                                    <Row gutter={[16, 24]}>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Firstname" name="firstname">
-                                                <Input placeholder="Firstname" prefix={<UserOutlined />} />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Middle Initial" name="middleinitial">
-                                                <Input placeholder="Middle Initial" />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Lastname" name="lastname">
-                                                <Input placeholder="Lastname" prefix={<UserOutlined />} />
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-                                    <Row gutter={[16, 24]}>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Suffix (Optional)" name="suffix">
-                                                <Input placeholder="Suffix (Optional)" />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Age" name="age">
-                                                <Input type="number" placeholder="Age" />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Date of Birth" name="dob">
-                                                <Input type="date" placeholder="Date of Birth" />
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-                                    <Row gutter={[16, 24]}>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Sex" name="sex">
-                                                <Select placeholder="Select Sex">
-                                                    <Option value="male">Male</Option>
-                                                    <Option value="female">Female</Option>
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Phone Number" name="phoneNumber">
-                                                <Input placeholder="Phone Number" />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Marital Status" name="maritalStatus">
-                                                <Select placeholder="Select Marital Status">
-                                                    <Option value="single">Single</Option>
-                                                    <Option value="married">Married</Option>
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                        <Col xs={24} sm={12} md={8}>
-                                            <Form.Item label="Religion" name="religion">
-                                                <Select placeholder="Select Religion">
-                                                    <Option value="romanCatholic">Roman Catholic</Option>
-                                                    <Option value="muslim">Muslim</Option>
-                                                    <Option value="other">Other</Option>
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-                                    <Row gutter={[16, 24]}>
-                                        <Col xs={24} sm={24} md={24}>
-                                            <Form.Item label="Address" name="address">
-                                                <Input.TextArea placeholder="Address" rows={4} />
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-                                </Form>
-                            ) : (
-                                <Descriptions title="User Information" bordered>
-                                    <Descriptions.Item label="Firstname">{userData?.firstname}</Descriptions.Item>
-                                    <Descriptions.Item label="Middle Initial">{userData?.middleinitial}</Descriptions.Item>
-                                    <Descriptions.Item label="Lastname">{userData?.lastname}</Descriptions.Item>
-                                    <Descriptions.Item label="Suffix (Optional)">{userData?.suffix}</Descriptions.Item>
-                                    <Descriptions.Item label="Age">{userData?.age}</Descriptions.Item>
-                                    <Descriptions.Item label="Date of Birth">{userData?.dob}</Descriptions.Item>
-                                    <Descriptions.Item label="Sex">{userData?.sex}</Descriptions.Item>
-                                    <Descriptions.Item label="Marital Status">{userData?.maritalStatus}</Descriptions.Item>
-                                    <Descriptions.Item label="Religion">{userData?.religion}</Descriptions.Item>
-                                    <Descriptions.Item label="Phone Number">{userData?.phoneNumber}</Descriptions.Item>
-                                    <Descriptions.Item label="Address">{userData?.address}</Descriptions.Item>
-                                </Descriptions>
-                            )}
+                            <ProfileForm form={form} isEditing={isEditing} />
                         </Col>
                     </Row>
                 </div>

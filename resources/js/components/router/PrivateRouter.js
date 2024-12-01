@@ -1,34 +1,28 @@
-
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-
-// Function to check if user is authenticated (based on localStorage token)
-const isAuthenticated = () => {
-  return !!localStorage.getItem('auth_token'); // Check if the token exists
-};
-
-// Function to get user role from localStorage
-const getUserRole = () => {
-  return localStorage.getItem('user_role'); // Assuming role is saved as 'user_role'
-};
+import { Navigate, useParams } from 'react-router-dom';
 
 const PrivateRoute = ({ children, roleRequired }) => {
-  const isLoggedIn = isAuthenticated();  
-  const userRole = getUserRole(); 
+  const { role } = useParams();  // Get the 'role' from the URL parameter
+  const userRole = localStorage.getItem('user_role');
+  const authToken = localStorage.getItem('auth_token');  // Check if user is authenticated
 
-  // If the user is not logged in, redirect to login
-  if (!isLoggedIn) {
+  // Check if the user is authenticated and the role matches
+  const isRoleValid = Array.isArray(roleRequired)
+    ? roleRequired.includes(userRole)
+    : userRole === roleRequired;
+
+  if (!authToken) {
+    // If the user is not authenticated, redirect to the login page
     return <Navigate to="/login" />;
   }
 
-  // If the user doesn't have the required role, redirect to their dashboard
-  if (roleRequired && !roleRequired.includes(userRole)) {
-    return <Navigate to={`/${userRole}/dashboard`} />;
+  if (!isRoleValid) {
+    // If the role doesn't match the required role, redirect to an error page or homepage
+    return <Navigate to="/unauthorized" />;
   }
 
-  // If the user is authenticated and has the correct role, render the child components
+  // If authenticated and role is valid, allow access
   return children;
 };
-
 
 export default PrivateRoute;

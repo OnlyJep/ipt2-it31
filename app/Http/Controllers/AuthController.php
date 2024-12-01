@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Hash;
 use Validator;
 
@@ -24,7 +25,7 @@ class AuthController extends Controller
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
-    
+        
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
@@ -38,13 +39,28 @@ class AuthController extends Controller
         // Authenticate user and generate token
         $token = $user->createToken('YourAppName')->plainTextToken;
     
-        // Return response with token and user role
+        // Retrieve the profile associated with the user
+        $profile = Profile::where('user_id', $user->id)->first();
+        
+        // Check if profile exists and get profile_id and user_id from profile
+        if ($profile) {
+            $profileId = $profile->id;  // This is the profile's ID (primary key)
+            $profileUserId = $profile->user_id;  // This is the user_id in the Profile model (foreign key)
+        } else {
+            $profileId = null;  // If profile doesn't exist
+            $profileUserId = null;  // If profile doesn't exist
+        }
+    
+        // Return response with token, profile_id, and user_id (from Profile)
         return response()->json([
             'message' => 'Login successful',
             'token' => $token,
-            'role' => optional($user->role)->role_name,  // Role name (assuming your Role model has a `role_name` column)
+            'role' => optional($user->role)->role_name,
+            'user_id' => $profileUserId,  // user_id from Profile model
+            'profile_id' => $profileId,  // profile_id from Profile model
         ]);
     }
+    
 
     /**
      * Handle logout request.

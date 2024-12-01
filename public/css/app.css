@@ -12005,11 +12005,7 @@ textarea.form-control-lg {
   flex: 1;
   display: flex;
   align-items: center;
-}
-.header .header-content h1, .header .header-content .h1 {
-  font-size: 1.5rem;
-  margin: 0;
-  color: #333333;
+  justify-content: space-between;
 }
 .header::after {
   content: "";
@@ -12052,9 +12048,32 @@ textarea.form-control-lg {
     display: block; /* Show the button on mobile */
   }
 }
-
-.sidebar .menu-icon {
-  display: none; /* Hide the button in sidebar */
+.header .search-wrapper {
+  display: flex;
+  align-items: center;
+}
+.header .search-wrapper .search-icon {
+  display: block;
+  cursor: pointer;
+  font-size: 20px;
+  color: #3f7afc;
+}
+.header .search-wrapper .search-input {
+  display: none;
+  transition: all 0.3s ease-in-out;
+  max-width: 300px;
+  margin-left: 10px;
+}
+.header .search-wrapper.search-active .search-input {
+  display: block;
+}
+@media (max-width: 991px) {
+  .header .search-wrapper .search-icon {
+    display: block;
+  }
+  .header .search-wrapper .search-input {
+    display: none;
+  }
 }
 
 .dashboard-container {
@@ -12105,6 +12124,9 @@ textarea.form-control-lg {
     cursor: pointer;
   }
 }
+.dashboard-container .ant-layout-content {
+  padding: 24px 16px; /* Top and bottom padding = 24px, Left and right padding = 16px */
+}
 @media only screen and (max-width: 991px) {
   .dashboard-container {
     /* When the sidebar is visible */
@@ -12133,17 +12155,18 @@ textarea.form-control-lg {
   display: flex;
   align-items: center;
   margin-bottom: 10px; /* Add space between menu items */
+  color: #fff !important;
   /* Hover effect for nav items */
 }
 .nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* White background on hover */
+  background-color: rgba(255, 255, 255, 0.1); /* Slight white background on hover */
   border-left: 4px solid #1890ff; /* Blue left border on hover */
   font-weight: bold;
+  color: #fff;
 }
 
 /* Style for the links within nav items */
 .nav-link {
-  color: #fff;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -12151,24 +12174,25 @@ textarea.form-control-lg {
 
 /* Style for selected item to keep consistency */
 .ant-menu-item-selected {
-  background-color: rgba(255, 255, 255, 0.2) !important; /* White background for selected item */
+  background-color: rgba(255, 255, 255, 0.1) !important; /* White background for selected item */
   color: #fff;
   border-left: 4px solid #1890ff !important; /* Blue left border for selected item */
   /* Ensure that the link color stays consistent for selected item */
   /* Prevent hover effect on selected item */
 }
 .ant-menu-item-selected .nav-link {
-  color: #fff;
+  color: #fff !important;
 }
 .ant-menu-item-selected:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* White background for selected item on hover */
+  background-color: rgba(255, 255, 255, 0.1); /* White background for selected item on hover */
   border-left: 4px solid #1890ff;
 }
 
 /* Ensure that the background on hover is transparent for the non-selected items */
 .ant-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* White background on hover */
-  border-left: 4px solid #1890ff; /* Blue left border when hovering */
+  background-color: rgba(255, 255, 255, 0.1); /* Slight white background on hover */
+  border-left: 4px solid #1890ff; /* Blue left border on hover */
+  font-weight: bold;
 }
 
 /* Separator between menu items */
@@ -12184,7 +12208,7 @@ textarea.form-control-lg {
 /* Icon styles: Ensure icons are sized correctly */
 .ant-menu-item .anticon {
   font-size: 20px;
-  color: #fff;
+  color: #fff !important;
   margin-right: 10px;
 }
 
@@ -12201,11 +12225,70 @@ textarea.form-control-lg {
   }
   .ant-menu-item {
     padding-left: 16px;
+    color: #fff !important;
   }
   .ant-menu-item .anticon {
     font-size: 16px;
   }
 }
+/* SubMenu styles: Ensure submenus have the same color and hover effects as main items */
+.ant-menu-submenu {
+  background-color: transparent !important; /* Make submenu background transparent */
+  padding-left: 16px; /* Adjust padding for submenu items */
+  padding-right: 16px; /* Adjust padding for submenu items */
+  border-radius: 8px; /* Add border radius for submenu items */
+  border: none; /* Remove any borders */
+  /* Ensure the submenu title color is white */
+  /* Remove the background on hover */
+  /* Style for submenu item when selected */
+  /* Ensure submenu item text is white and styled correctly */
+}
+.ant-menu-submenu .ant-menu-submenu-title {
+  color: #fff !important;
+  padding-left: 8px !important;
+}
+.ant-menu-submenu:hover {
+  background-color: transparent !important;
+  border-left: 4px solid #1890ff !important; /* Blue left border on hover */
+  background-color: rgba(255, 255, 255, 0.1) !important; /* White background for selected item */
+  color: #fff;
+  border-left: 4px solid #1890ff !important; /* Blue left border for selected item */
+}
+.ant-menu-submenu.ant-menu-submenu-open, .ant-menu-submenu.ant-menu-submenu-selected {
+  background-color: rgba(255, 255, 255, 0.1) !important; /* White background for selected item */
+  color: #fff; /* White color for selected and open submenu items */
+  border-left: 4px solid #1890ff !important; /* Blue left border for selected item */
+}
+.ant-menu-submenu .ant-menu-item {
+  color: #fff !important; /* Ensure submenu item text is white */
+  font-size: 14px; /* Slightly smaller font size for submenu items */
+  background-color: transparent !important; /* Ensure submenu items have transparent background */
+}
+
+/* Remove background for the specific ant-menu-submenu */
+.ant-menu-dark.ant-menu-inline .ant-menu-sub.ant-menu-inline {
+  background-color: transparent !important; /* Remove background color */
+}
+
+/* Add hover effect and selected indicator for all menu items including "System Settings" */
+.ant-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important; /* Slight white background on hover */
+  border-left: 4px solid #1890ff !important; /* Blue left border on hover */
+  font-weight: bold;
+}
+
+/* Apply the selected indicator with hover effect for System Settings */
+.ant-menu-item.selected {
+  background-color: rgba(255, 255, 255, 0.1) !important; /* White background for selected item */
+  color: #fff;
+  border-left: 4px solid #1890ff !important; /* Blue left border for selected item */
+}
+
+.ant-menu-item.selected:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important; /* Keep same background on hover when selected */
+  border-left: 4px solid #1890ff !important; /* Maintain blue left border */
+}
+
 .layout-container {
   min-height: 100vh;
   background-size: cover;

@@ -54,10 +54,17 @@ class ProfileController extends Controller
             'yearlevel_id' => 'nullable|exists:year_levels,id',
             'parent_info_id' => 'nullable|exists:parent_infos,id',
             'department_id' => 'nullable|exists:departments,id',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validate photo upload
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
+        }
+
+        // Handle file upload
+        $photoPath = null;
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            $photoPath = $request->file('photo')->store('profile_photos', 'public'); // Store the file in 'storage/app/public/photos'
         }
 
         $profile = Profile::create($request->all());
@@ -84,7 +91,7 @@ class ProfileController extends Controller
             'phone_number' => 'nullable|string|max:20',
             'admission_date' => 'nullable|date',
             'marital_status' => 'nullable|in:single,married,divorced,widowed',
-            'religion' => 'nullable|in:catholic,muslim,protestant,hindu',
+            'religion' => 'nullable|string',
             'photo_path' => 'nullable|string',
             'emer_full_name' => 'nullable|string|max:100',
             'relationship' => 'nullable|string|max:50',
@@ -95,25 +102,81 @@ class ProfileController extends Controller
             'yearlevel_id' => 'nullable|exists:year_levels,id',
             'parent_info_id' => 'nullable|exists:parent_infos,id',
             'department_id' => 'nullable|exists:departments,id',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validate photo upload
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
+        // Handle file upload (if any)
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            // Delete the old photo if exists
+            if ($profile->photo_path && Storage::exists('public/' . $profile->photo_path)) {
+                Storage::delete('public/' . $profile->photo_path);
+            }
+
+            // Store the new photo
+            $photoPath = $request->file('photo')->store('photos', 'public');
+            $profile->photo_path = $photoPath;
+        }
+
         $profile->update($request->all());
         return response()->json($profile, 200);
     }
 
+    public function uploadPhoto(Request $request, $id)
+{
+    // Validate the incoming request to ensure 'photo' is an image
+    $validator = Validator::make($request->all(), [
+        'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation error',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    // Handle the file upload and store it in public/profile_photos directory
+    $photo = $request->file('photo');
+    $photoPath = $photo->getClientOriginalName(); // Get the original filename
+    $photo->move(public_path('profile_photos'), $photoPath); // Save it directly in the public/profile_photos folder
+
+    // Store the file path in the database (assuming you have a Profile model)
+    $profile = Profile::find($id);
+    $profile->photo_path = 'profile_photos/' . $photoPath; // Store relative path
+    $profile->save();
+
+    return response()->json([
+        'message' => 'Profile photo uploaded successfully',
+        'photo_path' => 'profile_photos/' . $photoPath
+    ], 200);
+}
+
+
     // Display the specified profile
     public function show($id)
     {
-        $profile = Profile::withTrashed()->find($id);
-        if (!$profile) {
-            return response()->json(['message' => 'Profile not found'], 404);
+        try {
+            // Retrieve profile including soft-deleted ones using withTrashed
+            $profile = Profile::withTrashed()->find($id);
+
+            // Check if the profile exists
+            if (!$profile) {
+                return response()->json(['message' => 'Profile not found'], 404);
+            }
+
+            // Return the profile data as a JSON response
+            return response()->json($profile);
+        } catch (\Exception $e) {
+            // Log any errors for debugging purposes
+            \Log::error('Error retrieving profile: ' . $e->getMessage());
+            return response()->json(['message' => 'Something went wrong'], 500);
         }
-        return response()->json($profile);
     }
+
 
     // Soft delete the specified profile
     public function destroy($id)
@@ -138,4 +201,18 @@ class ProfileController extends Controller
         $profile->restore();
         return response()->json(['message' => 'Profile restored successfully']);
     }
+
+    public function showByProfileId($profileId)
+    {
+        // Fetch the profile using the profileId
+        $profile = Profile::find($profileId);
+
+        // Check if the profile exists
+        if ($profile) {
+            return response()->json($profile);
+        } else {
+            return response()->json(['message' => 'Profile not found.'], 404);
+        }
+    }
+
 }

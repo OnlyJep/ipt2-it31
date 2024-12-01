@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Form, Input, Button, Row, Col, message, Tooltip, Card, Spin } from 'antd';
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import navigate hook
 import LoginPageBackground from './components/LoginPageBackground';
 import LoginLogo from './components/LoginLogo';
 import LoginLoader from './components/LoginLoader'; // Import the loader component
+import { handleLogin } from '../../private/loginportal/UserLoginService'; // Import the backend logic
 
 const { Content } = Layout;
 
@@ -42,40 +42,32 @@ const UserLogin = ({ setUserRole }) => {
     setErrorMessage(''); // Reset error message before each submission
   
     try {
-      const response = await axios.post('/api/login', values, { timeout: 10000 }); // 10 seconds timeout
+      const response = await handleLogin(values); // Call the backend logic
+  
       if (response.status === 200) {
         message.success('Login successful!');
-        localStorage.setItem('auth_token', response.data.token); // Store token
-        localStorage.setItem('user_role', response.data.role); // Save role in localStorage
+        
+        // Store the response data in localStorage
+        localStorage.setItem('auth_token', response.data.token); // Store the authentication token
+        localStorage.setItem('user_role', response.data.role); // Store the role
+        localStorage.setItem('user_id', response.data.user_id); // Store user_id from profile
+        localStorage.setItem('profile_id', response.data.profile_id); // Store profile_id from profile
   
         // Set user role state in the parent component
         setUserRole(response.data.role);
   
-        // Use the navigate hook for redirect
-        navigate(response.data.role === 'superadmin' ? '/superadmin/dashboard' : '/admin/dashboard');
+        // Use the navigate hook to redirect based on user role
+        navigate(`/${response.data.role}/dashboard`);
       }
     } catch (error) {
-      // Check if error is related to network or server
-      if (error.response) {
-        setErrorMessage('Login failed. Please check your Username and Password credentials.');
-        message.error('Login failed. Please check your Username and Password credentials.');
-      } else if (error.request) {
-        // No response from server
-        setErrorMessage('Server is not responding. Please try again later.');
-        message.error('Server is not responding. Please try again later.');
-      } else {
-        // General error
-        setErrorMessage('An error occurred. Please try again later.');
-        message.error('An error occurred. Please try again later.');
-      }
+      setErrorMessage(error.message); // Set error message
+      message.error(error.message); // Show error message
     } finally {
       setLoading(false); // Hide spinner after login attempt
     }
   };
-  
 
   const onFinishFailed = (errorInfo) => {
-    // Only show error message from validation if the API hasn't been called yet
     if (!errorMessage) {
       message.error('Login failed. Please check your Username and Password credentials.');
     }
@@ -136,6 +128,7 @@ const UserLogin = ({ setUserRole }) => {
                       <Form.Item
                         name="username"
                         rules={[{ required: true, message: 'Please input your Username!' }]}>
+
                         <Input
                           prefix={<UserOutlined style={{ color: '#1890ff' }} />}
                           placeholder="Username"
@@ -146,6 +139,7 @@ const UserLogin = ({ setUserRole }) => {
                       <Form.Item
                         name="password"
                         rules={[{ required: true, message: 'Please input your Password!' }]}>
+
                         <Input.Password
                           prefix={<LockOutlined style={{ color: '#1890ff' }} />}
                           type={showPassword ? 'text' : 'password'}
@@ -176,7 +170,7 @@ const UserLogin = ({ setUserRole }) => {
                           }}
                           loading={loading} // Show spinner on button during login
                         >
-                          {loading ? 'Logging in...' : 'Login'} {/* Show spinner when loading */}
+                          {loading ? 'Logging in...' : 'Login'}
                         </Button>
                       </Form.Item>
                     </Form>

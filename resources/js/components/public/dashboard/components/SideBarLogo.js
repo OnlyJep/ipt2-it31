@@ -1,24 +1,24 @@
 const SideBarLogo = () => {
   const logoStyle = {
-    width: '180px', // Adjust this value to make the logo smaller or larger
-    height: 'auto', // Keep the aspect ratio intact
-    transition: 'width 0.3s ease', // Optional: smooth transition if size changes
-    marginTop: '16px', // Adjust this value to move the logo slightly downwards
+    width: '180px',
+    height: 'auto',
+    transition: 'width 0.3s ease',
+    marginTop: '16px',
   };
 
   const containerStyle = {
     display: 'flex',
-    justifyContent: 'center',  // Horizontally center the logo
-    alignItems: 'center',      // Vertically center the logo
-    height: '60px',            // Adjust the container height as needed
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '60px',
   };
 
   return (
     <div className="logo" style={containerStyle}>
       <img
-        src={require('../../../../../../public/images/sidebarlogo.svg').default}
+        src={require('../../../../../../public/images/sidebarlogo.svg').default} // This should work with file-loader
         alt="Sidebar Logo"
-        style={logoStyle} // Apply inline styles to the image
+        style={logoStyle}
       />
     </div>
   );

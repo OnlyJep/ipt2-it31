@@ -50,8 +50,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('users/{id}/restore', [UserController::class, 'restore']);
 
     // Profiles
-    Route::apiResource('profiles', ProfileController::class);
+    Route::apiResource('profiles', ProfileController::class)->except(['index', 'show']);
     Route::post('profiles/{id}/restore', [ProfileController::class, 'restore']);
+    Route::get('profiles/{id}', [ProfileController::class, 'showByProfileId']);
+    Route::put('/profiles/{id}/upload-photo', [ProfileController::class, 'uploadPhoto']);
 
     // Parent Info
     Route::apiResource('parentinfo', ParentInfoController::class);
