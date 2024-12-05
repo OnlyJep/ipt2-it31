@@ -1,67 +1,127 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Layout, Row, Col, Card, Statistic, Breadcrumb, Typography, Divider, Spin } from 'antd';
 import { UserOutlined, TeamOutlined, FileTextOutlined, AppstoreAddOutlined } from '@ant-design/icons';
-import axios from 'axios'; // Import axios for API requests
-import MainDashboard from '../dashboard/components/MainDashboard'; // Import MainDashboard
-import { useLocation } from 'react-router-dom'; // For route-based dynamic breadcrumb
+import axios from 'axios';
+import MainDashboard from '../dashboard/components/MainDashboard';
+import { useLocation } from 'react-router-dom';
 
-const { Content } = Layout; // Destructure Content from Layout
-const { Title } = Typography; // Destructure Title from Typography
+const { Content } = Layout;
+const { Title } = Typography;
 
 const DashboardPageDashboard = () => {
-    const [data, setData] = useState(null); // State to store API response data
-    const [currentSection, setCurrentSection] = useState('Analytics'); // Default section
-    const [loading, setLoading] = useState(true); // State for loading indicator
-    const location = useLocation(); // Get current route location
+    const [data, setData] = useState({ enrolledStudents: 0, totalInstructors: 0 }); // Default values
+    const [activeUsers, setActiveUsers] = useState(0); // Default value
+    const [totalCourses, setTotalCourses] = useState(0); // Default value
+    const [totalInstructors, setTotalInstructors] = useState(null); // State for instructors count
+    const [totalStudents, setTotalStudents] = useState(null); // State for total students
+    const [currentSection, setCurrentSection] = useState('Analytics');
+    const [loading, setLoading] = useState(true);
+    const [loadingActiveUsers, setLoadingActiveUsers] = useState(true);
+    const [loadingCourses, setLoadingCourses] = useState(true);
+    const [loadingInstructors, setLoadingInstructors] = useState(true); // State for loading instructors
+    const [loadingStudents, setLoadingStudents] = useState(true); // State for loading students
+    const location = useLocation();
 
-    // Fetch data from an API (for example, fetching analytics-related data)
-    const fetchData = async () => {
+    const getAuthToken = () => localStorage.getItem('auth_token');
+
+    const makeAuthenticatedRequest = async (url, setLoadingState, handleResponse, handleError) => {
         try {
-            setLoading(true); // Set loading to true when starting the fetch
-            const response = await axios.get('/api/analytics'); // Replace with your actual API URL
-            setData(response.data); // Update state with the API response
+            setLoadingState(true);
+
+            const token = getAuthToken();
+            if (!token) {
+                console.error("Authentication token not found.");
+                return;
+            }
+
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            handleResponse(response.data);
         } catch (error) {
-            console.error("There was an error fetching data:", error);
+            console.error(`Error fetching data from ${url}:`, error);
+
+            if (handleError) handleError(error);
         } finally {
-            setLoading(false); // Set loading to false when the fetch is complete
+            setLoadingState(false);
         }
     };
 
-    // Update current section based on route or API response
-    useEffect(() => {
-        // Dynamically set the current section based on the path (could be Analytics, Announcement, Reports)
-        const section = location.pathname.split("/").pop();
-        setCurrentSection(section.charAt(0).toUpperCase() + section.slice(1)); // Capitalize first letter
+    const fetchData = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get('/api/analytics');
+            setData(response.data || {});
+        } catch (error) {
+            console.error("Error fetching analytics data:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-        // Fetch data when the section changes
+    const fetchTotalCourses = useCallback(async () => {
+        await makeAuthenticatedRequest(
+            '/api/collegeprogram/total/count',
+            setLoadingCourses,
+            (data) => setTotalCourses(data.totalCourses || 0),
+            (error) => console.error("Error fetching total courses:", error)
+        );
+    }, []);
+
+    const fetchActiveUsers = useCallback(async () => {
+        await makeAuthenticatedRequest(
+            '/api/users/active/count',
+            setLoadingActiveUsers,
+            (data) => setActiveUsers(data.totalUsersNotDeleted || 0)
+        );
+    }, []);
+
+    const fetchTotalInstructors = useCallback(async () => {
+        await makeAuthenticatedRequest(
+            '/api/profiles/instructors/totalcount',
+            setLoadingInstructors,
+            (data) => setTotalInstructors(data.totalInstructors || 0), // Default to 0 if the field is missing
+            (error) => console.error("Failed to fetch total instructors:", error) // Custom error handler
+        );
+    }, []);
+
+    const fetchTotalStudents = useCallback(async () => {
+        await makeAuthenticatedRequest(
+            '/api/profiles/students/totalcount',
+            setLoadingStudents,
+            (data) => setTotalStudents(data.totalStudents || 0), // Default to 0 if missing
+            (error) => console.error("Failed to fetch total students:", error) // Custom error handler
+        );
+    }, []);
+    
+
+    useEffect(() => {
+        const section = location.pathname.split("/").pop();
+        setCurrentSection(section.charAt(0).toUpperCase() + section.slice(1));
         fetchData();
-    }, [location]);
+        fetchActiveUsers();
+        fetchTotalCourses();
+        fetchTotalInstructors();
+        fetchTotalStudents();
+    }, [location, fetchData, fetchActiveUsers, fetchTotalCourses, fetchTotalInstructors, fetchTotalStudents]);
 
     return (
         <Content style={{ padding: '20px' }}>
-            {/* Dashboard Label */}
-            <Title level={1} style={{ marginBottom: '18px' }}>Analytics</Title>
-
-            {/* Breadcrumb with Dynamic Highlighting */}
+            <Title level={1} style={{ marginBottom: '14px' }}>Analytics</Title>
             <Breadcrumb style={{ marginBottom: '20px' }}>
                 <Breadcrumb.Item style={{ color: currentSection === "Announcement" ? '#3f7afc' : 'gray' }}>Announcement</Breadcrumb.Item>
                 <Breadcrumb.Item style={{ color: currentSection === "Reports" ? '#3f7afc' : 'gray' }}>Reports</Breadcrumb.Item>
                 <Breadcrumb.Item style={{ color: currentSection === "Analytics" ? '#3f7afc' : 'gray' }}>Analytics</Breadcrumb.Item>
             </Breadcrumb>
-
-            {/* Divider (Boundary) between Breadcrumb and Analytics */}
             <Divider style={{ margin: '20px 0' }} />
-
-            {/* Analytics Title */}
-            <Title level={2} style={{ marginBottom: '20px' }}>{currentSection}</Title>
-
-            {/* Spinner for Loading */}
             {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '50px' }}>
                     <Spin size="large" />
                 </div>
             ) : (
-                // Analytics Container
                 <Row gutter={16}>
                     <Col xs={24} sm={12} md={6} lg={6}>
                         <Card
@@ -69,54 +129,46 @@ const DashboardPageDashboard = () => {
                             bordered={false}
                             style={{ textAlign: 'center', backgroundColor: '#e6f7ff' }}
                         >
-                            <Statistic
-                                title="Total Enrolled Students"
-                                value={data.enrolledStudents}
-                                prefix={<UserOutlined style={{ color: '#1890ff' }} />}
-                                style={{ fontSize: '18px', color: '#1890ff' }}
-                            />
+                            {loadingStudents ? (
+                                <Spin size="small" />
+                            ) : (
+                                <Statistic
+                                    title="Total Enrolled Students"
+                                    value={totalStudents || 0} // Fallback to 0 if null
+                                    prefix={<UserOutlined style={{ color: '#1890ff' }} />}
+                                    style={{ fontSize: '18px', color: '#1890ff' }}
+                                />
+                            )}
                         </Card>
                     </Col>
+
                     <Col xs={24} sm={12} md={6} lg={6}>
                         <Card
                             hoverable
                             bordered={false}
                             style={{ textAlign: 'center', backgroundColor: '#f6ffed' }}
                         >
-                            <Statistic
-                                title="Total Instructors"
-                                value={data.totalInstructors}
-                                prefix={<TeamOutlined style={{ color: '#52c41a' }} />}
-                                style={{ fontSize: '18px', color: '#52c41a' }}
-                            />
+                            {loadingInstructors ? (
+                                <Spin size="small" />
+                            ) : (
+                                <Statistic
+                                    title="Total Instructors"
+                                    value={totalInstructors || 0} // Fallback to 0 if null
+                                    prefix={<TeamOutlined style={{ color: '#52c41a' }} />}
+                                    style={{ fontSize: '18px', color: '#52c41a' }}
+                                />
+                            )}
+                        </Card>
+                    </Col>
+
+                    <Col xs={24} sm={12} md={6} lg={6}>
+                        <Card hoverable bordered={false} style={{ textAlign: 'center', backgroundColor: '#fff2e8' }}>
+                            {loadingCourses ? <Spin size="small" /> : <Statistic title="Total Courses" value={totalCourses} prefix={<FileTextOutlined style={{ color: '#ff4d4f' }} />} />}
                         </Card>
                     </Col>
                     <Col xs={24} sm={12} md={6} lg={6}>
-                        <Card
-                            hoverable
-                            bordered={false}
-                            style={{ textAlign: 'center', backgroundColor: '#fff2e8' }}
-                        >
-                            <Statistic
-                                title="Total Courses"
-                                value={data.totalCourses}
-                                prefix={<FileTextOutlined style={{ color: '#ff4d4f' }} />}
-                                style={{ fontSize: '18px', color: '#ff4d4f' }}
-                            />
-                        </Card>
-                    </Col>
-                    <Col xs={24} sm={12} md={6} lg={6}>
-                        <Card
-                            hoverable
-                            bordered={false}
-                            style={{ textAlign: 'center', backgroundColor: '#fff7e6' }}
-                        >
-                            <Statistic
-                                title="Total Users"
-                                value={data.totalUsers}
-                                prefix={<AppstoreAddOutlined style={{ color: '#faad14' }} />}
-                                style={{ fontSize: '18px', color: '#faad14' }}
-                            />
+                        <Card hoverable bordered={false} style={{ textAlign: 'center', backgroundColor: '#fff7e6' }}>
+                            {loadingActiveUsers ? <Spin size="small" /> : <Statistic title="Total Active Users" value={activeUsers} prefix={<AppstoreAddOutlined style={{ color: '#faad14' }} />} />}
                         </Card>
                     </Col>
                 </Row>

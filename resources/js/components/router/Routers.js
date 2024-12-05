@@ -51,15 +51,15 @@ export default function Routers() {
         <Route path="/admin/dashboard" element={<PrivateRoute roleRequired="admin"><Dashboard /></PrivateRoute>} />
         
         {/* Role-based Routes */}
-        <Route path="/:role/users" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><User /></PrivateRoute>} />
-        <Route path="/:role/manage-account" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><Profile /></PrivateRoute>} />
-        <Route path="/:role/faculty-is" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><FacultyIS /></PrivateRoute>} />
-        <Route path="/:role/student-is" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><StudentIS /></PrivateRoute>} />
-        <Route path="/:role/class-scheduling" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><ClassSchedulings /></PrivateRoute>} />
-        <Route path="/:role/academic-programs" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><AcademicPrograms /></PrivateRoute>} />
-        <Route path="/:role/subject-enlistment" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><SubjectEnlistments /></PrivateRoute>} />
+        <Route path="/:role/users" element={<PrivateRoute roleRequired={['superadmin']}><User /></PrivateRoute>} />
+        <Route path="/:role/manage-account" element={<PrivateRoute roleRequired={[ 'admin','superadmin']}><Profile /></PrivateRoute>} />
+        <Route path="/:role/faculty-is" element={<PrivateRoute roleRequired={['superadmin']}><FacultyIS /></PrivateRoute>} />
+        <Route path="/:role/student-is" element={<PrivateRoute roleRequired={['superadmin']}><StudentIS /></PrivateRoute>} />
+        <Route path="/:role/class-scheduling" element={<PrivateRoute roleRequired={['superadmin']}><ClassSchedulings /></PrivateRoute>} />
+        <Route path="/:role/academic-programs" element={<PrivateRoute roleRequired={['superadmin']}><AcademicPrograms /></PrivateRoute>} />
+        <Route path="/:role/subject-enlistment" element={<PrivateRoute roleRequired={['superadmin']}><SubjectEnlistments /></PrivateRoute>} />
         <Route path="/:role/enlistment-manager" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><EnlistmentManagers /></PrivateRoute>} />
-        <Route path="/:role/classroom-manager" element={<PrivateRoute roleRequired={['admin', 'superadmin']}><ClassroomManagers /></PrivateRoute>} />
+        <Route path="/:role/classroom-manager" element={<PrivateRoute roleRequired={['superadmin']}><ClassroomManagers /></PrivateRoute>} />
 
         {/* Superadmin-only routes */}
         <Route path="/:role/facilities-manager" element={<PrivateRoute roleRequired={['superadmin']}><FacilitiesManagerManagement /></PrivateRoute>} />

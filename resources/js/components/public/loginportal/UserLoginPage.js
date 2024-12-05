@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'; // Import navigate hook
 import LoginPageBackground from './components/LoginPageBackground';
 import LoginLogo from './components/LoginLogo';
 import LoginLoader from './components/LoginLoader'; // Import the loader component
-import { handleLogin } from '../../private/loginportal/UserLoginService'; // Import the backend logic
+import { handleLogin } from './../../private/loginportal/UserLoginService'; // Import the backend logic
 
 const { Content } = Layout;
 
@@ -58,6 +58,7 @@ const UserLogin = ({ setUserRole }) => {
   
         // Use the navigate hook to redirect based on user role
         navigate(`/${response.data.role}/dashboard`);
+        window.location.reload();
       }
     } catch (error) {
       setErrorMessage(error.message); // Set error message

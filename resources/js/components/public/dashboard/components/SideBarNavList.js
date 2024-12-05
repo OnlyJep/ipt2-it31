@@ -36,17 +36,21 @@ const SideBarNavList = ({ userRole }) => {
       {/* Dashboard Menu Item */}
       <Menu.Item key={`/${userRole}/dashboard`} icon={<DashboardOutlined />} className="nav-item">
         <NavLink to={`/${userRole}/dashboard`} className="nav-link">
-          Dashboard
+          <span className="nav-link-text">Dashboard</span>
         </NavLink>
       </Menu.Item>
+
+      
 
       {/* Admin can only access Dashboard and Enlistment Manager */}
       {userRole === 'admin' && (
         <Menu.Item key={`/${userRole}/enlistment-manager`} icon={<ProfileOutlined />} className="nav-item">
           <NavLink to={`/${userRole}/enlistment-manager`} className="nav-link">
-            Enlistment Manager
+          <span className="nav-link-text">Enlistment Manager</span>
           </NavLink>
         </Menu.Item>
+
+        
       )}
 
       {/* Users and Faculty IS only accessible by Superadmin */}
@@ -54,12 +58,12 @@ const SideBarNavList = ({ userRole }) => {
         <>
           <Menu.Item key={`/${userRole}/users`} icon={<UserOutlined />} className="nav-item">
             <NavLink to={`/${userRole}/users`} className="nav-link">
-              Users
+            <span className="nav-link-text">Users</span>
             </NavLink>
           </Menu.Item>
           <Menu.Item key={`/${userRole}/faculty-is`} icon={<TeamOutlined />} className="nav-item">
             <NavLink to={`/${userRole}/faculty-is`} className="nav-link">
-              Faculty IS
+            <span className="nav-link-text">Faculty IS</span>
             </NavLink>
           </Menu.Item>
         </>
@@ -70,12 +74,12 @@ const SideBarNavList = ({ userRole }) => {
         <>
           <Menu.Item key={`/${userRole}/student-is`} icon={<BookOutlined />} className="nav-item">
             <NavLink to={`/${userRole}/student-is`} className="nav-link">
-              Student IS
+            <span className="nav-link-text">Student IS</span>
             </NavLink>
           </Menu.Item>
           <Menu.Item key={`/${userRole}/class-scheduling`} icon={<ScheduleOutlined />} className="nav-item">
             <NavLink to={`/${userRole}/class-scheduling`} className="nav-link">
-              Class Scheduling
+            <span className="nav-link-text">Class Scheduling</span>
             </NavLink>
           </Menu.Item>
         </>
@@ -86,19 +90,19 @@ const SideBarNavList = ({ userRole }) => {
         <>
           <Menu.Item key={`/${userRole}/academic-programs`} icon={<ApartmentOutlined />} className="nav-item">
             <NavLink to={`/${userRole}/academic-programs`} className="nav-link">
-              Academic Programs
+            <span className="nav-link-text">Academic Programs</span>
             </NavLink>
           </Menu.Item>
 
           <Menu.Item key={`/${userRole}/subject-enlistment`} icon={<ProfileOutlined />} className="nav-item">
             <NavLink to={`/${userRole}/subject-enlistment`} className="nav-link">
-              Subject Enlistment
+            <span className="nav-link-text">Subject Enlistment</span>
             </NavLink>
           </Menu.Item>
 
           <Menu.Item key={`/${userRole}/classroom-manager`} icon={<ProfileOutlined />} className="nav-item">
             <NavLink to={`/${userRole}/classroom-manager`} className="nav-link">
-              Classroom Manager
+            <span className="nav-link-text">Classroom Manager</span>
             </NavLink>
           </Menu.Item>
 
@@ -117,25 +121,26 @@ const SideBarNavList = ({ userRole }) => {
         >
           <Menu.Item key="/system-settings/facilities-manager">
             <NavLink to="/system-settings/facilities-manager" className="nav-link">
-              Facilities Manager
+            <span className="nav-link-text">Facilities Manager</span>
             </NavLink>
           </Menu.Item>
           <Menu.Item key="/system-settings/programs-management">
             <NavLink to="/system-settings/programs-management" className="nav-link">
-              Programs Manager 
+            <span className="nav-link-text">Programs Manager</span>
             </NavLink>
           </Menu.Item>
           <Menu.Item key="/system-settings/terms-management">
             <NavLink to="/system-settings/terms-management" className="nav-link">
-              Terms Manager
+            <span className="nav-link-text">Terms Manager</span>
             </NavLink>
           </Menu.Item>
           <Menu.Item key="/system-settings/posting-management">
             <NavLink to="/system-settings/posting-management" className="nav-link">
-              Posting Manager
+            <span className="nav-link-text">Posting Manager</span>
             </NavLink>
           </Menu.Item>
         </Menu.SubMenu>
+        
       )}
     </Menu>
   );

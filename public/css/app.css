@@ -11991,6 +11991,7 @@ textarea.form-control-lg {
   margin-right: 40px; /* Adds spacing from the right edge */
 }
 
+/* Media query for mobile devices */
 .header {
   height: 80px;
   width: 100%;
@@ -12038,8 +12039,8 @@ textarea.form-control-lg {
 .header .menu-icon {
   display: none; /* Hide by default */
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 10px;
+  left: 15px;
   z-index: 1000; /* Ensure it's on top of other content */
   cursor: pointer;
 }
@@ -12223,6 +12224,9 @@ textarea.form-control-lg {
   .nav-item {
     margin-bottom: 8px; /* Slightly smaller gap on mobile */
   }
+  .separator {
+    width: calc(75% - 20px);
+  }
   .ant-menu-item {
     padding-left: 16px;
     color: #fff !important;
@@ -12289,6 +12293,14 @@ textarea.form-control-lg {
   border-left: 4px solid #1890ff !important; /* Maintain blue left border */
 }
 
+@media (max-width: 768px) {
+  .nav-item .nav-link-text {
+    display: none; /* Hide the text */
+  }
+  .ant-menu-submenu .nav-link .nav-link-text {
+    display: none;
+  }
+}
 .layout-container {
   min-height: 100vh;
   background-size: cover;
@@ -12355,4 +12367,10 @@ textarea.form-control-lg {
 
 .form-item-center {
   text-align: center;
+}
+
+@media (max-width: 480px) {
+  .card-container {
+    max-width: 320px;
+  }
 }

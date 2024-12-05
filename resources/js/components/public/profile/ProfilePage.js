@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Layout, Button, Row, Col, Divider, Upload, message, Avatar, Spin, Form } from 'antd';
+import { Layout, Button, Descriptions, Row, Col, Divider, Upload, message, Avatar, Spin, Form } from 'antd';
 import { UserOutlined, PlusOutlined } from '@ant-design/icons';
 import MainDashboard from '../dashboard/components/MainDashboard';
 import ProfileForm from './components/ProfileForm';
@@ -15,13 +15,16 @@ const ProfilePageDashboard = () => {
     const [isLoading, setIsLoading] = useState(true); // State to manage loading
     const [isUploading, setIsUploading] = useState(false); // State for photo upload progress
     const [uploadMessage, setUploadMessage] = useState(''); // Message state for upload success/error
+    const [selectedPhoto, setSelectedPhoto] = useState(null); // State to track selected photo
+    const [photoPreview, setPhotoPreview] = useState(null); // State to hold the preview URL
+
+
 
     // Fetch user data and profile data when component mounts
     useEffect(() => {
         const fetchProfileData = async () => {
             setIsLoading(true);
             try {
-                // Get profile_id directly from localStorage
                 const profileId = localStorage.getItem('profile_id');
                 if (!profileId) {
                     message.error('Profile ID not found. Please log in again.');
@@ -34,7 +37,6 @@ const ProfilePageDashboard = () => {
                     return;
                 }
 
-                // Fetch profile data using the profile_id from localStorage
                 const response = await axios.get(`/api/profiles/${profileId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -58,7 +60,7 @@ const ProfilePageDashboard = () => {
                 });
 
             } catch (error) {
-                console.error(error); // Log the error for debugging
+                console.error(error);
                 message.error('Failed to load profile data');
             } finally {
                 setIsLoading(false);
@@ -66,7 +68,7 @@ const ProfilePageDashboard = () => {
         };
 
         fetchProfileData();
-    }, [form]); // Trigger when the component is mounted
+    }, [form]);
 
     // Handle profile save
     const handleSave = async () => {
@@ -74,7 +76,7 @@ const ProfilePageDashboard = () => {
             const values = await form.validateFields(); // Get form values
             const token = localStorage.getItem('auth_token'); // Get the token
             const profileId = localStorage.getItem('profile_id'); // Retrieve profile_id from localStorage
-        
+            
             if (!profileId) {
                 message.error('Profile ID not found in localStorage');
                 return;
@@ -93,7 +95,26 @@ const ProfilePageDashboard = () => {
                 address: values.address,
             };
     
-            // Send the PUT request to update the profile
+            // If a new photo was selected, upload it
+            if (selectedPhoto) {
+                const formData = new FormData();
+                formData.append('photo', selectedPhoto);
+                formData.append('profile_id', profileId);
+    
+                try {
+                    await axios.post('/api/upload-photo', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+                        },
+                    });
+                    setUploadMessage('Photo uploaded successfully.');
+                } catch (error) {
+                    setUploadMessage('Failed to upload photo.');
+                }
+            }
+    
+            // Send the PUT request to update the profile (with or without the photo)
             const response = await axios.put(`/api/profiles/${profileId}`, mappedValues, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -109,59 +130,33 @@ const ProfilePageDashboard = () => {
         }
     };
     
+
     // Toggle edit mode
     const handleEdit = () => {
         setIsEditing(true); // Switch to edit mode
     };
 
-    const handleUpload = async (file) => {
-        try {
-            const profileId = localStorage.getItem('profile_id');  // Get profile ID from localStorage
-            if (!profileId) {
-                message.error('Profile ID not found in localStorage');
-                return;
-            }
+    // Handle photo upload
+    const handleUpload = (file) => {
+        // Temporarily store the selected photo in the state
+        setSelectedPhoto(file);
     
-            const formData = new FormData();
-            formData.append('photo', file);  // Ensure the file is under 'photo' field
-            formData.append('profile_id', profileId);  // Add profile_id as well
+        // Create a temporary URL to preview the selected photo
+        const imageUrl = URL.createObjectURL(file);
     
-            const response = await axios.put(`/api/profiles/${profileId}/upload-photo`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+        // Update the preview state with the URL of the selected photo
+        setPhotoPreview(imageUrl);
     
-            // Handle the response (e.g., update UI with the new photo path)
-            setProfileData((prevState) => ({
-                ...prevState,
-                photo_path: response.data.photo_path,
-            }));
+        // Update the upload message to inform the user that the photo is selected
+        setUploadMessage('Photo selected. Save info to upload the photo.');
+    };    
     
-            setUploadMessage('Profile photo updated successfully');
-        } catch (error) {
-            console.error(error);
-            setUploadMessage('Failed to upload photo');
-        } finally {
-            setIsUploading(false);
-        }
+    
+    const handleCancel = () => {
+        setIsEditing(false); // Switch back to view mode
     };
     
-    
-    const ProfilePage = ({ userData }) => {
-        // If there's no photo_path, show a default image
-        const photoUrl = userData?.photo_path ? `/${userData.photo_path}` : '/path/to/default/photo.jpg';
-    
-        return (
-            <div>
-                <h2>User Profile</h2>
-                <img src={photoUrl} alt="Profile" />
-                {/* Other profile info */}
-            </div>
-        );
-    };
-    
+
     // Show loading spinner while data is being fetched
     if (isLoading) {
         return (
@@ -175,16 +170,32 @@ const ProfilePageDashboard = () => {
         <MainDashboard>
             <Content style={{ padding: '20px' }}>
                 <div style={{ maxHeight: 'calc(100vh - 80px)', overflowY: 'auto' }}>
-                    <Row justify="space-between" align="middle" style={{ marginBottom: '20px' }}>
-                        <Col>
-                            <h2>Account</h2>
-                        </Col>
-                        <Col style={{ marginRight: '20px' }}>
-                            <Button onClick={isEditing ? handleSave : handleEdit} type="primary">
-                                {isEditing ? 'Save Info' : 'Edit Info'}
+                <Row justify="space-between" align="middle" style={{ marginBottom: '20px' }}>
+                    <Col>
+                        <h2>Account</h2>
+                    </Col>
+                    <Col style={{ marginRight: '20px' }}>
+                        {isEditing ? (
+                            <>
+                                {/* Save Info Button */}
+                                <Button onClick={handleSave} type="primary">
+                                    Save Info
+                                </Button>
+
+                                {/* Cancel Button */}
+                                <Button onClick={handleCancel} style={{ marginLeft: '10px' }}>
+                                    Cancel
+                                </Button>
+                            </>
+                        ) : (
+                            // Edit Info Button
+                            <Button onClick={handleEdit} type="primary">
+                                Edit Info
                             </Button>
-                        </Col>
-                    </Row>
+                        )}
+                    </Col>
+                </Row>
+
 
                     <Divider />
 
@@ -199,27 +210,30 @@ const ProfilePageDashboard = () => {
                         <Col xs={24} sm={8} md={6} lg={4} style={{ textAlign: 'center' }}>
                             <Avatar
                                 size={150}
-                                src={profileData?.photo_path ? `/storage/${profileData.photo_path}` : undefined}
+                                src={photoPreview || (profileData?.photo_path ? `/storage/${profileData.photo_path}` : undefined)}
                                 icon={<UserOutlined />}
                                 style={{ marginBottom: '20px' }}
                             />
-                            <Upload
-                                name="photo"
-                                showUploadList={false}
-                                beforeUpload={(file) => {
-                                    handleUpload(file);
-                                    return false; // Prevent auto upload
-                                }}
-                            >
-                                <Button
-                                    icon={<PlusOutlined />}
-                                    type="dashed"
-                                    style={{ marginTop: '20px' }}
-                                    loading={isUploading}
+
+                            {isEditing && (
+                                <Upload
+                                    name="photo"
+                                    showUploadList={false}
+                                    beforeUpload={(file) => {
+                                        handleUpload(file); // Call handleUpload to store the photo and create the preview
+                                        return false; // Prevent auto-upload
+                                    }}
                                 >
-                                    {isUploading ? 'Uploading...' : 'Add Photo'}
-                                </Button>
-                            </Upload>
+                                    <Button
+                                        icon={<PlusOutlined />}
+                                        type="dashed"
+                                        style={{ marginTop: '20px' }}
+                                    >
+                                        {selectedPhoto ? 'Photo Selected. Save to upload.' : 'Update Photo'}
+                                    </Button>
+                                </Upload>
+                            )}
+
                             {uploadMessage && (
                                 <div style={{ marginTop: '10px', color: uploadMessage.includes('successfully') ? 'green' : 'red' }}>
                                     {uploadMessage}
@@ -231,6 +245,7 @@ const ProfilePageDashboard = () => {
                             <ProfileForm form={form} isEditing={isEditing} />
                         </Col>
                     </Row>
+
                 </div>
             </Content>
         </MainDashboard>

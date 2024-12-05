@@ -87,6 +87,10 @@
     margin-bottom: 8px; /* Slightly smaller gap on mobile */
   }
 
+  .separator{
+    width: calc(75% - 20px);
+  }
+
   .ant-menu-item {
     padding-left: 16px;
     color: #fff !important;
@@ -166,4 +170,25 @@
 .ant-menu-item.selected:hover {
   background-color: rgba(255, 255, 255, 0.1) !important; /* Keep same background on hover when selected */
   border-left: 4px solid #1890ff !important; /* Maintain blue left border */
+}
+
+
+//icon display in mobile view
+
+@media (max-width: 768px) {
+  .nav-item {
+    .nav-link-text {
+      display: none; /* Hide the text */
+    }
+  }
+
+  .ant-menu-submenu{
+    .nav-link{
+      .nav-link-text {
+        display: none;
+      }
+    }
+
+  }
+  
 }

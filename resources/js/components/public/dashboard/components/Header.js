@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from '../../../private/dashboard/logoff'; // Import the logout function
 import HeadNavList from './HeaderNavList'; // Import the new HeadNavList component
 
+
 const { Header: AntHeader } = Layout;
 const { Search } = Input; // Import Search component from Ant Design
 
@@ -65,12 +66,12 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
         {/* Left side of the header */}
         <div className="header-left" style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
           {/* Hamburger Button for Mobile */}
-          <div className="menu-icon" onClick={toggleMobileSidebar} style={{ marginRight: '20px' }}>
+          <div className="menu-icon" onClick={toggleMobileSidebar} style={{ marginRight: '20px'}}>
             <MenuOutlined style={{ fontSize: '24px', color: '#3f7afc' }} />
           </div>
 
           {/* Search Bar */}
-          <div className="search-bar" style={{ flexGrow: 1, marginLeft: '20px', marginTop: '30px' }}>
+          <div className="search-bar" style={{ flexGrow: 1, marginLeft: '50px', marginTop: '30px' }}>
             <Row gutter={16}>
               <Col xs={20} sm={18} md={12} lg={14} xl={12}>
                 <Search
@@ -78,7 +79,7 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
                   onSearch={onSearch}
                   enterButton
                   allowClear
-                  style={{ width: '100%' }} // Make the search bar take full width of its column
+                  style={{ width: '110%' }} // Make the search bar take full width of its column
                 />
               </Col>
             </Row>

@@ -13,12 +13,13 @@ class UserController extends Controller
     {
         $deleted = $request->query('deleted', 'false');
 
+        // Eager load the 'role' relationship to get the role_name
         if ($deleted === 'only') {
-            $users = User::onlyTrashed()->get();
+            $users = User::onlyTrashed()->with('role')->get();
         } elseif ($deleted === 'true') {
-            $users = User::withTrashed()->get();
+            $users = User::withTrashed()->with('role')->get();
         } else {
-            $users = User::all();
+            $users = User::with('role')->get();
         }
 
         if ($users->isEmpty()) {
@@ -37,6 +38,7 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'status' => 'nullable|string|in:regular,irregular',
             'role_id' => 'required|exists:roles,id',
+            'profile_id' => 'required|exists:profile,id',
         ]);
 
         if ($validator->fails()) {
@@ -61,6 +63,7 @@ class UserController extends Controller
             'password' => 'nullable|string|min:8',
             'status' => 'nullable|string|in:regular,irregular',
             'role_id' => 'required|exists:roles,id',
+            'profile_id' => 'required|exists:profile,id',
         ]);
 
         if ($validator->fails()) {
@@ -104,4 +107,13 @@ class UserController extends Controller
         $user->restore();
         return response()->json(['message' => 'User restored successfully']);
     }
+
+    public function getActiveUserCount()
+    {
+        // Count only non-soft-deleted users
+        $activeUserCount = User::whereNull('deleted_at')->count();
+
+        return response()->json(['totalUsersNotDeleted' => $activeUserCount]);
+    }
+
 }

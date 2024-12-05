@@ -1,27 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
+import Unauthorized from './Unauthorized';
 
 const PrivateRoute = ({ children, roleRequired }) => {
-  const { role } = useParams();  // Get the 'role' from the URL parameter
-  const userRole = localStorage.getItem('user_role');
-  const authToken = localStorage.getItem('auth_token');  // Check if user is authenticated
+  const { role } = useParams();
+  const [authToken, setAuthToken] = useState(localStorage.getItem('auth_token'));
+  const [userRole, setUserRole] = useState(localStorage.getItem('user_role'));
 
-  // Check if the user is authenticated and the role matches
+  useEffect(() => {
+    // Update authToken and userRole whenever they change in localStorage
+    const token = localStorage.getItem('auth_token');
+    const role = localStorage.getItem('user_role');
+    setAuthToken(token);
+    setUserRole(role);
+  }, []); // This effect runs once when the component is mounted
+
+  // If either the auth_token or user_role is missing, redirect to the login page
+  if (!authToken || !userRole) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Check if the user has the correct role
   const isRoleValid = Array.isArray(roleRequired)
     ? roleRequired.includes(userRole)
     : userRole === roleRequired;
 
-  if (!authToken) {
-    // If the user is not authenticated, redirect to the login page
-    return <Navigate to="/login" />;
+  // Validate if the URL role matches the logged-in user role
+  if (role && role !== userRole) {
+    return <Unauthorized />; // If roles do not match, show Unauthorized
   }
 
   if (!isRoleValid) {
-    // If the role doesn't match the required role, redirect to an error page or homepage
-    return <Navigate to="/unauthorized" />;
+    return <Unauthorized />; // If role is invalid, show Unauthorized
   }
 
-  // If authenticated and role is valid, allow access
+  // If authenticated and role is valid, render children (protected route content)
   return children;
 };
 
