@@ -172,6 +172,7 @@ const ProfilePageDashboard = () => {
         setUploadMessage(''); // Clear the upload message
 
         setIsEditing(false); // Switch back to view mode
+        
     };
     
     

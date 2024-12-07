@@ -17,7 +17,7 @@ class UserWithProfileController extends Controller
         // Validate the input data
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|max:50|unique:users,username',
-            'email' => 'required|email|unique:users,email|max:100',
+            'email' => 'nullable|email|unique:users,email|max:100',
             'password' => 'required|string|min:8',
             'role_id' => 'required|exists:roles,id', // Foreign key reference
             //Profile Data
@@ -79,4 +79,76 @@ class UserWithProfileController extends Controller
             return response()->json(['error' => 'Failed to create user and profile: ' . $e->getMessage()], 500);
         }
     }
+
+    public function show($id)
+    {
+        // Fetch the user with its associated profile
+        $user = User::with('profile')->find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Return the user along with the associated profile
+        return response()->json([
+            'user' => $user,
+            'profile' => $user->profile // Assuming the profile is related to the user
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validate the input data
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|max:50|unique:users,username,' . $id,  // Ignore current user's username during update
+            'email' => 'nullable|email|unique:users,email,' . $id,  // Ignore current user's email during update
+            'password' => 'nullable|string|min:8', // Only validate if password is provided
+            'status' => 'required|string|in:active,archived',
+            'role' => 'required|exists:roles,id',  // Ensure the role exists
+        ]);
+
+        // If validation fails, return the errors
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        try {
+            // Start transaction to ensure atomicity
+            DB::beginTransaction();
+
+            // Find the user by ID, or return an error if not found
+            $user = User::findOrFail($id);
+
+            // Update the user fields with the request data
+            $user->username = $request->input('username');
+            $user->email = $request->input('email');
+            $user->status = $request->input('status');
+            $user->role_id = $request->input('role');
+
+            // If a password is provided, update it
+            if ($request->has('password') && $request->input('password')) {
+                $user->password = Hash::make($request->input('password'));
+            }
+
+            // Save the updated user
+            $user->save();
+
+            // Commit the transaction
+            DB::commit();
+
+            // Return a success response
+            return response()->json([
+                'message' => 'User updated successfully!',
+                'user' => $user
+            ], 200);
+
+        } catch (\Exception $e) {
+            // If an error occurs, rollback the transaction
+            DB::rollBack();
+            return response()->json(['error' => 'Failed to update user: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+
 }

@@ -8,7 +8,7 @@ import DropdownMaritalStatus from './DropdownMaritalStatus';
 const ProfileForm = ({ form, isEditing }) => {
     // Items for Descriptions when not editing
     const items = [
-        { key: '1', label: 'Firstname', children: form.getFieldValue('firstname') || 'N/A', span: 2,},
+        { key: '1', label: 'Firstname', children: form.getFieldValue('firstname') || 'N/A' },
         { key: '2', label: 'Middle Initial', children: form.getFieldValue('middleinitial') || 'N/A' },
         { key: '3', label: 'Lastname', children: form.getFieldValue('lastname') || 'N/A' },
         { key: '4', label: 'Sex', children: form.getFieldValue('sex') || 'N/A' },

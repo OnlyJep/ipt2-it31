@@ -17,10 +17,12 @@ import AcademicPrograms from '../public/academicprograms/AcademicProgramsPage';
 import SubjectEnlistments from '../public/subjectenlistment/SubjectEnlistmentPage';
 import EnlistmentManagers from '../public/enlistmentmanager/EnlistmentManagerPage';
 import ClassroomManagers from '../public/classroommanager/ClassroomManagerPage';
-import FacilitiesManagerManagement from '../public/systemsettings/FacilitiesManagerManagement/FacilitiesManagerManagementPage';
+
+import FacilitiesManagerManagement from './../public/systemsettings/facilitiesmanagermanagement/FacilitiesManagerManagementPage';
+
 import PostingManagement from '../public/systemsettings/PostingManagementPage';
 import ProgramsManagement from '../public/systemsettings/ProgramsManagerManagementPage';
-import TermsManagementPage from '../public/systemsettings/TermsManagementPage';
+import TermsManagement from '../public/systemsettings/TermsManagementPage';
 
 const isAuthenticated = () => {
   return !!localStorage.getItem('auth_token'); // Check if the token exists
@@ -63,9 +65,10 @@ export default function Routers() {
 
         {/* Superadmin-only routes */}
         <Route path="/system-settings/facilities-manager" element={<PrivateRoute roleRequired={['superadmin']}><FacilitiesManagerManagement /></PrivateRoute>} />
+
         <Route path="/system-settings/posting-management" element={<PrivateRoute roleRequired={['superadmin']}><PostingManagement /></PrivateRoute>} />
         <Route path="/system-settings/programs-management" element={<PrivateRoute roleRequired={['superadmin']}><ProgramsManagement /></PrivateRoute>} />
-        <Route path="/system-settings/terms-management" element={<PrivateRoute roleRequired={['superadmin']}><TermsManagementPage /></PrivateRoute>} />
+        <Route path="/system-settings/terms-management" element={<PrivateRoute roleRequired={['superadmin']}><TermsManagement /></PrivateRoute>} />
         
         {/* Header and Sidebar Routes */}
         <Route path="/header" element={<Header />} />

@@ -1,4 +1,4 @@
-// UserPage.js
+// UserPage.js (new working functionality on filter by role)
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Button,
@@ -15,23 +15,22 @@ import {
 import {
     FilterOutlined,
     FileTextOutlined,
-    PrinterOutlined,
     PlusOutlined,
 } from '@ant-design/icons';
 import UserTable from './components/UserTable';
-import UserModals from './components/UserModals';
+import UserCreateModal from './components/UserCreateModal';
+import UserEditModal from './components/UserEditModal';
 import MainDashboard from '../dashboard/components/MainDashboard';
 import axios from 'axios';
-import { printTable } from './components/PrintTable'; // Ensure correct path
 import debounce from 'lodash.debounce';
 import { useMediaQuery } from 'react-responsive';
-
 
 const { Text } = Typography;
 
 const UserPage = () => {
     const [data, setData] = useState([]); // User data
     const [filteredData, setFilteredData] = useState([]); // Filtered user data
+    const [roles, setRoles] = useState([]); // State for roles (Not used in roleMenu)
     const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Selected rows
     const [searchValue, setSearchValue] = useState(''); // Search query
     const [loading, setLoading] = useState(false);
@@ -41,16 +40,22 @@ const UserPage = () => {
     const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
     const [showArchived, setShowArchived] = useState(false); // Toggle between active and archived users
     const [modalData, setModalData] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState('All'); // Default to 'All' status filter
+
 
     // State for the confirmation delete modal
     const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
 
-    const [roles, setRoles] = useState([]); // State to hold roles for dynamic role filtering
+    // State for selected role filter
+    const [selectedRole, setSelectedRole] = useState('All');
 
     // Media query to detect mobile devices
     const isMobile = useMediaQuery({ maxWidth: 767 });
 
-    // Fetch roles from the API (Optional: If roles are dynamic)
+    useEffect(() => {
+        filterData(); // Call the filterData function whenever searchValue, showArchived, selectedRole, or data changes
+    }, [searchValue, showArchived, selectedRole, data, filterData]);
+
     useEffect(() => {
         const fetchRoles = async () => {
             try {
@@ -60,11 +65,17 @@ const UserPage = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setRoles(response.data);
+
+                if (Array.isArray(response.data)) {
+                    setRoles(response.data);
+                } else {
+                    message.error('Error: Data received is not an array.');
+                }
             } catch (error) {
-                message.error('Failed to fetch roles');
+                message.error('Error fetching roles: ' + (error.response?.data?.message || error.message));
             }
         };
+
         fetchRoles();
     }, []);
 
@@ -83,11 +94,21 @@ const UserPage = () => {
                 console.log('API Response:', response.data); // Log the API response
 
                 if (Array.isArray(response.data)) {
-                    const users = response.data.map(user => ({
-                        ...user,
-                        status: user.deleted_at ? 'archived' : 'active',
-                        role_name: user.role && user.role.name ? user.role.name : 'No Role',
-                    }));
+                    const users = response.data.map(user => {
+                        // Find the role name based on role_id
+                        const role = roles.find(role => role.id === user.role_id);
+                        return {
+                            ...user,
+                            status: user.deleted_at 
+                            ? 'archived' 
+                            : user.status === 'regular' 
+                            ? 'regular' 
+                            : user.status === 'irregular' 
+                            ? 'irregular' 
+                            : 'active',  // default to 'active' if status is not specified
+                            role_name: role ? role.name : 'No Role',  // Use role_name instead of role_id
+                        };
+                    });
 
                     setData(users);
                     setFilteredData(users);
@@ -104,6 +125,47 @@ const UserPage = () => {
         fetchData();
     }, []);
 
+    const reloadData = () => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const token = localStorage.getItem('auth_token');
+                const response = await axios.get('/api/users', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                console.log('API Response:', response.data); // Log the API response
+
+                if (Array.isArray(response.data)) {
+                    const users = response.data.map(user => ({
+                        ...user,
+                        status: user.deleted_at 
+                        ? 'archived' 
+                        : user.status === 'regular' 
+                        ? 'regular' 
+                        : user.status === 'irregular' 
+                        ? 'irregular' 
+                        : 'active',  // default to 'active' if status is not specified
+                    role_name: user.role && user.role.name ? user.role.name : 'No Role',
+                }));
+
+                    setData(users);
+                    setFilteredData(users);
+                } else {
+                    message.error('Error: Data received is not an array.');
+                }
+            } catch (error) {
+                message.error('Error fetching user data: ' + (error.response?.data?.message || error.message));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData(); // Reload the data by calling fetchData again
+    };
+
     // Consolidated filter function
     const filterData = useCallback(() => {
         let filtered = data.filter((user) => {
@@ -112,13 +174,15 @@ const UserPage = () => {
                 (user.role_name && user.role_name.toLowerCase().includes(searchValue.toLowerCase())) ||
                 (user.email && user.email.toLowerCase().includes(searchValue.toLowerCase()));
 
-            const matchesStatus = showArchived ? user.status === 'archived' : user.status === 'active';
+                const matchesStatus = selectedStatus === 'All' || user.status === selectedStatus;
 
-            return matchesSearch && matchesStatus;
+            const matchesRole = selectedRole === 'All' || user.role_name === selectedRole;
+
+            return matchesSearch && matchesStatus && matchesRole;
         });
 
-        setFilteredData(filtered); // Update the filtered data based on the search
-    }, [searchValue, showArchived, data]);
+        setFilteredData(filtered); // Update the filtered data based on the search, status, and role
+    }, [searchValue, showArchived, selectedRole, data]);
 
     // Debounced filter function to improve performance on rapid input
     const debouncedFilter = useCallback(
@@ -137,50 +201,27 @@ const UserPage = () => {
         filterData(); // Trigger filtering when search button is clicked or Enter is pressed
     };
 
-    // Role filtering menu
+    // Original Role filtering menu with static roles
     const roleMenu = (
         <Menu>
-            {roles.length > 0 ? (
-                roles.map(role => (
-                    <Menu.Item key={role.id} onClick={() => handleRoleFilter(role.name)}>
-                        {role.name}
-                    </Menu.Item>
-                ))
-            ) : (
-                <>
-                    <Menu.Item onClick={() => handleRoleFilter('Superadmin')}>Superadmin</Menu.Item>
-                    <Menu.Item onClick={() => handleRoleFilter('Admin')}>Admin</Menu.Item>
-                    <Menu.Item onClick={() => handleRoleFilter('Teacher')}>Teacher</Menu.Item>
-                    <Menu.Item onClick={() => handleRoleFilter('Student')}>Student</Menu.Item>
-                </>
-            )}
+            <Menu.Item onClick={() => handleRoleFilter('superadmin')}>Superadmin</Menu.Item>
+            <Menu.Item onClick={() => handleRoleFilter('Admin')}>Admin</Menu.Item>
+            <Menu.Item onClick={() => handleRoleFilter('Teacher')}>Teacher</Menu.Item>
+            <Menu.Item onClick={() => handleRoleFilter('Student')}>Student</Menu.Item>
             <Menu.Divider />
-            <Menu.Item onClick={handleReset}>Reset</Menu.Item>
+            <Menu.Item onClick={() => handleRoleFilter('All')}>All Roles</Menu.Item> {/* Reset filter */}
         </Menu>
     );
 
-    // Handle role filter
     const handleRoleFilter = (role) => {
-        const filteredByRole = data.filter(user => {
-            const matchesRole = user.role_name === role;
-
-            const matchesSearch =
-                (user.username && user.username.toLowerCase().includes(searchValue.toLowerCase())) ||
-                (user.role_name && user.role_name.toLowerCase().includes(searchValue.toLowerCase())) ||
-                (user.email && user.email.toLowerCase().includes(searchValue.toLowerCase()));
-
-            const matchesStatus = showArchived ? user.status === 'archived' : user.status === 'active';
-
-            return matchesRole && matchesSearch && matchesStatus;
-        });
-
-        setFilteredData(filteredByRole);
+        setSelectedRole(role); // Update the selected role
     };
 
     // Reset filters
     const handleReset = () => {
         setFilteredData(data);
         setSearchValue(''); // Reset search filter
+        setSelectedRole('All'); // Reset role filter
     };
 
     // Toggle between active and archived users
@@ -257,7 +298,7 @@ const UserPage = () => {
     };
 
     // Row selection logic for the table
-    const rowSelection = {
+    const rowSelectionConfig = {
         selectedRowKeys,
         onChange: (keys) => setSelectedRowKeys(keys),
         getCheckboxProps: (record) => ({
@@ -265,19 +306,10 @@ const UserPage = () => {
         }),
     };
 
-    // Trigger data filtering on search or showArchived toggle change
+    // Trigger data filtering on search, showArchived, selectedRole, or data change
     useEffect(() => {
         filterData();
-    }, [searchValue, showArchived, data, filterData]);
-
-    // Print handler
-    const handlePrint = () => {
-        console.log('Data to print (filteredData):', filteredData);
-        console.log('Complete Data (data):', data);
-        printTable(filteredData); // Try with filteredData first
-        // If issue persists, try with data
-        // printTable(data);
-    };
+    }, [filterData]);
 
     return (
         <MainDashboard>
@@ -301,7 +333,9 @@ const UserPage = () => {
                                     allowClear
                                 />
                                 <Dropdown overlay={roleMenu} trigger={['click']}>
-                                    <Button icon={<FilterOutlined />}>Filter by Role</Button>
+                                    <Button icon={<FilterOutlined />}>
+                                        {selectedRole === 'All' ? 'Filter by Role' : `Role: ${selectedRole}`}
+                                    </Button>
                                 </Dropdown>
                                 <Button
                                     icon={<FileTextOutlined />}
@@ -310,10 +344,10 @@ const UserPage = () => {
                                     {showArchived ? 'View Active Users' : 'View Archived Users'}
                                 </Button>
                                 <Button
-                                    icon={<PrinterOutlined />}
-                                    onClick={handlePrint} // Call print function
+                                    onClick={handleReset}
+                                    disabled={searchValue === '' && selectedRole === 'All'}
                                 >
-                                    Print
+                                    Reset Filters
                                 </Button>
                             </Space>
                         </Col>
@@ -354,7 +388,7 @@ const UserPage = () => {
 
                     {/* User Table */}
                     <UserTable
-                        rowSelection={rowSelection}
+                        rowSelection={rowSelectionConfig}
                         data={filteredData}
                         loading={loading}
                         setIsEditModalVisible={setIsEditModalVisible}
@@ -362,21 +396,25 @@ const UserPage = () => {
                         setModalData={setModalData}
                         handleDelete={handleDelete}
                         handleRestore={handleRestore}
+                        reloadData={reloadData} // Pass reloadData to UserTable
                     />
                 </Space>
 
                 {/* User Modals (Create, Edit, Delete) */}
-                <UserModals
-                    isEditModalVisible={isEditModalVisible}
-                    setIsEditModalVisible={setIsEditModalVisible}
-                    isDeleteModalVisible={isDeleteModalVisible}
-                    setIsDeleteModalVisible={setIsDeleteModalVisible}
-                    isCreateModalVisible={isCreateModalVisible}
-                    setIsCreateModalVisible={setIsCreateModalVisible}
-                    data={data}
-                    setData={setData}
+                <UserCreateModal
+                    isVisible={isCreateModalVisible}
+                    setIsVisible={setIsCreateModalVisible}
+                    reloadData={reloadData}
+                    roles={roles}
+                />
+
+                <UserEditModal
+                    isVisible={isEditModalVisible}
+                    setIsVisible={setIsEditModalVisible}
+                    reloadData={reloadData}
                     modalData={modalData}
                     setModalData={setModalData}
+                    roles={roles}
                 />
 
                 {/* Confirmation Modal for Deleting */}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -36,7 +37,7 @@ class UserController extends Controller
             'username' => 'required|string|max:50|unique:users,username',
             'email' => 'required|email|unique:users,email|max:100',
             'password' => 'required|string|min:8',
-            'status' => 'nullable|string|in:regular,irregular',
+            'status' => 'nullable|string|in:regular,irregular, active, archived',
             'role_id' => 'required|exists:roles,id', // Validating role_id
             'profile_id' => 'required|exists:profiles,id', // Profile field
             'first_name' => 'required|string|max:50',
@@ -89,22 +90,38 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
+        // Validate the input fields
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|max:50|unique:users,username,' . $id,
             'email' => 'required|email|unique:users,email,' . $id . '|max:100',
-            'password' => 'nullable|string|min:8',
-            'status' => 'nullable|string|in:regular,irregular',
+            'password' => 'nullable|string|min:8', // Password is optional in the update
+            'status' => 'nullable|string|in:active,archived,regular,irregular',  // Updated status validation
             'role_id' => 'required|exists:roles,id',
-            'profile_id' => 'required|exists:profile,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $user->update($request->all());
+        // Prepare the update data
+        $updatedData = [
+            'username' => $request->username,
+            'email' => $request->email,
+            'status' => $request->status,
+            'role_id' => $request->role_id,
+        ];
+
+        // If password is provided, hash it and update
+        if ($request->password) {
+            $updatedData['password'] = Hash::make($request->password);
+        }
+
+        // Update user with the validated data
+        $user->update($updatedData);
+
         return response()->json($user, 200);
     }
+
 
     // Display the specified user
     public function show($id)

@@ -10,6 +10,7 @@ const UserModals = ({
     setIsEditModalVisible,
     isCreateModalVisible,
     setIsCreateModalVisible,
+    reloadData,
     data,
     setData,
     modalData,
@@ -50,12 +51,12 @@ const UserModals = ({
         setUsername(value);
     };
 
-    const handleCreateOrUpdate = () => {
+    const handleCreateUser = () => {
         form.validateFields()
             .then((values) => {
                 const userData = {
                     username: values.username,
-                    email: values.email,
+                    email: `${values.username}@urios.edu.ph`,
                     password: values.password,
                     role_id: values.role_id, // Correct field for role_id
                     first_name: values.first_name,
@@ -69,18 +70,34 @@ const UserModals = ({
                     address: values.address,
                 };
     
+                // Get the auth token from localStorage
+                const token = localStorage.getItem('auth_token');
+                if (!token) {
+                    message.error('No auth token found. Please log in.');
+                    return;
+                }
+    
                 // Perform the POST request to create user and profile
-                axios.post('/api/user-with-profile', userData)
+                axios.post('/api/user-with-profile', userData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,  // Attach token to the request header
+                    },
+                })
                     .then((response) => {
-                        message.success('User and profile created successfully!');
+                        message.success('User created successfully!');
                         setIsCreateModalVisible(false); // Close the modal
                         setModalData(null); // Clear modal data
-                        setData((prevData) => [...prevData, response.data.user]); // Update the list
+    
+                        // Call the reloadData function to refresh the user list
+                        reloadData(); // Add this line to refresh the table data
+
+                        form.resetFields();
+    
                     })
                     .catch((error) => {
                         if (error.response && error.response.status === 422) {
                             // If validation errors occur, show them to the user
-                            const errors = error.response.data;
+                            const errors = error.response.data.errors; // Adjust based on your response structure
                             Object.keys(errors).forEach((field) => {
                                 // Display error messages for each field
                                 message.error(`${field}: ${errors[field].join(', ')}`);
@@ -99,9 +116,6 @@ const UserModals = ({
     
     
     
-    
-    
-    
 
     return (
         <Modal
@@ -112,7 +126,7 @@ const UserModals = ({
                 setIsEditModalVisible(false);
                 setModalData(null);
             }}
-            onOk={handleCreateOrUpdate}
+            onOk={handleCreateUser}
             okText={isCreateModalVisible ? 'Create' : 'Update'}
             width={1000}  // Set width for landscape mode
         >
@@ -175,6 +189,7 @@ const UserModals = ({
                         <Form.Item
                             name="sex"
                             label="Sex"
+                            rules={[{ required: true, message: 'Please select sex!' }]}
                         >
                             <Select placeholder="Select Sex">
                                 <Option value="male">Male</Option>
@@ -188,6 +203,7 @@ const UserModals = ({
                         <Form.Item
                             name="marital_status"
                             label="Marital Status"
+                            rules={[{ required: true, message: 'Please select your marital status!' }]}
                         >
                             <Select placeholder="Select Marital Status">
                                 <Option value="single">Single</Option>
@@ -211,6 +227,7 @@ const UserModals = ({
                         <Form.Item
                             name="age"
                             label="Age"
+                            rules={[{ required: true, message: 'Please input the age!' }]}
                         >
                             <Input />
                         </Form.Item>
@@ -229,6 +246,7 @@ const UserModals = ({
                         <Form.Item
                             name="address"
                             label="Address"
+                            rules={[{ required: true, message: 'Please input the address!' }]}
                         >
                             <Input />
                         </Form.Item>

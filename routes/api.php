@@ -52,7 +52,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('users/active/count', [UserController::class, 'getActiveUserCount']);
 
     //USERS X PROFILES TRANSACTIONS
-    Route::apiResource('/users-with-profile', UserWithProfileController::class);
+    Route::post('/user-with-profile', [UserWithProfileController::class, 'store']);
+    Route::get('/user-with-profile/{id}', [UserWithProfileController::class, 'show']);
+    Route::put('/user-with-profile/{id}', [UserWithProfileController::class, 'update']);
+    
 
     // Profiles
     Route::apiResource('profiles', ProfileController::class)->except(['index', 'show']);
