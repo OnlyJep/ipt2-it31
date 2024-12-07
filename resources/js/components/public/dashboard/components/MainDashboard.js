@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Layout, theme, Spin } from "antd";
-import Header from "./Header"; // Custom Header
+// Replace direct imports with lazy imports
+const Header = React.lazy(() => import("./Header")); // Lazy-loaded Header
+const SideBar = React.lazy(() => import("./SideBar")); // Lazy-loaded Sidebar
 import MobileSidebarToggle from './MobileSidebarToggle'; // Import mobile sidebar toggle component
 import { useMediaQuery } from 'react-responsive';
 
 const { Sider, Content } = Layout;
-const SideBar = React.lazy(() => import("./SideBar")); // Lazy-loaded Sidebar
 
 const MainDashboard = ({ children }) => {
   const {
@@ -77,7 +78,9 @@ const MainDashboard = ({ children }) => {
             zIndex: 1,
           }}
         >
-          <SideBar userRole={userRole} /> {/* Pass userRole to the Sidebar */}
+          <Suspense fallback={<Spin size="large" />}>
+            <SideBar userRole={userRole} /> {/* Pass userRole to the Sidebar */}
+          </Suspense>
         </Sider>
       )}
 
@@ -93,11 +96,13 @@ const MainDashboard = ({ children }) => {
         )}
 
         {/* Header */}
-        <Header 
-          style={{ padding: 0, background: colorBgContainer }} 
-          toggleSidebar={toggleSidebar} 
-          toggleMobileSidebar={toggleMobileSidebar}
-        />
+        <Suspense fallback={<Spin size="large" />}>
+          <Header 
+            style={{ padding: 0, background: colorBgContainer }} 
+            toggleSidebar={toggleSidebar} 
+            toggleMobileSidebar={toggleMobileSidebar}
+          />
+        </Suspense>
 
         {/* Content Area */}
         <Content style={{ marginTop: '64px', margin: "24px 16px 0" }}> {/* Offset content by header height */}

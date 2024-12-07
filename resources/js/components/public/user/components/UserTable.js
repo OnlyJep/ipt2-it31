@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Space, Button, Card, List, Typography } from 'antd';
+import { Table, Space, Button, Typography, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, ReloadOutlined, PrinterOutlined } from '@ant-design/icons';
 import { useMediaQuery } from 'react-responsive';
 
@@ -10,21 +10,23 @@ const UserTable = ({
     rowSelection, // Retain this for bulk actions
     setIsEditModalVisible,
     setModalData,
-    handleDelete, // Single delete logic passed from parent
-    handleRestore,
+    loadingDelete,
+    handleSpecificDelete,  // The delete function passed from the parent
+    handleRestore,         // The restore function passed from the parent
 }) => {
     const [currentPage, setCurrentPage] = useState(1); // State to track the current page
     const pageSize = 5; // Define the page size
+
+    // Function for handling page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page); // Update the current page when the page is changed
+    };
 
     const isMobile = useMediaQuery({ maxWidth: 767 }); // Define mobile breakpoint
 
     const handleEdit = (record) => {
         setModalData(record);
         setIsEditModalVisible(true);
-    };
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page); // Update the current page when the page is changed
     };
 
     const columns = [
@@ -37,28 +39,35 @@ const UserTable = ({
                     <Button
                         type="primary"
                         icon={<EditOutlined />}
-                        onClick={() => handleEdit(record)}
+                        onClick={() => handleEdit(record)}  // Triggers edit modal with user data
                         size="small"
                         aria-label="Edit User"
                     />
 
-                    {/* Delete Button */}
-                    {!record.archived && (
+                    {/* Delete Button - Visible only for non-archived users */}
+                    {record.status !== 'archived' && (  // Ensure 'record.archived' is false (non-archived)
+                        <Popconfirm
+                            title="Are you sure to delete this user?"
+                            onConfirm={() => handleSpecificDelete(record.id)}
+                            okText="Yes"
+                            cancelText="No"
+                        >
                         <Button
                             type="danger"
                             icon={<DeleteOutlined />}
-                            onClick={() => handleDelete(record.id)} // Directly delete using ID
+                            loading={loadingDelete}  // Show loading state during deletion
                             size="small"
                             aria-label="Delete User"
                         />
+                        </Popconfirm>
                     )}
 
-                    {/* Restore Button */}
-                    {record.archived && (
+                    {/* Restore Button - Visible only for archived users */}
+                    {record.status === 'archived' && (  // Only show if 'record.archived' is true (archived)
                         <Button
                             type="default"
                             icon={<ReloadOutlined />}
-                            onClick={() => handleRestore(record.id)}
+                            onClick={() => handleRestore(record.id)}  // Trigger restore using record ID
                             size="small"
                             aria-label="Restore User"
                         >
@@ -66,6 +75,7 @@ const UserTable = ({
                         </Button>
                     )}
                 </Space>
+
             ),
             responsive: ['xs', 'sm', 'md', 'lg', 'xl'], // Visible on all screen sizes
         },
@@ -194,30 +204,34 @@ const UserTable = ({
                                         'Unknown'  // Optional fallback in case of an unknown status value
                                     }
                                     <Text strong>Role:</Text> {item.role ? item.role.role_name : 'No Role'}
-                                    {/* Add more fields as necessary */}
-                                <Space>
-
+                                    
+                                    <Space>
+                                        {/* Edit Button - always visible */}
                                         <Button
                                             type="primary"
                                             icon={<EditOutlined />}
-                                            onClick={() => handleEdit(item)}
+                                            onClick={() => handleEdit(item)}  // Triggers edit modal with user data
                                             size="small"
                                             aria-label="Edit User"
                                         />
-                                        {!item.archived && (
+
+                                        {/* Delete Button - only visible for non-archived users */}
+                                        {item.status !== 'archived' && (  // Ensure 'item.archived' is false (not archived)
                                             <Button
                                                 type="danger"
                                                 icon={<DeleteOutlined />}
-                                                onClick={() => handleDelete(item.id)}
+                                                onClick={() => handleSpecificDelete(item.id)}  // Triggers delete function with user ID
                                                 size="small"
                                                 aria-label="Delete User"
                                             />
                                         )}
-                                        {item.archived && (
+
+                                        {/* Restore Button - only visible for archived users */}
+                                        {item.status === 'archived' && (  // Only show if 'item.archived' is true (archived)
                                             <Button
                                                 type="default"
                                                 icon={<ReloadOutlined />}
-                                                onClick={() => handleRestore(item.id)}
+                                                onClick={() => handleRestore(item.id)}  // Triggers restore function with user ID
                                                 size="small"
                                                 aria-label="Restore User"
                                             >
@@ -225,6 +239,8 @@ const UserTable = ({
                                             </Button>
                                         )}
                                     </Space>
+
+
                                 </Space>
                             </Card>
                         </List.Item>
@@ -240,7 +256,6 @@ const UserTable = ({
                 />
             ) : (
                 <Table
-                    id="user-table" // Make sure to add this line
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={data}
@@ -252,14 +267,8 @@ const UserTable = ({
                         onChange: handlePageChange,
                         position: ['topRight'],
                     }}
-                    style={{ color: '#000' }}
                     rowKey="id"
                     scroll={{ x: 'max-content' }}
-                    footer={() => (
-                        <div style={{ textAlign: 'left' }}>
-                            Page {currentPage} of {Math.ceil(data.length / pageSize)}
-                        </div>
-                    )}
                 />
             )}
         </>

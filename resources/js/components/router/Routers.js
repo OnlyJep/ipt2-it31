@@ -18,11 +18,10 @@ import SubjectEnlistments from '../public/subjectenlistment/SubjectEnlistmentPag
 import EnlistmentManagers from '../public/enlistmentmanager/EnlistmentManagerPage';
 import ClassroomManagers from '../public/classroommanager/ClassroomManagerPage';
 
-import FacilitiesManagerManagement from './../public/systemsettings/facilitiesmanagermanagement/FacilitiesManagerManagementPage';
-
-import PostingManagement from '../public/systemsettings/PostingManagementPage';
-import ProgramsManagement from '../public/systemsettings/ProgramsManagerManagementPage';
-import TermsManagement from '../public/systemsettings/TermsManagementPage';
+import FacilitiesManagerManagement from '../public/systemsettings/facilitiesmanagement/FacilitiesManagerManagementPage';
+import ProgramsManagerManagement from './../public/systemsettings/programsmanager/ProgramsManagerManagementPage'
+import PostingManagement from './../public/systemsettings/postingmanagement/PostingManagementPage';
+import TermsManagement from '../public/systemsettings/termsmanagement/TermsManagementPage';
 
 const isAuthenticated = () => {
   return !!localStorage.getItem('auth_token'); // Check if the token exists
@@ -67,7 +66,7 @@ export default function Routers() {
         <Route path="/system-settings/facilities-manager" element={<PrivateRoute roleRequired={['superadmin']}><FacilitiesManagerManagement /></PrivateRoute>} />
 
         <Route path="/system-settings/posting-management" element={<PrivateRoute roleRequired={['superadmin']}><PostingManagement /></PrivateRoute>} />
-        <Route path="/system-settings/programs-management" element={<PrivateRoute roleRequired={['superadmin']}><ProgramsManagement /></PrivateRoute>} />
+        <Route path="/system-settings/programs-management" element={<PrivateRoute roleRequired={['superadmin']}><ProgramsManagerManagement /></PrivateRoute>} />
         <Route path="/system-settings/terms-management" element={<PrivateRoute roleRequired={['superadmin']}><TermsManagement /></PrivateRoute>} />
         
         {/* Header and Sidebar Routes */}

@@ -116,6 +116,15 @@ class UserController extends Controller
             $updatedData['password'] = Hash::make($request->password);
         }
 
+        // Handle the soft delete logic based on status
+        if ($request->status === 'archived') {
+            // Soft delete: set the 'deleted_at' timestamp to the current time
+            $user->delete();
+        } elseif ($user->status === 'archived' && $request->status !== 'archived') {
+            // Restore user if the status is changed from 'archived' to another status
+            $user->restore();
+        }
+
         // Update user with the validated data
         $user->update($updatedData);
 
@@ -164,5 +173,6 @@ class UserController extends Controller
 
         return response()->json(['totalUsersNotDeleted' => $activeUserCount]);
     }
+    
 
 }

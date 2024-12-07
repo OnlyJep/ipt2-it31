@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { Layout, Dropdown, Badge, Input, Row, Col, message, Spin, List } from "antd";
+import { Layout, Dropdown, Badge, Input, Row, Col, message, List } from "antd";
 import { BellFilled, DownOutlined, MenuOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 import { logout } from '../../../private/dashboard/logoff'; // Import the logout function
@@ -13,7 +13,6 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
   const [user, setUser] = useState(null);
   const [notifications, setNotifications] = useState(0);
   const [scrolled, setScrolled] = useState(false); // State to track scroll position
-  const [isLoading, setIsLoading] = useState(true); // To handle loading state
   const [isSearching, setIsSearching] = useState(false); // To handle search loading state
   const [searchResults, setSearchResults] = useState([]); // To store search results
   const [filteredRecommendations, setFilteredRecommendations] = useState([]); // For search suggestions
@@ -22,7 +21,6 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      setIsLoading(true);
       try {
         const profileId = localStorage.getItem('profile_id');
         if (!profileId) {
@@ -48,8 +46,6 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
       } catch (error) {
         console.error(error);
         message.error('Failed to load profile data');
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -151,15 +147,6 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
     }
     setFilteredRecommendations([]);
   };
-
-  // Show loading spinner while data is being fetched
-  if (isLoading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
 
   return (
     <AntHeader

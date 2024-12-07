@@ -11,22 +11,25 @@ class BuildingController extends Controller
     // Display a listing of buildings
     public function index(Request $request)
     {
-        $deleted = $request->query('deleted', 'false');
+        try {
+            $deleted = $request->query('deleted', 'false');
 
-        if ($deleted === 'only') {
-            $buildings = Building::onlyTrashed()->get();
-        } elseif ($deleted === 'true') {
-            $buildings = Building::withTrashed()->get();
-        } else {
-            $buildings = Building::all();
+            if ($deleted === 'only') {
+                $buildings = Building::onlyTrashed()->get();
+            } elseif ($deleted === 'true') {
+                $buildings = Building::withTrashed()->get();
+            } else {
+                $buildings = Building::all();
+            }
+
+            // Return a response with buildings (even if empty)
+            return response()->json($buildings);
+        } catch (\Exception $e) {
+            // Return an empty array or handle error gracefully
+            return response()->json([], 200); // Empty response when there's an error
         }
-
-        if ($buildings->isEmpty()) {
-            return response()->json(['message' => 'No buildings found'], 404);
-        }
-
-        return response()->json($buildings);
     }
+
 
     // Store a newly created building in storage
     public function store(Request $request)
@@ -89,13 +92,16 @@ class BuildingController extends Controller
 
     // Restore the specified soft-deleted building
     public function restore($id)
-    {
-        $building = Building::withTrashed()->find($id);
-        if (!$building) {
-            return response()->json(['message' => 'Building not found'], 404);
-        }
+{
+    $building = Building::withTrashed()->find($id); // Include soft-deleted buildings
 
-        $building->restore();
-        return response()->json(['message' => 'Building restored successfully']);
+    if (!$building) {
+        return response()->json(['message' => 'Building not found'], 404);
     }
+
+    $building->deleted_at = null; // Restore the building (set deleted_at to null)
+    $building->save();
+
+    return response()->json(['message' => 'Building restored successfully'], 200);
+}
 }

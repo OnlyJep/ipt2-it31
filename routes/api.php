@@ -48,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Users
     Route::apiResource('users', UserController::class);
-    Route::post('users/{id}/restore', [UserController::class, 'restore']);
+    Route::post('/users/{id}/restore', [UserController::class, 'restore']);
     Route::get('users/active/count', [UserController::class, 'getActiveUserCount']);
 
     //USERS X PROFILES TRANSACTIONS

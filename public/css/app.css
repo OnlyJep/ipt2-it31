@@ -11970,7 +11970,7 @@ textarea.form-control-lg {
 .sidebar-container {
   height: 100%;
   width: 250px; /* Adjust sidebar width as needed */
-  background-color: #131f73; /* Sidebar background color */
+  background-color: #3f7afc; /* Sidebar background color */
   display: flex;
   flex-direction: column;
   padding: 10px;
@@ -11992,6 +11992,7 @@ textarea.form-control-lg {
 }
 
 /* Media query for mobile devices */
+/* Add this CSS in your styles (e.g., App.css or a separate CSS file) */
 .header {
   height: 80px;
   width: 100%;
@@ -12077,46 +12078,46 @@ textarea.form-control-lg {
   }
 }
 
-B.dashboard-container {
+.dashboard-container {
   display: flex;
   height: 100vh;
   /* Mobile - Hide hamburger button on desktop */
   /* Media Queries for Mobile */
 }
-B.dashboard-container .sidebar {
+.dashboard-container .sidebar {
   width: 250px;
   height: 100vh;
-  background-color: #131f73;
+  background-color: #3f7afc;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10;
   transition: transform 0.3s ease-in-out;
 }
-B.dashboard-container .dashboard-main {
+.dashboard-container .dashboard-main {
   flex: 1;
   margin-left: 250px;
   display: flex;
   flex-direction: column;
 }
-B.dashboard-container .header {
+.dashboard-container .header {
   height: 60px;
   background-color: white;
   border-bottom: 1px solid #3f7afc;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   z-index: 5;
 }
-B.dashboard-container .dashboard-content {
+.dashboard-container .dashboard-content {
   flex: 1;
   padding: 20px;
   background-color: #f1f1f1;
   overflow-y: auto;
 }
-B.dashboard-container .menu-icon {
+.dashboard-container .menu-icon {
   display: none; /* Hide by default */
 }
 @media (max-width: 991px) {
-  B.dashboard-container .menu-icon {
+  .dashboard-container .menu-icon {
     display: block; /* Show the button on mobile */
     position: absolute;
     top: 20px; /* Position it at the top */
@@ -12125,23 +12126,23 @@ B.dashboard-container .menu-icon {
     cursor: pointer;
   }
 }
-B.dashboard-container .ant-layout-content {
+.dashboard-container .ant-layout-content {
   padding: 24px 16px; /* Top and bottom padding = 24px, Left and right padding = 16px */
 }
 @media only screen and (max-width: 991px) {
-  B.dashboard-container {
+  .dashboard-container {
     /* When the sidebar is visible */
   }
-  B.dashboard-container .sidebar {
+  .dashboard-container .sidebar {
     transform: translateX(-250px); /* Initially hide the sidebar */
   }
-  B.dashboard-container .dashboard-main {
+  .dashboard-container .dashboard-main {
     margin-left: 0;
   }
-  B.dashboard-container .dashboard-content {
+  .dashboard-container .dashboard-content {
     margin-left: 0;
   }
-  B.dashboard-container .sidebar-active {
+  .dashboard-container .sidebar-active {
     transform: translateX(0);
   }
 }
@@ -12161,7 +12162,7 @@ B.dashboard-container .ant-layout-content {
 }
 .nav-item:hover {
   background-color: rgba(255, 255, 255, 0.1); /* Slight white background on hover */
-  border-left: 4px solid #1890ff; /* Blue left border on hover */
+  border-left: 4px solid #3f7afc; /* Blue left border on hover */
   font-weight: bold;
   color: #fff;
 }
@@ -12179,62 +12180,41 @@ B.dashboard-container .ant-layout-content {
   color: #fff;
   border-left: 4px solid #1890ff !important; /* Blue left border for selected item */
   /* Ensure that the link color stays consistent for selected item */
-  /* Prevent hover effect on selected item */
 }
 .ant-menu-item-selected .nav-link {
   color: #fff !important;
 }
 .ant-menu-item-selected:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* White background for selected item on hover */
+  background-color: rgba(255, 255, 255, 0.1);
   border-left: 4px solid #1890ff;
 }
 
-/* Ensure that the background on hover is transparent for the non-selected items */
 .ant-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Slight white background on hover */
-  border-left: 4px solid #1890ff; /* Blue left border on hover */
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #1890ff;
   font-weight: bold;
 }
 
-/* Separator between menu items */
 .separator {
   margin-top: 20px;
   margin-bottom: 20px;
   border-top: 2px solid #fff;
-  width: calc(100% - 20px); /* Keeps the separator from touching edges */
+  width: calc(100% - 20px);
   margin-left: 10px;
   margin-right: 10px;
 }
 
-/* Icon styles: Ensure icons are sized correctly */
 .ant-menu-item .anticon {
   font-size: 20px;
   color: #fff !important;
   margin-right: 10px;
 }
 
-/* Ensure spacing between menu items */
 .ant-menu {
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
-/* Adjust spacing on mobile if necessary */
-@media (max-width: 768px) {
-  .nav-item {
-    margin-bottom: 8px; /* Slightly smaller gap on mobile */
-  }
-  .separator {
-    width: calc(75% - 20px);
-  }
-  .ant-menu-item {
-    padding-left: 16px;
-    color: #fff !important;
-  }
-  .ant-menu-item .anticon {
-    font-size: 16px;
-  }
-}
 /* SubMenu styles: Ensure submenus have the same color and hover effects as main items */
 .ant-menu-submenu {
   background-color: transparent !important; /* Make submenu background transparent */
@@ -12293,14 +12273,6 @@ B.dashboard-container .ant-layout-content {
   border-left: 4px solid #1890ff !important; /* Maintain blue left border */
 }
 
-@media (max-width: 768px) {
-  .nav-item .nav-link-text {
-    display: none; /* Hide the text */
-  }
-  .ant-menu-submenu .nav-link .nav-link-text {
-    display: none;
-  }
-}
 .layout-container {
   min-height: 100vh;
   background-size: cover;
