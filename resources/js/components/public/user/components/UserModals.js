@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Select, message } from 'antd';
+import { Modal, Form, Input, message, Row, Col, Select } from 'antd';
+import axios from 'axios';
+import DropdownReligion from '../../profile/components/DropdownReligion';  // Import the DropdownReligion component
 
 const { Option } = Select;
 
@@ -12,6 +14,7 @@ const UserModals = ({
     setData,
     modalData,
     setModalData,
+    roles = [],
 }) => {
     const [form] = Form.useForm();
     const [username, setUsername] = useState('');
@@ -20,12 +23,20 @@ const UserModals = ({
         if (modalData) {
             // Pre-fill form fields only when modalData is not null
             form.setFieldsValue({
-                username: modalData.username || '', // Only use the username field now
-                role: modalData.role,
-                password: modalData.password || '', // Password field can be empty when editing
+                username: modalData.username || '',
+                role_id: modalData.role_id,
+                password: modalData.password || '',
+                first_name: modalData.first_name || '',
+                middle_initial: modalData.middle_initial || '',
+                last_name: modalData.last_name || '',
+                sex: modalData.sex || '',
+                marital_status: modalData.marital_status || '',
+                religion: modalData.religion || '',
+                age: modalData.age || '',
+                phone_number: modalData.phone_number || '',
+                address: modalData.address || '',
             });
-            
-            // Set username if modalData exists
+
             if (modalData.username) {
                 setUsername(modalData.username);
             }
@@ -42,86 +53,200 @@ const UserModals = ({
     const handleCreateOrUpdate = () => {
         form.validateFields()
             .then((values) => {
-                if (isCreateModalVisible) {
-                    // Add new user
-                    const newUser = {
-                        ...values,
-                        username: `${username}@gmail.com`, // Ensure username is used for email
-                        id: Math.random().toString(36).substring(2, 9), // Generate random ID
-                        created: new Date().toLocaleString(),
-                        updated: new Date().toLocaleString(),
-                        archived: false,
-                    };
-                    setData((prevData) => [...prevData, newUser]);
-                    message.success('User created successfully!');
-                } else if (isEditModalVisible) {
-                    // Update existing user
-                    setData((prevData) =>
-                        prevData.map((user) =>
-                            user.id === modalData.id
-                                ? { ...user, ...values, username: `${username}@gmail.com`, updated: new Date().toLocaleString() }
-                                : user
-                        )
-                    );
-                    message.success('User updated successfully!');
-                }
-                closeModal();
+                const userData = {
+                    username: values.username,
+                    email: values.email,
+                    password: values.password,
+                    role_id: values.role_id, // Correct field for role_id
+                    first_name: values.first_name,
+                    last_name: values.last_name,
+                    middle_initial: values.middle_initial,
+                    sex: values.sex,
+                    marital_status: values.marital_status,
+                    religion: values.religion,
+                    age: values.age,
+                    phone_number: values.phone_number,
+                    address: values.address,
+                };
+    
+                // Perform the POST request to create user and profile
+                axios.post('/api/user-with-profile', userData)
+                    .then((response) => {
+                        message.success('User and profile created successfully!');
+                        setIsCreateModalVisible(false); // Close the modal
+                        setModalData(null); // Clear modal data
+                        setData((prevData) => [...prevData, response.data.user]); // Update the list
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.status === 422) {
+                            // If validation errors occur, show them to the user
+                            const errors = error.response.data;
+                            Object.keys(errors).forEach((field) => {
+                                // Display error messages for each field
+                                message.error(`${field}: ${errors[field].join(', ')}`);
+                            });
+                        } else {
+                            // Generic error message for other types of errors
+                            message.error('Failed to create user and profile');
+                        }
+                        console.error('Error:', error);
+                    });
             })
-            .catch((info) => {
-                console.error('Validation Failed:', info);
+            .catch((error) => {
+                message.error('Form validation failed');
             });
     };
-
-    const closeModal = () => {
-        form.resetFields();
-        setModalData(null);
-        setIsCreateModalVisible(false);
-        setIsEditModalVisible(false);
-    };
+    
+    
+    
+    
+    
+    
 
     return (
         <Modal
             title={isCreateModalVisible ? 'Create User' : 'Edit User'}
             visible={isCreateModalVisible || isEditModalVisible}
+            onCancel={() => {
+                setIsCreateModalVisible(false);
+                setIsEditModalVisible(false);
+                setModalData(null);
+            }}
             onOk={handleCreateOrUpdate}
-            onCancel={closeModal}
             okText={isCreateModalVisible ? 'Create' : 'Update'}
+            width={1000}  // Set width for landscape mode
         >
-            <Form form={form} layout="vertical">
-                {/* Username */}
-                <Form.Item
-                    name="username"
-                    label="Username"
-                    rules={[{ required: true, message: 'Please input the username!' }]}
-                >
-                    <Input
-                        value={username}
-                        onChange={(e) => handleUsernameChange(e.target.value)}
-                        placeholder="Enter username"
-                    />
-                </Form.Item>
+            <Form form={form} layout="vertical" name="userForm">
+                <Row gutter={24}>
+                    <Col span={12}>
+                        <Form.Item
+                            name="username"
+                            label="Username"
+                            rules={[{ required: true, message: 'Please input the username!' }]}
+                        >
+                            <Input
+                                value={username}
+                                onChange={(e) => handleUsernameChange(e.target.value)}
+                                placeholder="Enter username"
+                            />
+                        </Form.Item>
+                    </Col>
 
-                {/* Password */}
-                <Form.Item
-                    name="password"
-                    label="Password"
-                    rules={[{ required: true, message: 'Please input the password!' }]}
-                >
-                    <Input.Password />
-                </Form.Item>
+                    <Col span={12}>
+                        <Form.Item
+                            name="password"
+                            label="Password"
+                            rules={[{ required: true, message: 'Please input the password!' }]}
+                        >
+                            <Input.Password />
+                        </Form.Item>
+                    </Col>
 
-                {/* Role */}
-                <Form.Item
-                    name="role"
-                    label="Role"
-                    rules={[{ required: true, message: 'Please select the role!' }]}
-                >
-                    <Select disabled={isEditModalVisible && (modalData?.role === 'Teacher' || modalData?.role === 'Student')}>
-                        <Option value="Superadmin">Superadmin</Option>
-                        <Option value="Admin">Admin</Option>
-                        {/* Removed Teacher and Student roles from the Create modal */}
-                    </Select>
-                </Form.Item>
+                    <Col span={12}>
+                        <Form.Item
+                            name="first_name"
+                            label="First Name"
+                            rules={[{ required: true, message: 'Please input the first name!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="middle_initial"
+                            label="Middle Initial"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="last_name"
+                            label="Last Name"
+                            rules={[{ required: true, message: 'Please input the last name!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="sex"
+                            label="Sex"
+                        >
+                            <Select placeholder="Select Sex">
+                                <Option value="male">Male</Option>
+                                <Option value="female">Female</Option>
+                                <Option value="other">Other</Option>
+                            </Select>
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="marital_status"
+                            label="Marital Status"
+                        >
+                            <Select placeholder="Select Marital Status">
+                                <Option value="single">Single</Option>
+                                <Option value="married">Married</Option>
+                                <Option value="widowed">Widowed</Option>
+                            </Select>
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="religion"
+                            label="Religion"
+                            rules={[{ required: true, message: 'Please select a religion!' }]}
+                        >
+                            <DropdownReligion value={form.getFieldValue('religion')} onChange={(value) => form.setFieldsValue({ religion: value })} />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="age"
+                            label="Age"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="phone_number"
+                            label="Phone Number"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="address"
+                            label="Address"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={12}>
+                        <Form.Item
+                            name="role_id"
+                            label="Role"
+                            rules={[{ required: true, message: 'Please select a role!' }]}
+                        >
+                            <Select>
+                                <Option value="1">Superadmin</Option>
+                                <Option value="2">Admin</Option>
+                            </Select>
+                        </Form.Item>
+                    </Col>
+                </Row>
             </Form>
         </Modal>
     );

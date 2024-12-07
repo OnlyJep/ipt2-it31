@@ -4,9 +4,6 @@ import { MenuOutlined } from '@ant-design/icons';
 import SideBar from './SideBar';  // Import the Sidebar component
 
 const MobileSidebarToggle = ({ userRole, mobileSidebarVisible, toggleMobileSidebar }) => {
-  // Calculate drawer width based on screen size
-  const drawerWidth = window.innerWidth <= 480 ? 75 : 250; // Set to 100px on mobile, 250px on larger screens
-
   return (
     <>
       {/* Hamburger Menu Button for mobile */}
@@ -29,7 +26,7 @@ const MobileSidebarToggle = ({ userRole, mobileSidebarVisible, toggleMobileSideb
         closable={false}
         onClose={toggleMobileSidebar}
         visible={mobileSidebarVisible}
-        width={drawerWidth} // Use the calculated width
+        width={250}
         style={{
           zIndex: 1000, // Ensure it's on top of other content
         }}

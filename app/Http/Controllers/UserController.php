@@ -37,17 +37,49 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email|max:100',
             'password' => 'required|string|min:8',
             'status' => 'nullable|string|in:regular,irregular',
-            'role_id' => 'required|exists:roles,id',
-            'profile_id' => 'required|exists:profile,id',
+            'role_id' => 'required|exists:roles,id', // Validating role_id
+            'profile_id' => 'required|exists:profiles,id', // Profile field
+            'first_name' => 'required|string|max:50',
+            'middle_initial' => 'nullable|string|max:10',
+            'last_name' => 'required|string|max:50',
+            'sex' => 'required|string|in:male,female',
+            'marital_status' => 'nullable|string',
+            'religion' => 'nullable|string',
+            'age' => 'nullable|integer',
+            'phone_number' => 'nullable|string|max:15',
+            'address' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $user = User::create($request->all());
+        // Create user in the users table
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'status' => $request->status,
+            'role_id' => $request->role_id,  // Store selected role_id
+        ]);
+
+        // Create profile in the profile table
+        $user->profile()->create([
+            'first_name' => $request->first_name,
+            'middle_initial' => $request->middle_initial,
+            'last_name' => $request->last_name,
+            'sex' => $request->sex,
+            'marital_status' => $request->marital_status,
+            'religion' => $request->religion,
+            'age' => $request->age,
+            'phone_number' => $request->phone_number,
+            'address' => $request->address,
+        ]);
+
         return response()->json($user, 201);
     }
+
+
 
     // Update an existing user in storage
     public function update(Request $request, $id)

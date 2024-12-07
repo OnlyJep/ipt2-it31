@@ -15,8 +15,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _public_images_loginpagebackground_svg__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../../public/images/loginpagebackground.svg */ "./public/images/loginpagebackground.svg");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-// LoginPageBackground.js
-
 
 
 
@@ -26,6 +24,7 @@ var LoginPageBackground = function LoginPageBackground(_ref) {
     style: {
       minHeight: '100vh',
       backgroundImage: "url(".concat(_public_images_loginpagebackground_svg__WEBPACK_IMPORTED_MODULE_1__["default"], ")"),
+      // Corrected here
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
@@ -37,20 +36,6 @@ var LoginPageBackground = function LoginPageBackground(_ref) {
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoginPageBackground);
-
-/***/ }),
-
-/***/ "./public/images/loginpagebackground.svg":
-/*!***********************************************!*\
-  !*** ./public/images/loginpagebackground.svg ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/loginpagebackground.svg?87ccf7990c6c92116715fd3d298d06d1");
 
 /***/ })
 

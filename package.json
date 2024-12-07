@@ -33,6 +33,7 @@
         "less-loader": "^12.2.0",
         "react-responsive": "^10.0.0",
         "react-router": "^6.27.0",
-        "react-router-dom": "^6.28.0"
+        "react-router-dom": "^6.28.0",
+        "react-to-print": "^3.0.2"
     }
 }

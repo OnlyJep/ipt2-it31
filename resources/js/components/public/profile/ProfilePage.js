@@ -17,7 +17,7 @@ const ProfilePageDashboard = () => {
     const [uploadMessage, setUploadMessage] = useState(''); // Message state for upload success/error
     const [selectedPhoto, setSelectedPhoto] = useState(null); // State to track selected photo
     const [photoPreview, setPhotoPreview] = useState(null); // State to hold the preview URL
-
+    const SelectPhotoMessage = 'Photo Selected. Save to upload.';
 
 
     // Fetch user data and profile data when component mounts
@@ -153,8 +153,27 @@ const ProfilePageDashboard = () => {
     
     
     const handleCancel = () => {
+        // Reset form fields back to the original profile data
+        form.setFieldsValue({
+            firstname: profileData.first_name,
+            middleinitial: profileData.middle_initial,
+            lastname: profileData.last_name,
+            sex: profileData.sex,
+            maritalStatus: profileData.marital_status,
+            religion: profileData.religion,
+            age: profileData.age,
+            phoneNumber: profileData.phone_number,
+            address: profileData.address,
+        });
+    
+        // Also reset the photo preview and selected photo
+        setPhotoPreview(profileData.photo_path ? `/storage/${profileData.photo_path}` : null);
+        setSelectedPhoto(null); // Remove the selected photo
+        setUploadMessage(''); // Clear the upload message
+
         setIsEditing(false); // Switch back to view mode
     };
+    
     
 
     // Show loading spinner while data is being fetched
@@ -229,7 +248,7 @@ const ProfilePageDashboard = () => {
                                         type="dashed"
                                         style={{ marginTop: '20px' }}
                                     >
-                                        {selectedPhoto ? 'Photo Selected. Save to upload.' : 'Update Photo'}
+                                        {selectedPhoto ? SelectPhotoMessage : 'Update Photo'}
                                     </Button>
                                 </Upload>
                             )}

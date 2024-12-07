@@ -35,6 +35,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SubjectCurriculumController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\YearLevelController;
+use App\Http\Controllers\UserWithProfileController;
 
 // Define the login route outside of the auth middleware
 Route::post('login', [AuthController::class, 'login']); // Login route
@@ -50,6 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('users/{id}/restore', [UserController::class, 'restore']);
     Route::get('users/active/count', [UserController::class, 'getActiveUserCount']);
 
+    //USERS X PROFILES TRANSACTIONS
+    Route::apiResource('/users-with-profile', UserWithProfileController::class);
 
     // Profiles
     Route::apiResource('profiles', ProfileController::class)->except(['index', 'show']);

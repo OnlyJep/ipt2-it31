@@ -111,11 +111,6 @@ const DashboardPageDashboard = () => {
     return (
         <Content style={{ padding: '20px' }}>
             <Title level={1} style={{ marginBottom: '14px' }}>Analytics</Title>
-            <Breadcrumb style={{ marginBottom: '20px' }}>
-                <Breadcrumb.Item style={{ color: currentSection === "Announcement" ? '#3f7afc' : 'gray' }}>Announcement</Breadcrumb.Item>
-                <Breadcrumb.Item style={{ color: currentSection === "Reports" ? '#3f7afc' : 'gray' }}>Reports</Breadcrumb.Item>
-                <Breadcrumb.Item style={{ color: currentSection === "Analytics" ? '#3f7afc' : 'gray' }}>Analytics</Breadcrumb.Item>
-            </Breadcrumb>
             <Divider style={{ margin: '20px 0' }} />
             {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '50px' }}>

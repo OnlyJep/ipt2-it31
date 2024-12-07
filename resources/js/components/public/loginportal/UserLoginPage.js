@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Layout, Form, Input, Button, Row, Col, message, Tooltip, Card, Spin } from 'antd';
 import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom'; // Import navigate hook
-import LoginPageBackground from './components/LoginPageBackground';
-import LoginLogo from './components/LoginLogo';
-import LoginLoader from './components/LoginLoader'; // Import the loader component
-import { handleLogin } from './../../private/loginportal/UserLoginService'; // Import the backend logic
+import { useNavigate } from 'react-router-dom'; 
+import { handleLogin } from './../../private/loginportal/UserLoginService'; 
 
 const { Content } = Layout;
+
+// Lazy load components
+const LoginPageBackground = lazy(() => import('./components/LoginPageBackground'));
+const LoginLogo = lazy(() => import('./components/LoginLogo'));
+const LoginLoader = lazy(() => import('./components/LoginLoader'));
 
 const UserLogin = ({ setUserRole }) => {
   const [showPassword, setShowPassword] = useState(false); // Show password toggle
@@ -22,8 +24,8 @@ const UserLogin = ({ setUserRole }) => {
     const loadPageContent = async () => {
       try {
         await fetchDataForPage();
-        setPageLoading(false); // Hide page loader
         setShowContent(true); // Show login content
+        setPageLoading(false); // Hide page loader
       } catch (error) {
         console.error('Error loading page content:', error);
         setPageLoading(false); // Ensure page loads even in case of error
@@ -33,8 +35,9 @@ const UserLogin = ({ setUserRole }) => {
     loadPageContent(); // Call the async function on component mount
   }, []);
 
+  // Simulate a 2-second delay to let the background and other components load
   const fetchDataForPage = async () => {
-    return new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate 2 seconds delay
+    return new Promise((resolve) => setTimeout(resolve, 2000)); // 2 seconds delay
   };
 
   const onFinish = async (values) => {
@@ -78,109 +81,114 @@ const UserLogin = ({ setUserRole }) => {
   return (
     <>
       {pageLoading && (
-        <LoginPageBackground>
-          <LoginLoader /> {/* Display loader on top of the background */}
-        </LoginPageBackground>
+        <Suspense fallback={<LoginLoader />}> {/* Lazy load LoginPageBackground and Loader */}
+          <LoginPageBackground>
+            <LoginLogo /> {/* Display logo first */}
+            <LoginLoader /> {/* Display loader on top of the background */}
+          </LoginPageBackground>
+        </Suspense>
       )}
 
       {!pageLoading && (
-        <LoginPageBackground>
-          {showContent && (
-            <Content
-              className="content-container"
-              style={{
-                minHeight: '100vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'relative',
-                zIndex: 20, // Higher z-index to appear above the loader and background
-              }}
-            >
-              <Row justify="center" align="middle" style={{ width: '100%' }}>
-                <Col xs={24} style={{ textAlign: 'center', marginBottom: '20px' }}>
-                  <LoginLogo />
-                </Col>
-                <Col xs={24} sm={20} md={12} lg={10} style={{ marginTop: '-30px' }}>
-                  <Card
-                    bordered={false}
-                    className="card-container"
-                    style={{
-                      borderRadius: '10px',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                    }}
-                  >
-                    <Form
-                      name="loginForm"
-                      initialValues={{ remember: true }}
-                      onFinish={onFinish}
-                      onFinishFailed={onFinishFailed}
+        <Suspense fallback={<LoginLoader />}> {/* Lazy load the content once the page is ready */}
+          <LoginPageBackground>
+            {showContent && (
+              <Content
+                className="content-container"
+                style={{
+                  minHeight: '100vh',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  position: 'relative',
+                  zIndex: 20,
+                }}
+              >
+                <Row justify="center" align="middle" style={{ width: '100%' }}>
+                  <Col xs={24} style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    <LoginLogo />
+                  </Col>
+                  <Col xs={24} sm={20} md={12} lg={10} style={{ marginTop: '-30px' }}>
+                    <Card
+                      bordered={false}
+                      className="card-container"
+                      style={{
+                        borderRadius: '10px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                      }}
                     >
-                      <div
-                        style={{
-                          marginBottom: '16px',
-                          fontWeight: 'bold',
-                          fontSize: '16px',
-                          textAlign: 'center',
-                        }}
+                      <Form
+                        name="loginForm"
+                        initialValues={{ remember: true }}
+                        onFinish={onFinish}
+                        onFinishFailed={onFinishFailed}
                       >
-                        Account Portal
-                      </div>
-                      <Form.Item
-                        name="username"
-                        rules={[{ required: true, message: 'Please input your Username!' }]}>
-
-                        <Input
-                          prefix={<UserOutlined style={{ color: '#1890ff' }} />}
-                          placeholder="Username"
-                          style={{ borderRadius: '8px' }}
-                        />
-                      </Form.Item>
-
-                      <Form.Item
-                        name="password"
-                        rules={[{ required: true, message: 'Please input your Password!' }]}>
-
-                        <Input.Password
-                          prefix={<LockOutlined style={{ color: '#1890ff' }} />}
-                          type={showPassword ? 'text' : 'password'}
-                          placeholder="Password"
-                          iconRender={(visible) => (
-                            <Tooltip title={visible ? 'Hide Password' : 'Show Password'}>
-                              {visible ? (
-                                <EyeTwoTone onClick={() => setShowPassword(!showPassword)} />
-                              ) : (
-                                <EyeInvisibleOutlined onClick={() => setShowPassword(!showPassword)} />
-                              )}
-                            </Tooltip>
-                          )}
-                          style={{ borderRadius: '8px' }}
-                        />
-                      </Form.Item>
-
-                      <Form.Item style={{ textAlign: 'center' }}>
-                        <Button
-                          type="primary"
-                          htmlType="submit"
+                        <div
                           style={{
-                            width: '100%',
-                            borderRadius: '8px',
-                            backgroundColor: '#131f73',
-                            borderColor: '#131f73',
-                            height: '40px',
+                            marginBottom: '16px',
+                            fontWeight: 'bold',
+                            fontSize: '16px',
+                            textAlign: 'center',
                           }}
-                          loading={loading} // Show spinner on button during login
                         >
-                          {loading ? 'Logging in...' : 'Login'}
-                        </Button>
-                      </Form.Item>
-                    </Form>
-                  </Card>
-                </Col>
-              </Row>
-            </Content>
-          )}
-        </LoginPageBackground>
+                          Account Portal
+                        </div>
+                        <Form.Item
+                          name="username"
+                          rules={[{ required: true, message: 'Please input your Username!' }]}
+                        >
+                          <Input
+                            prefix={<UserOutlined style={{ color: '#1890ff' }} />}
+                            placeholder="Username"
+                            style={{ borderRadius: '8px' }}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          name="password"
+                          rules={[{ required: true, message: 'Please input your Password!' }]}
+                        >
+                          <Input.Password
+                            prefix={<LockOutlined style={{ color: '#1890ff' }} />}
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Password"
+                            iconRender={(visible) => (
+                              <Tooltip title={visible ? 'Hide Password' : 'Show Password'}>
+                                {visible ? (
+                                  <EyeTwoTone onClick={() => setShowPassword(!showPassword)} />
+                                ) : (
+                                  <EyeInvisibleOutlined onClick={() => setShowPassword(!showPassword)} />
+                                )}
+                              </Tooltip>
+                            )}
+                            style={{ borderRadius: '8px' }}
+                          />
+                        </Form.Item>
+
+                        <Form.Item style={{ textAlign: 'center' }}>
+                          <Button
+                            type="primary"
+                            htmlType="submit"
+                            style={{
+                              width: '100%',
+                              borderRadius: '8px',
+                              backgroundColor: '#131f73',
+                              borderColor: '#131f73',
+                              height: '40px',
+                            }}
+                            loading={loading} 
+                          >
+                            {loading ? 'Logging in...' : 'Login'}
+                          </Button>
+                        </Form.Item>
+                      </Form>
+                    </Card>
+                  </Col>
+                </Row>
+              </Content>
+            )}
+          </LoginPageBackground>
+        </Suspense>
       )}
     </>
   );
