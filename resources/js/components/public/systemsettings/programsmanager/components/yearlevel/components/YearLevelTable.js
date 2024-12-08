@@ -11,6 +11,7 @@ const YearLevelTable = ({
     setModalData,
     handleDeleteYearLevel,
     handleRestoreYearLevel,
+    loading,
 }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
@@ -134,6 +135,11 @@ const YearLevelTable = ({
                     </div>
                 )}
                 scroll={{ x: 800 }} // Allows horizontal scrolling on smaller screens if needed
+                loading={{
+                    spinning: loading, // Controls if the table should show loading spinner
+                    indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
+                    tip: "Loading data..." // Loading message
+                }}
             />
     );
 };

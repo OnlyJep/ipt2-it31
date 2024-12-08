@@ -14,6 +14,7 @@ const BuildingModal = ({
     modalData,
     setModalData,
     handleCreateBuilding, // Pass the handler for creating a building
+    reloadData,
 }) => {
     const [form] = useForm(); // Ant Design Form hook for form handling
     const [floors, setFloors] = useState([]); // Floors data for dropdown

@@ -1,7 +1,7 @@
 import React from 'react';
-import SideBarLogo from './SideBarLogo'; // Import the logo component
-import SideBarTexture from './SideBarTexture'; // Import the texture component
-import SideBarNavList from './SideBarNavList'; // Import the navigation list component
+import SideBarLogo from './SideBarLogo'; 
+import SideBarTexture from './SideBarTexture'; 
+import SideBarNavList from './SideBarNavList'; 
 
 const SideBar = ({ userRole }) => {
   return (

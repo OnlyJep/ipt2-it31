@@ -36,6 +36,20 @@ var LoginLogo = function LoginLogo() {
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoginLogo);
 
+/***/ }),
+
+/***/ "./public/images/loginlogo.svg":
+/*!*************************************!*\
+  !*** ./public/images/loginlogo.svg ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/loginlogo.svg?63a7bdb2b710aa91dba59c51897beee2");
+
 /***/ })
 
 }]);

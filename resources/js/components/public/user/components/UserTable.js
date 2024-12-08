@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Table, Space, Button, Typography, Popconfirm, List, Card } from 'antd';
 import { EditOutlined, DeleteOutlined, ReloadOutlined, PrinterOutlined } from '@ant-design/icons';
 import { useMediaQuery } from 'react-responsive';
+import moment from 'moment';
 
 const { Text } = Typography;
 
@@ -12,7 +13,8 @@ const UserTable = ({
     setModalData,
     loadingDelete,
     handleSpecificDelete,  // The delete function passed from the parent
-    handleRestore,         // The restore function passed from the parent
+    handleRestore,   
+    loading,      // The restore function passed from the parent
 }) => {
     const [currentPage, setCurrentPage] = useState(1); // State to track the current page
     const pageSize = 5; // Define the page size
@@ -135,14 +137,17 @@ const UserTable = ({
             title: <span style={{ color: '#1890ff' }}>Created</span>,
             dataIndex: 'created_at',
             key: 'created',
+            render: (created_at) => moment(created_at).format('MM/DD/YYYY, h:mm:ss A'),
             responsive: ['lg', 'xl'], // Hidden on small and extra small screens
         },
         {
             title: <span style={{ color: '#1890ff' }}>Updated</span>,
             dataIndex: 'updated_at',
             key: 'updated',
+            render: (updated_at) => moment(updated_at).format('MM/DD/YYYY, h:mm:ss A'),
             responsive: ['lg', 'xl'], // Hidden on small and extra small screens
         },
+        
     ];
 
     const printTable = () => {
@@ -269,6 +274,11 @@ const UserTable = ({
                     }}
                     rowKey="id"
                     scroll={{ x: 'max-content' }}
+                    loading={{
+                        spinning: loading, // Controls if the table should show loading spinner
+                        indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
+                        tip: "Loading data..." // Loading message
+                    }}
                 />
             )}
         </>

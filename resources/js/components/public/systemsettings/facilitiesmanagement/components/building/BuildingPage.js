@@ -272,6 +272,7 @@ const handleDeleteBuilding = async (buildingId) => {
             setData((prevData) => [...prevData, response.data.building]);
             setIsCreateModalVisible(false);
             message.success('Building created successfully');
+            reloadData();
         } catch (error) {
             setError(error.message);
             message.error('Failed to create building');

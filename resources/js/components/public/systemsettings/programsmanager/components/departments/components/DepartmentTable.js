@@ -137,7 +137,11 @@ const DepartmentTable = ({
                 </div>
             )}
             scroll={{ x: 800 }} // Allows horizontal scrolling on smaller screens if needed
-            loading={loading}
+            loading={{
+                spinning: loading, // Controls if the table should show loading spinner
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
+                tip: "Loading data..." // Loading message
+            }}
             bordered
         />
     );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, InputNumber, message } from 'antd';
-import axios from 'axios';
+import { Modal, Form, Button, InputNumber, notification } from 'antd';
+import axios from 'axios'; // For making the GET request to read data
 
 const FloorModal = ({
     isCreateModalVisible,
@@ -11,10 +11,34 @@ const FloorModal = ({
     modalData,
 }) => {
     const [form] = Form.useForm();
+    const [existingFloors, setExistingFloors] = useState([]); // Store existing floors
+    const [loading, setLoading] = useState(false); // To manage loading state
 
+    // Fetch existing floors when the modal is opened
+    useEffect(() => {
+        if (isCreateModalVisible) {
+            setLoading(true);
+            axios
+                .get('/api/floors') // Replace with your actual API endpoint
+                .then(response => {
+                    setExistingFloors(response.data); // Assuming response.data is an array of floor levels
+                })
+                .catch(error => {
+                    console.error("Error fetching floors:", error);
+                    notification.error({
+                        message: 'Failed to Load Floors',
+                        description: 'There was an error fetching existing floors.',
+                    });
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    }, [isCreateModalVisible]);
+
+    // Prefill the form with data if editing
     useEffect(() => {
         if (isEditModalVisible && modalData) {
-            // Prefill if editing
             form.setFieldsValue({
                 floor_level: modalData.floor_level,
             });
@@ -23,25 +47,21 @@ const FloorModal = ({
         }
     }, [isEditModalVisible, isCreateModalVisible, modalData, form]);
 
-    const handleSave = async () => {
-        try {
-            // Validate form fields
-            const values = await form.validateFields();
-            const floorLevel = values.floor_level;
-
-            // Check if the floor level already exists by making an API request
-            const response = await axios.post('/api/floor/check', { floor_level: floorLevel });
-
-            if (response.data.exists) {
-                message.error('This floor level already exists!');
-            } else {
-                // Proceed to save the new floor level if it doesn't exist
-                handleCreateFloor({ floor_level: floorLevel });
-            }
-        } catch (error) {
-            console.error("Error saving floor:", error);
-            message.error('An error occurred while saving the floor.');
+    // Custom validation for floor level
+    const checkIfFloorExists = (rule, value) => {
+        if (value && existingFloors.includes(value)) {
+            return Promise.reject('Floor level already exists');
         }
+        return Promise.resolve();
+    };
+
+    const handleSave = () => {
+        form.validateFields().then(values => {
+            // If validation passes, save the floor
+            const { floor_level } = values;
+            handleCreateFloor({ floor_level });
+            handleCancel();
+        });
     };
 
     const handleCancel = () => {
@@ -58,18 +78,21 @@ const FloorModal = ({
                 <Button key="cancel" onClick={handleCancel}>
                     Cancel
                 </Button>,
-                <Button key="save" type="primary" onClick={handleSave}>
+                <Button key="save" type="primary" onClick={handleSave} loading={loading}>
                     Save
                 </Button>,
             ]}
         >
-            <Form form={form} layout="vertical" name="floorForm">
+            <Form form={form} layout="vertical">
                 <Form.Item
-                    label="Floor Level"
                     name="floor_level"
-                    rules={[{ required: true, message: 'Please enter a floor level' }]}
+                    label="Floor Level"
+                    rules={[
+                        { required: true, message: 'Please input the floor level' },
+                        { validator: checkIfFloorExists }, // Custom validation to check if floor exists
+                    ]}
                 >
-                    <InputNumber min={1} max={100} style={{ width: '100%' }} />
+                    <InputNumber min={1} />
                 </Form.Item>
             </Form>
         </Modal>

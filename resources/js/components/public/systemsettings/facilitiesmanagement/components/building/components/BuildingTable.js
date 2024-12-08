@@ -122,7 +122,11 @@ const BuildingTable = ({
                 </div>
             )}
             scroll={{ x: 1200 }} // Allow horizontal scrolling if needed
-            loading={loading} // Show loading spinner when data is being fetched
+            loading={{
+                spinning: loading, // Controls if the table should show loading spinner
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
+                tip: "Loading data..." // Loading message
+            }} // Show loading spinner when data is being fetched
             locale={{
                 emptyText: loading ? 'Loading Buildings...' : 'No Buildings Found.', // Show loading or empty message
             }}

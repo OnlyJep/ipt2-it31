@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { Layout, theme, Spin } from "antd";
-// Replace direct imports with lazy imports
-const Header = React.lazy(() => import("./Header")); // Lazy-loaded Header
-const SideBar = React.lazy(() => import("./SideBar")); // Lazy-loaded Sidebar
-import MobileSidebarToggle from './MobileSidebarToggle'; // Import mobile sidebar toggle component
+
+const Header = React.lazy(() => import("./Header")); 
+const SideBar = React.lazy(() => import("./SideBar")); 
+import MobileSidebarToggle from './MobileSidebarToggle'; 
 import { useMediaQuery } from 'react-responsive';
 
 const { Sider, Content } = Layout;
@@ -11,16 +11,16 @@ const { Sider, Content } = Layout;
 const MainDashboard = ({ children }) => {
   const {
     token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken(); // Dynamic theme styling
+  } = theme.useToken(); 
 
-  // State for Sidebar collapse (desktop view)
+  
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mobileSidebarVisible, setMobileSidebarVisible] = useState(false); // State for mobile sidebar visibility
-  const [userRole, setUserRole] = useState(null); // State for user role (null initially)
-  const [isLoaded, setIsLoaded] = useState(false); // Loading state to ensure userRole is set before render
-  const [isMobile, setIsMobile] = useState(false); // Track if we are in mobile view
+  const [mobileSidebarVisible, setMobileSidebarVisible] = useState(false); 
+  const [userRole, setUserRole] = useState(null); 
+  const [isLoaded, setIsLoaded] = useState(false); 
+  const [isMobile, setIsMobile] = useState(false); 
 
-  // Effect to check for the user role
+  
   useEffect(() => {
     const savedRole = localStorage.getItem("user_role");
     if (savedRole) {
@@ -31,62 +31,62 @@ const MainDashboard = ({ children }) => {
     setIsLoaded(true);
   }, []);
 
-  // Effect to detect screen width changes
+ 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 992) {
-        setIsMobile(true); // Treat as mobile if screen width is less than 992px
-        setSidebarCollapsed(false); // Un-collapse the desktop sidebar on mobile (if needed)
-        setMobileSidebarVisible(false); // Hide the mobile sidebar when switching to mobile
+        setIsMobile(true); 
+        setSidebarCollapsed(false); 
+        setMobileSidebarVisible(false); 
       } else {
-        setIsMobile(false); // Treat as desktop if screen width is greater than 992px
-        setMobileSidebarVisible(false); // Hide the mobile sidebar when switching to desktop
+        setIsMobile(false); 
+        setMobileSidebarVisible(false); 
       }
     };
 
-    // Call handleResize once on mount to set initial state
+    
     handleResize();
 
-    // Attach the resize event listener
+    
     window.addEventListener("resize", handleResize);
 
-    // Clean up event listener on component unmount
+    
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed); // Toggle sidebar visibility for desktop
+    setSidebarCollapsed(!sidebarCollapsed); 
   };
 
   const toggleMobileSidebar = () => {
-    setMobileSidebarVisible(!mobileSidebarVisible); // Toggle sidebar visibility for mobile
+    setMobileSidebarVisible(!mobileSidebarVisible); 
   };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      {/* Sidebar for larger screens */}
+      {}
       {!isMobile && (
         <Sider
           width={250}
           breakpoint="lg"
           collapsedWidth="0"
-          collapsed={sidebarCollapsed} // Handle collapse state for desktop
-          onCollapse={(collapsed) => setSidebarCollapsed(collapsed)} // Update collapse state
+          collapsed={sidebarCollapsed} 
+          onCollapse={(collapsed) => setSidebarCollapsed(collapsed)} 
           style={{
-            position: "fixed", // Keep the sidebar fixed on larger screens
+            position: "fixed", 
             height: "100vh",
             zIndex: 1,
           }}
         >
           <Suspense fallback={<Spin size="large" />}>
-            <SideBar userRole={userRole} /> {/* Pass userRole to the Sidebar */}
+            <SideBar userRole={userRole} /> {}
           </Suspense>
         </Sider>
       )}
 
-      {/* Main Layout */}
+      {}
       <Layout style={{ marginLeft: isMobile ? 0 : sidebarCollapsed ? 0 : 250, transition: 'margin-left 0.3s' }}>
-        {/* Mobile Sidebar Toggle Button */}
+        {}
         {isMobile && (
           <MobileSidebarToggle 
             userRole={userRole} 
@@ -95,7 +95,7 @@ const MainDashboard = ({ children }) => {
           />
         )}
 
-        {/* Header */}
+        {}
         <Suspense fallback={<Spin size="large" />}>
           <Header 
             style={{ padding: 0, background: colorBgContainer }} 
@@ -104,8 +104,8 @@ const MainDashboard = ({ children }) => {
           />
         </Suspense>
 
-        {/* Content Area */}
-        <Content style={{ marginTop: '64px', margin: "24px 16px 0" }}> {/* Offset content by header height */}
+        {}
+        <Content style={{ marginTop: '64px', margin: "24px 16px 0" }}> {}
           <div
             style={{
               padding: 24,
@@ -114,7 +114,7 @@ const MainDashboard = ({ children }) => {
               borderRadius: borderRadiusLG,
             }}
           >
-            {/* Render loading spinner only for content area */}
+            {}
             {isLoaded ? children : <Spin size="large" />}
           </div>
         </Content>

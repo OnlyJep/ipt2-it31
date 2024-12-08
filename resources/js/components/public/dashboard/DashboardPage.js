@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Layout, Row, Col, Card, Statistic, Breadcrumb, Typography, Divider, Spin } from 'antd';
-import { UserOutlined, TeamOutlined, FileTextOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import { UserOutlined, TeamOutlined, FileTextOutlined, AppstoreAddOutlined, ReloadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import MainDashboard from '../dashboard/components/MainDashboard';
 import { useLocation } from 'react-router-dom';
@@ -112,58 +112,97 @@ const DashboardPageDashboard = () => {
         <Content style={{ padding: '20px' }}>
             <Title level={1} style={{ marginBottom: '14px' }}>Analytics</Title>
             <Divider style={{ margin: '20px 0' }} />
+
+            {/* Main Loading Spinner */}
             {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '50px' }}>
                     <Spin size="large" />
                 </div>
             ) : (
                 <Row gutter={16}>
+                    {/* Total Enrolled Students Card */}
                     <Col xs={24} sm={12} md={6} lg={6}>
                         <Card
                             hoverable
                             bordered={false}
                             style={{ textAlign: 'center', backgroundColor: '#e6f7ff' }}
                         >
-                            {loadingStudents ? (
-                                <Spin size="small" />
-                            ) : (
+                            <Spin
+                                spinning={loadingStudents} // Display loading spinner based on loadingStudents state
+                                indicator={<ReloadOutlined spin style={{ fontSize: 24 }} />}
+                                tip="Loading students..."
+                            >
                                 <Statistic
                                     title="Total Enrolled Students"
                                     value={totalStudents || 0} // Fallback to 0 if null
                                     prefix={<UserOutlined style={{ color: '#1890ff' }} />}
                                     style={{ fontSize: '18px', color: '#1890ff' }}
                                 />
-                            )}
+                            </Spin>
                         </Card>
                     </Col>
 
+                    {/* Total Instructors Card */}
                     <Col xs={24} sm={12} md={6} lg={6}>
                         <Card
                             hoverable
                             bordered={false}
                             style={{ textAlign: 'center', backgroundColor: '#f6ffed' }}
                         >
-                            {loadingInstructors ? (
-                                <Spin size="small" />
-                            ) : (
+                            <Spin
+                                spinning={loadingInstructors} // Display loading spinner based on loadingInstructors state
+                                indicator={<ReloadOutlined spin style={{ fontSize: 24 }} />}
+                                tip="Loading instructors..."
+                            >
                                 <Statistic
                                     title="Total Instructors"
                                     value={totalInstructors || 0} // Fallback to 0 if null
                                     prefix={<TeamOutlined style={{ color: '#52c41a' }} />}
                                     style={{ fontSize: '18px', color: '#52c41a' }}
                                 />
-                            )}
+                            </Spin>
                         </Card>
                     </Col>
 
+                    {/* Total Courses Card */}
                     <Col xs={24} sm={12} md={6} lg={6}>
-                        <Card hoverable bordered={false} style={{ textAlign: 'center', backgroundColor: '#fff2e8' }}>
-                            {loadingCourses ? <Spin size="small" /> : <Statistic title="Total Courses" value={totalCourses} prefix={<FileTextOutlined style={{ color: '#ff4d4f' }} />} />}
+                        <Card
+                            hoverable
+                            bordered={false}
+                            style={{ textAlign: 'center', backgroundColor: '#fff2e8' }}
+                        >
+                            <Spin
+                                spinning={loadingCourses} // Display loading spinner based on loadingCourses state
+                                indicator={<ReloadOutlined spin style={{ fontSize: 24 }} />}
+                                tip="Loading courses..."
+                            >
+                                <Statistic
+                                    title="Total Courses"
+                                    value={totalCourses || 0} // Fallback to 0 if null
+                                    prefix={<FileTextOutlined style={{ color: '#ff4d4f' }} />}
+                                />
+                            </Spin>
                         </Card>
                     </Col>
+
+                    {/* Total Active Users Card */}
                     <Col xs={24} sm={12} md={6} lg={6}>
-                        <Card hoverable bordered={false} style={{ textAlign: 'center', backgroundColor: '#fff7e6' }}>
-                            {loadingActiveUsers ? <Spin size="small" /> : <Statistic title="Total Active Users" value={activeUsers} prefix={<AppstoreAddOutlined style={{ color: '#faad14' }} />} />}
+                        <Card
+                            hoverable
+                            bordered={false}
+                            style={{ textAlign: 'center', backgroundColor: '#fff7e6' }}
+                        >
+                            <Spin
+                                spinning={loadingActiveUsers} // Display loading spinner based on loadingActiveUsers state
+                                indicator={<ReloadOutlined spin style={{ fontSize: 24 }} />}
+                                tip="Loading active users..."
+                            >
+                                <Statistic
+                                    title="Total Active Users"
+                                    value={activeUsers || 0} // Fallback to 0 if null
+                                    prefix={<AppstoreAddOutlined style={{ color: '#faad14' }} />}
+                                />
+                            </Spin>
                         </Card>
                     </Col>
                 </Row>

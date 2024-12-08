@@ -132,7 +132,11 @@ const RoomTagsTable = ({
                 onChange: handlePageChange,
                 position: ['topRight'],
             }}
-            loading={loading} // Add this line
+            loading={{
+                spinning: loading, // Controls if the table should show loading spinner
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
+                tip: "Loading data..." // Loading message
+            }} // Add this line
             style={{ color: '#000' }}
             rowKey="id"
             scroll={{ x: 'max-content' }}

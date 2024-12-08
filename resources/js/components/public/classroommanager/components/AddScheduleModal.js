@@ -24,11 +24,11 @@ const AddScheduleModal = ({ isModalOpen, setIsModalOpen, handleCreateSchedules, 
                     .catch((info) => console.log('Validation Failed:', info));
             }}
             okText="Save All Schedules"
-            width="80%" // Responsive width
+            width="80%" 
             bodyStyle={{
                 padding: '16px',
                 maxHeight: '70vh',
-                overflowY: 'auto', // Add scrolling for smaller devices
+                overflowY: 'auto', 
             }}
         >
             <Form form={form} layout="vertical">
@@ -50,7 +50,7 @@ const AddScheduleModal = ({ isModalOpen, setIsModalOpen, handleCreateSchedules, 
                                     }}
                                 >
                                     <Row
-                                        gutter={[16, 16]} // Add spacing between fields
+                                        gutter={[16, 16]} 
                                         style={{
                                             flexWrap: 'wrap',
                                         }}

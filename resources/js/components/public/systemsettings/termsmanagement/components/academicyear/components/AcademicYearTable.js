@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Table, Button, Space, Typography } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+// AcademicYearTable.js
+import React from 'react';
+import { Table, Button, Space, Typography, Popconfirm } from 'antd';
+import { EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
@@ -9,35 +10,68 @@ const AcademicYearTable = ({
     data,
     setIsEditModalVisible,
     setModalData,
-    handleDeleteAcademicYear
+    handleDeleteAcademicYear,
+    handleRestoreAcademicYear, // Handler for restoring an academic year
+    currentPage,
+    pageSize,
+    setCurrentPage,
+    showArchived,
+    loading
 }) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
 
+    // Handle page change
     const handlePageChange = (page) => {
         setCurrentPage(page); // Update the current page when the page is changed
     };
 
-    const columns = [
+    // Handle edit action
+    const handleEdit = (record) => {
+        setModalData(record);
+        setIsEditModalVisible(true);
+    };
+
+    // Define table columns
+    const baseColumns = [
         {
             title: <span style={{ color: '#1890ff' }}>Actions</span>, // Blue title
             key: 'actions',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button
-                        icon={<EditOutlined />}
-                        style={{ backgroundColor: '#1677FF', borderColor: '#1677FF', color: '#fff' }}
-                        onClick={() => {
-                            setIsEditModalVisible(true);
-                            setModalData(record);
-                        }}
-                    />
-                    <Button
-                        icon={<DeleteOutlined />}
-                        danger
-                        style={{ backgroundColor: 'white', border: 'none', color: 'black' }}
-                        onClick={() => handleDeleteAcademicYear(record.id)}
-                    />
+                    {!record.isArchived ? (
+                        <>
+                            <Button
+                                icon={<EditOutlined />}
+                                style={{ backgroundColor: '#1677FF', borderColor: '#1677FF', color: '#fff' }}
+                                onClick={() => handleEdit(record)}
+                            />
+                            <Popconfirm
+                                title="Are you sure you want to delete this academic year?"
+                                onConfirm={() => handleDeleteAcademicYear(record.id)}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button
+                                    icon={<DeleteOutlined />}
+                                    danger
+                                    style={{ backgroundColor: 'white', border: 'none', color: 'black' }}
+                                />
+                            </Popconfirm>
+                        </>
+                    ) : (
+                        <Popconfirm
+                            title="Are you sure you want to restore this academic year?"
+                            onConfirm={() => handleRestoreAcademicYear(record.id)}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button
+                                icon={<ReloadOutlined />}
+                                style={{ backgroundColor: '#52c41a', borderColor: '#52c41a', color: '#fff' }}
+                            >
+                                Restore
+                            </Button>
+                        </Popconfirm>
+                    )}
                 </Space>
             ),
         },
@@ -52,35 +86,57 @@ const AcademicYearTable = ({
             key: 'academic_year',
         },
         {
-            title: <span style={{ color: '#1890ff' }}>Created At</span>, // Blue title
-            dataIndex: 'created_at',
-            key: 'created_at',
-            render: (text) => (
-                <Text>{new Date(text).toLocaleString()}</Text> // Format the date
-            ),
-        },
-        {
-            title: <span style={{ color: '#1890ff' }}>Updated At</span>, // Blue title
-            dataIndex: 'updated_at',
-            key: 'updated_at',
-            render: (text) => (
-                <Text>{new Date(text).toLocaleString()}</Text> // Format the date
-            ),
+            title: <span style={{ color: '#1890ff' }}>Description</span>, // Blue title
+            dataIndex: 'description',
+            key: 'description',
         },
     ];
+
+    // Additional columns based on view
+    const extraColumns = showArchived
+        ? [
+            {
+                title: <span style={{ color: '#1890ff' }}>Deleted At</span>, // Blue title
+                dataIndex: 'deleted_at',
+                key: 'deleted_at',
+                render: (value) => value ? new Date(value).toLocaleString() : 'None'
+            }
+        ]
+        : [
+            {
+                title: <span style={{ color: '#1890ff' }}>Created At</span>, // Blue title
+                dataIndex: 'created_at',
+                key: 'created_at',
+                render: (text) => (
+                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> // Format the date
+                ),
+            },
+            {
+                title: <span style={{ color: '#1890ff' }}>Updated At</span>, // Blue title
+                dataIndex: 'updated_at',
+                key: 'updated_at',
+                render: (text) => (
+                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> // Format the date
+                ),
+            },
+        ];
+
+    // Combine all columns
+    const columns = [...baseColumns, ...extraColumns];
 
     return (
         <Table
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={data.slice((currentPage - 1) * pageSize, currentPage * pageSize)} // Paginate the data
+            dataSource={data} // Data is already filtered and managed by parent
             rowKey="id" // Ensure each row is keyed by the unique academic year ID
             pagination={{
                 current: currentPage,
                 pageSize: pageSize,
                 total: data.length,
                 onChange: handlePageChange, // Update the page when changed
-                position: ['topRight'], // Pagination only at the top-right
+                position: ['topRight'],
+                showSizeChanger: false, // Hide page size changer if handled server-side
             }}
             footer={() => (
                 <div style={{ textAlign: 'left' }}>
@@ -89,6 +145,12 @@ const AcademicYearTable = ({
                 </div>
             )}
             scroll={{ x: 800 }} // Allows horizontal scrolling on smaller screens if needed
+            loading={{
+                spinning: loading, // Controls if the table should show loading spinner
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
+                tip: "Loading data..." // Loading message
+            }}
+            bordered
         />
     );
 };

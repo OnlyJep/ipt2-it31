@@ -1,6 +1,8 @@
+// FloorTable.js
 import React from 'react';
 import { Table, Space, Button, Typography, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
+import { toOrdinal } from './FloorUtils'; // Ensure the path is correct
 
 const { Text } = Typography;
 
@@ -33,38 +35,44 @@ const FloorTable = ({
             render: (_, record) => (
                 <Space>
                     {!record.isArchived && (
-                        <Button
-                            type="primary"
-                            icon={<EditOutlined />}
-                            onClick={() => handleEdit(record)}
-                        />
+                        <Popconfirm
+                            title="Are you sure you want to edit this floor?"
+                            onConfirm={() => handleEdit(record)}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button
+                                type="primary"
+                                icon={<EditOutlined />}
+                            />
+                        </Popconfirm>
                     )}
                     {!record.isArchived && (
                         <Popconfirm
-                        title="Are you sure you want to delete this floor?"
-                        onConfirm={() => handleDeleteFloor(record.id)}
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <Button
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                        />
+                            title="Are you sure you want to delete this floor?"
+                            onConfirm={() => handleDeleteFloor(record.id)}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button
+                                type="danger"
+                                icon={<DeleteOutlined />}
+                            />
                         </Popconfirm>
                     )}
                     {record.isArchived && (
                         <Popconfirm
-                        title="Are you sure you want to restore this floor?"
-                        onConfirm={() => handleRestoreFloor(record.id)}  // Trigger restore with year level ID
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <Button
-                            type="default"
-                            icon={<ReloadOutlined />}
+                            title="Are you sure you want to restore this floor?"
+                            onConfirm={() => handleRestoreFloor(record.id)}
+                            okText="Yes"
+                            cancelText="No"
                         >
-                            Restore
-                        </Button>
+                            <Button
+                                type="default"
+                                icon={<ReloadOutlined />}
+                            >
+                                Restore
+                            </Button>
                         </Popconfirm>
                     )}
                 </Space>
@@ -74,11 +82,14 @@ const FloorTable = ({
             title: <span style={{ color: '#1890ff' }}>ID</span>,
             dataIndex: 'id',
             key: 'id',
+            sorter: (a, b) => a.id - b.id, // Enable sorting
         },
         {
             title: <span style={{ color: '#1890ff' }}>Floor Level</span>,
             dataIndex: 'floor_level',
             key: 'floor_level',
+            render: (floorLevel) => `${toOrdinal(floorLevel)} Floor`, // Format floor_level
+            sorter: (a, b) => a.floor_level - b.floor_level, // Enable sorting
         },
     ];
 
@@ -88,7 +99,8 @@ const FloorTable = ({
                 title: <span style={{ color: '#1890ff' }}>Deleted At</span>,
                 dataIndex: 'deleted_at',
                 key: 'deleted_at',
-                render: (value) => value || 'None'
+                render: (value) => value ? new Date(value).toLocaleString() : 'None',
+                sorter: (a, b) => new Date(a.deleted_at) - new Date(b.deleted_at), // Enable sorting
             }
         ]
         : [
@@ -96,13 +108,15 @@ const FloorTable = ({
                 title: <span style={{ color: '#1890ff' }}>Created At</span>,
                 dataIndex: 'created_at',
                 key: 'created_at',
-                render: (value) => value || 'None'
+                render: (value) => value ? new Date(value).toLocaleString() : 'None',
+                sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at), // Enable sorting
             },
             {
                 title: <span style={{ color: '#1890ff' }}>Updated At</span>,
                 dataIndex: 'updated_at',
                 key: 'updated_at',
-                render: (value) => value || 'None'
+                render: (value) => value ? new Date(value).toLocaleString() : 'None',
+                sorter: (a, b) => new Date(a.updated_at) - new Date(b.updated_at), // Enable sorting
             }
         ];
 
@@ -121,7 +135,11 @@ const FloorTable = ({
                 onChange: handlePageChange,
                 position: ['topRight'],
             }}
-            loading={loading} // Add this line
+            loading={{
+                spinning: loading, // Controls if the table should show loading spinner
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
+                tip: "Loading data..." // Loading message
+            }} // Loading state
             style={{ color: '#000' }}
             rowKey="id"
             scroll={{ x: 'max-content' }}

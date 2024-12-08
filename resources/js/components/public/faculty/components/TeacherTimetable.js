@@ -1,39 +1,26 @@
 import React from 'react';
-import { Table } from 'antd';
+import { Card, Table } from 'antd';
 
-// Example timetable data
-const timetableData = [
-  { key: 1, day: 'Monday', time: '9:00 AM - 11:00 AM', course: 'CS101' },
-  { key: 2, day: 'Tuesday', time: '1:00 PM - 3:00 PM', course: 'CS102' },
-  { key: 3, day: 'Wednesday', time: '10:00 AM - 12:00 PM', course: 'CS201' },
-  { key: 4, day: 'Thursday', time: '11:00 AM - 1:00 PM', course: 'CS102' },
-];
+// TeacherTimetable component to display timetable data
+const TeacherTimetable = ({ timetable, searchQuery }) => {
+    // Filter timetable based on search query
+    const filteredTimetable = timetable.filter(
+        entry => entry.teacherName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
-const TeacherTimetable = () => {
-  const columns = [
-    {
-      title: 'Day',
-      dataIndex: 'day',
-    },
-    {
-      title: 'Time',
-      dataIndex: 'time',
-    },
-    {
-      title: 'Course',
-      dataIndex: 'course',
-    },
-  ];
-
-  return (
-    <Table
-      columns={columns}
-      dataSource={timetableData}
-      pagination={false}
-      title={() => 'Teacher Timetable'}
-      style={{ marginBottom: 24 }}
-    />
-  );
+    return (
+        <Card title="Teacher Timetable" bordered={false}>
+            <Table
+                dataSource={filteredTimetable}
+                columns={[
+                    { title: 'Teacher', dataIndex: 'teacherName', key: 'teacherName' },
+                    { title: 'Subject', dataIndex: 'subject', key: 'subject' },
+                    { title: 'Time', dataIndex: 'time', key: 'time' },
+                ]}
+                rowKey="id"
+            />
+        </Card>
+    );
 };
 
 export default TeacherTimetable;

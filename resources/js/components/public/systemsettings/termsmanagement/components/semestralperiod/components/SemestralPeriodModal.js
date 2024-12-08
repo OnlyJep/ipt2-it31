@@ -10,6 +10,8 @@ const SemesterModal = ({
     setData,
     modalData,
     setModalData,
+    handleEditSemester,
+    handleCreateSemester,
 }) => {
     const [form] = Form.useForm();
 
@@ -24,49 +26,41 @@ const SemesterModal = ({
 
     const handleOk = () => {
         form.validateFields().then((values) => {
+            // Ensure the semester_period is trimmed to avoid issues with extra spaces
             const semesterPeriodName = values.semester_period.trim();
-
-            // Check if the semester period already exists
-            const semesterExists = data.some(
-                (semester) => semester.semester_period.toLowerCase() === semesterPeriodName.toLowerCase()
-            );
-
-            if (semesterExists) {
-                message.error('This Semester Period already exists.');
-                return; // Prevent the modal from closing if semester period exists
-            }
-
+    
+            // Only send necessary data to the backend (just semester_period)
+            const sanitizedValues = { semester_period: semesterPeriodName };
+    
             if (isEditModalVisible) {
-                // Handle update logic for an existing semester
-                const updatedData = data.map((semester) =>
-                    semester.id === modalData.id
-                        ? { ...semester, ...values, updated_at: new Date().toISOString() }
-                        : semester
-                );
-                setData(updatedData);
-                setIsEditModalVisible(false);
-                message.success('Semester Period updated successfully');
+                // Handle the update logic for an existing semester
+                handleEditSemester(modalData.id, sanitizedValues);
             } else {
-                // Handle create logic for a new semester
-                const newSemester = {
-                    id: Date.now(), // Auto-generate unique ID using timestamp
-                    ...values,
-                    created_at: new Date().toISOString(), // Set created_at and updated_at
-                    updated_at: new Date().toISOString(),
-                };
-                setData([...data, newSemester]);
-                setIsCreateModalVisible(false);
-                message.success('New Semester Period created successfully');
+                // Handle the create logic for a new semester
+                handleCreateSemester(sanitizedValues);
             }
-            form.resetFields(); // Reset the form fields
+    
+            // Reset the form fields after submission
+            form.resetFields();
+        }).catch((info) => {
+            // Catch any form validation errors
+            console.log('Validate Failed:', info);
         });
     };
-
+    
+    
+    
+    
+    
+    
+    
     const handleCancel = () => {
-        setIsCreateModalVisible(false);
-        setIsEditModalVisible(false);
-        form.resetFields(); // Clear the form when the modal is canceled
+        form.resetFields(); // Reset the form fields when the modal is closed
+        setIsCreateModalVisible(false); // Close the "Create" modal
+        setIsEditModalVisible(false); // Close the "Edit" modal
     };
+    
+    
 
     return (
         <Modal

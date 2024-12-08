@@ -3,14 +3,14 @@ import { Button, Input, Space, Typography, message, Popconfirm } from 'antd';
 import { FileTextOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import YearLevelTable from './components/YearLevelTable';
 import YearLevelModal from './components/YearLevelModal';
-import { yearLevelData } from './components/YearLevelData'; // Replace with your initial year level data
+//import { yearLevelData } from './components/YearLevelData'; // Replace with your initial year level data
 
 const { Text } = Typography;
 
 const YearLevelPage = () => {
-    const [data, setData] = useState(yearLevelData); // Store active data
+    const [data, setData] = useState([]); // Store active data
     const [archivedData, setArchivedData] = useState([]); // Store archived data
-    const [filteredData, setFilteredData] = useState(yearLevelData); // Filtered data based on search
+    const [filteredData, setFilteredData] = useState([]); // Filtered data based on search
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(false);
@@ -343,6 +343,7 @@ const YearLevelPage = () => {
                 handleDeleteYearLevel={handleDeleteYearLevel}
                 handleRestoreYearLevel={handleRestoreYearLevel}
                 handleDeleteSelected={handleDeleteSelected}
+                loading={loading}
             />
             <YearLevelModal
                 isEditModalVisible={isEditModalVisible}

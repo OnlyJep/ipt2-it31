@@ -1,23 +1,43 @@
 import React from 'react';
-import { Layout } from "antd";
-import MainDashboard from '../../dashboard/components/MainDashboard';  // Import MainDashboard
+import { Tabs } from 'antd';
+import { AppstoreAddOutlined, FileSearchOutlined } from '@ant-design/icons'; // Import icons
+import PostEventPage from './components/event/PostEventPage'; // Import Post Event component
+import PostAnnouncementPage from './components/announcement/PostAnnouncementPage'; // Import Post Announcement component
+import MainDashboard from '../../dashboard/components/MainDashboard'; // Import Dashboard
 
-const { Content } = Layout; // Destructure Content from Layout
+const { TabPane } = Tabs;
 
-
-const PostingManagementPageDashboard = () => {
-    return (
-        <Content>
-            <h1>This is a Posting Management page</h1>
-        </Content>
-    );
-};
 const PostingManagementPage = () => {
-    return (
-        <MainDashboard>
-            <PostingManagementPageDashboard />
-        </MainDashboard>
-    );
+  return (
+    <MainDashboard>
+      <div style={{ padding: '20px', background: '#f5f5f5', minHeight: '100vh' }}>
+        <h1>Posting Management</h1>
+
+        {/* Blue Divider with 10% length */}
+        <div style={{
+          borderBottom: '2px solid #1890ff', 
+          width: '10%', 
+          marginBottom: '20px'
+        }} />
+
+        <Tabs defaultActiveKey="1" type="card">
+          <TabPane 
+            tab={<><AppstoreAddOutlined style={{ marginRight: '8px' }} />Post Event</>} 
+            key="1"
+          >
+            <PostEventPage />
+          </TabPane>
+
+          <TabPane 
+            tab={<><FileSearchOutlined style={{ marginRight: '8px' }} />Post Announcement</>} 
+            key="2"
+          >
+            <PostAnnouncementPage />
+          </TabPane>
+        </Tabs>
+      </div>
+    </MainDashboard>
+  );
 };
 
 export default PostingManagementPage;

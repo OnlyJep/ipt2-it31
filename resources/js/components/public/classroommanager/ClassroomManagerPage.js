@@ -16,11 +16,11 @@ const ClassroomManagerPage = () => {
     const [scheduleData, setScheduleData] = useState([]);
     const [editingSchedule, setEditingSchedule] = useState(null);
 
-    // Separate form instances
+    
     const [addForm] = Form.useForm();
     const [editForm] = Form.useForm();
 
-    // Handle schedule creation
+    
     const handleCreateSchedules = (values) => {
         const newSchedules = values.schedules.map((schedule) => {
             const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -47,7 +47,7 @@ const ClassroomManagerPage = () => {
         addForm.resetFields();
     };
 
-    // Handle edit schedule
+    
     const handleEditSchedule = (values) => {
         const updatedSchedules = scheduleData.map((schedule) =>
             schedule.id === editingSchedule.id ? { ...schedule, ...values } : schedule
@@ -57,7 +57,7 @@ const ClassroomManagerPage = () => {
         editForm.resetFields();
     };
 
-    // Handle delete schedule
+    
     const handleDeleteSchedule = () => {
         const updatedSchedules = scheduleData.filter((schedule) => schedule.id !== editingSchedule.id);
         setScheduleData(updatedSchedules);
@@ -65,12 +65,12 @@ const ClassroomManagerPage = () => {
         editForm.resetFields();
     };
 
-    // Handle save all schedules (UI for now)
+    
     const handleSaveSchedules = () => {
-        // For now, just log the schedules
+        
         console.log('Saving schedules:', scheduleData);
 
-        // You can add logic here to clear the table after "saving"
+        
         setScheduleData([]);
         message.success('All schedules saved and cleared.');
     };
@@ -82,15 +82,15 @@ const ClassroomManagerPage = () => {
                     <h2 style={{ marginBottom: '0' }}>Classroom Manager</h2>
                 </div>
 
-                {/* Blue Divider Below the Header */}
+                {}
                 <div style={{
                     borderBottom: '2px solid #1890ff',
                     width: '10%',
                     marginBottom: '20px', 
-                    marginLeft: '0',  // Align to the left
+                    marginLeft: '0',  
                 }} />
 
-                {/* Buttons Container with Right Alignment */}
+                {}
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
                     <Button type="primary" onClick={() => setIsModalOpen(true)} style={{ marginRight: '10px' }}>
                         Add Schedule
@@ -113,7 +113,7 @@ const ClassroomManagerPage = () => {
                     setIsModalOpen={setIsModalOpen}
                     handleCreateSchedules={handleCreateSchedules}
                     form={addForm}
-                    scheduleData={scheduleData} // Pass scheduleData as a prop here
+                    scheduleData={scheduleData} 
                 />
 
                 <EditScheduleModal

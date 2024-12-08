@@ -77,8 +77,8 @@ const CollegeProgramsPage = () => {
             }
         } catch (err) {
             console.error('Error fetching archived college programs:', err);
-            setError('Failed to fetch archived college programs.');
-            message.error('Failed to fetch archived college programs.');
+            setError('No archived content available at the moment.');
+            message.error('No archived content available at the moment.');
         } finally {
             setLoading(false);
         }

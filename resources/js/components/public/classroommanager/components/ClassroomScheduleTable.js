@@ -1,18 +1,18 @@
 import React from 'react';
 import moment from 'moment';
-import { daysOfWeek } from './constants'; // Import daysOfWeek
+import { daysOfWeek } from './constants'; 
 
 const ClassroomScheduleTable = ({ scheduleData, onEditSchedule }) => {
-    // Generate time slots for each hour (7:00 am, 7:30 am, 7:59 am, etc.)
+    
     const generateTimeSlots = () => {
-        const startHour = 7; // Starting hour (7:00 am)
-        const endHour = 20; // Ending hour (8:00 pm, which is 20:00 in 24-hour format)
+        const startHour = 7; 
+        const endHour = 20; 
         let slots = [];
 
         for (let hour = startHour; hour <= endHour; hour++) {
             slots.push(moment({ hour, minute: 0 }));
             slots.push(moment({ hour, minute: 30 }));
-            slots.push(moment({ hour, minute: 59 })); // Add 7:59 am, 8:59 am, etc.
+           
         }
         return slots;
     };
@@ -38,7 +38,7 @@ const ClassroomScheduleTable = ({ scheduleData, onEditSchedule }) => {
                     marginBottom: '4px',
                     cursor: 'pointer',
                 }}
-                onClick={() => onEditSchedule(event)} // Trigger edit on click
+                onClick={() => onEditSchedule(event)} 
             >
                 <div>Room: {event.classroom_id}</div>
                 <div style={{ fontSize: '12px', fontStyle: 'italic' }}>
@@ -55,12 +55,12 @@ const ClassroomScheduleTable = ({ scheduleData, onEditSchedule }) => {
         <div
             style={{
                 display: 'grid',
-                gridTemplateColumns: '150px repeat(7, 1fr)', // Column layout with fixed Time column
+                gridTemplateColumns: '150px repeat(7, 1fr)', 
                 border: '1px solid #ddd',
-                overflowX: 'auto', // Enable horizontal scrolling for smaller screens
+                overflowX: 'auto', 
             }}
         >
-            {/* Header Row for Time */}
+            {}
             <div
                 style={{
                     padding: '10px',
@@ -89,7 +89,7 @@ const ClassroomScheduleTable = ({ scheduleData, onEditSchedule }) => {
 
             {timeSlots.map((time, index) => (
                 <React.Fragment key={time.format('hh:mm A')}>
-                    {/* Time Slot Row */}
+                    {}
                     <div
                         style={{
                             padding: '10px',
@@ -102,7 +102,7 @@ const ClassroomScheduleTable = ({ scheduleData, onEditSchedule }) => {
                         {time.format('h:mm a')}
                     </div>
 
-                    {/* Render schedule cells for each day */}
+                    {}
                     {daysOfWeek.map((day) => (
                         <div
                             key={`${day}-${time.format('hh:mm A')}`}

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Result, Button, Typography, Tag } from 'antd';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import loginLogo from '../../../../public/images/loginpagebackground.svg';
-import fsuu from '../../../../public/images/loginlogo.svg'; // Your new image
+import loginLogo from '../../../../public/images/loginpagebackground.svg'; // Background image
 
 const { Title, Text } = Typography;
 
-const UnauthorizedPage = () => {
+const NotFoundPage = () => {
   const navigate = useNavigate(); // Initialize useNavigate
   const [timeLeft, setTimeLeft] = useState(10); // Initialize the timer with 10 seconds
 
@@ -29,63 +28,44 @@ const UnauthorizedPage = () => {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     height: '100vh', // Full viewport height
+    padding: '20px',
+    position: 'relative',
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
   };
 
-  const textStyle = {
+  const timerStyle = {
+    position: 'absolute',
+    top: '20px',
+    right: '20px',
     color: 'white',
-  };
-
-  const titleStyle = {
-    color: '#ff4d4f', // Red color for the 403 title
-    fontSize: '64px', // Large title size
-    fontWeight: 'bold', // Make the title bold
-    textShadow: '2px 2px 8px rgba(0, 0, 0, 0.4)', // Add a text shadow
-  };
-
-  const subTitleStyle = {
-    color: 'white',
-    fontSize: '18px', // Slightly smaller than the title
-    textAlign: 'center',
-    marginTop: '20px', // Add some space above the subtitle
+    fontSize: '18px',
+    border: '2px solid white',
+    padding: '5px 10px',
+    borderRadius: '5px',
   };
 
   return (
     <div style={backgroundStyle}>
-      {/* Timer and redirect message */}
-      <Tag
-        color="transparent"
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          padding: '10px 15px',
-          fontSize: '16px',
-          border: '1px solid white',
-          color: 'white',
-          fontWeight: 'bold',
-        }}
-      >
-        Redirecting in {timeLeft}s
-      </Tag>
+      {/* Timer */}
+      <div style={timerStyle}>
+        <Text style={{ color: 'white' }}>Redirecting in {timeLeft}s...</Text>
+      </div>
 
-      {/* Main content */}
       <Result
-        status="403"
-        title={<Title level={1} style={titleStyle}>403</Title>}
-        subTitle={<Text style={subTitleStyle}>You are not authorized to view this page.</Text>}
-        extra={[
-          <Button type="primary" key="console" href="/">
-            Go to Homepage
-          </Button>,
-        ]}
+        status="404"
+        title={<Title style={{ color: 'white' }}>401</Title>}
+        subTitle={<Text style={{ color: 'white' }}>Sorry, the page you are looking for does not exist.</Text>}
+        extra={
+          <Button type="primary">
+            <a href="/">Back to Home</a>
+          </Button>
+        }
       />
     </div>
   );
 };
 
-export default UnauthorizedPage;
-
+export default NotFoundPage;

@@ -23,6 +23,7 @@ import ProgramsManagerManagement from './../public/systemsettings/programsmanage
 import PostingManagement from './../public/systemsettings/postingmanagement/PostingManagementPage';
 import TermsManagement from '../public/systemsettings/termsmanagement/TermsManagementPage';
 
+import EmptyPage from './EmptyPage';
 const isAuthenticated = () => {
   return !!localStorage.getItem('auth_token'); // Check if the token exists
 };
@@ -72,6 +73,7 @@ export default function Routers() {
         {/* Header and Sidebar Routes */}
         <Route path="/header" element={<Header />} />
         <Route path="/sidebar" element={<SideBar userRole={userRole} />} />
+        <Route path="*" element={<EmptyPage />} />
       </Routes>
     </Router>
   );
