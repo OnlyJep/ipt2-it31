@@ -113,7 +113,7 @@
   /* Style for submenu item when selected */
   &.ant-menu-submenu-open,
   &.ant-menu-submenu-selected {
-    background-color: rgba(255, 255, 255, 0.1) !important; /* White background for selected item */
+    background-color: rgba(255, 255, 255, 0.1) ; /* White background for selected item */
     //background-color: transparent !important; /* Transparent background */
     color: #fff; /* White color for selected and open submenu items */
     border-left: 4px solid #1890ff !important; /* Blue left border for selected item */

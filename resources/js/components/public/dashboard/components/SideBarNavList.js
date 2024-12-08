@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu } from 'antd';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -17,13 +17,23 @@ const SideBarNavList = React.memo(({ userRole }) => {
 
   const [openKeys, setOpenKeys] = useState([]);
 
+  // Update openKeys when the route changes
+  useEffect(() => {
+    // If the URL includes "/system-settings", keep the "System Settings" submenu open
+    if (location.pathname.includes('/system-settings')) {
+      setOpenKeys(['system-settings']);
+    } else {
+      setOpenKeys([]); // Collapse the submenu if we're not in the system settings section
+    }
+  }, [location.pathname]);
+
   const onOpenChange = (keys) => {
     setOpenKeys(keys);
   };
 
   return (
     <Menu
-      theme="dark"
+      theme="blue"
       mode="inline"
       selectedKeys={[location.pathname]}
       openKeys={openKeys}
@@ -105,7 +115,6 @@ const SideBarNavList = React.memo(({ userRole }) => {
           key="system-settings"
           icon={<SettingOutlined />}
           title="System Settings"
-          onTitleClick={() => setOpenKeys(openKeys.length ? [] : ['system-settings'])}
         >
           <Menu.Item key="/system-settings/facilities-manager">
             <NavLink to="/system-settings/facilities-manager" className="nav-link">

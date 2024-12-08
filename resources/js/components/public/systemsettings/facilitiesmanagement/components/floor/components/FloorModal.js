@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, InputNumber } from 'antd';
+import { Modal, Form, Button, InputNumber, message } from 'antd';
+import axios from 'axios';
 
 const FloorModal = ({
     isCreateModalVisible,
@@ -22,11 +23,25 @@ const FloorModal = ({
         }
     }, [isEditModalVisible, isCreateModalVisible, modalData, form]);
 
-    const handleSave = () => {
-        form.validateFields().then(values => {
-            // values.floor_level is guaranteed to be a number
-            handleCreateFloor({ floor_level: values.floor_level });
-        });
+    const handleSave = async () => {
+        try {
+            // Validate form fields
+            const values = await form.validateFields();
+            const floorLevel = values.floor_level;
+
+            // Check if the floor level already exists by making an API request
+            const response = await axios.post('/api/floor/check', { floor_level: floorLevel });
+
+            if (response.data.exists) {
+                message.error('This floor level already exists!');
+            } else {
+                // Proceed to save the new floor level if it doesn't exist
+                handleCreateFloor({ floor_level: floorLevel });
+            }
+        } catch (error) {
+            console.error("Error saving floor:", error);
+            message.error('An error occurred while saving the floor.');
+        }
     };
 
     const handleCancel = () => {
@@ -52,9 +67,9 @@ const FloorModal = ({
                 <Form.Item
                     label="Floor Level"
                     name="floor_level"
-                    rules={[{ required: true, message: 'Please enter a floor level!' }]}
+                    rules={[{ required: true, message: 'Please enter a floor level' }]}
                 >
-                    <InputNumber style={{ width: '100%' }} placeholder="Enter Floor Level (numbers only)" />
+                    <InputNumber min={1} max={100} style={{ width: '100%' }} />
                 </Form.Item>
             </Form>
         </Modal>

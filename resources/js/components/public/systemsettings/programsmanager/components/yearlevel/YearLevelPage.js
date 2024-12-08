@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Space, Typography, message } from 'antd';
+import { Button, Input, Space, Typography, message, Popconfirm } from 'antd';
 import { FileTextOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import YearLevelTable from './YearLevelTable';
-import YearLevelModal from './YearLevelModal';
-import { yearLevelData } from './YearLevelData'; // Replace with your initial year level data
+import YearLevelTable from './components/YearLevelTable';
+import YearLevelModal from './components/YearLevelModal';
+import { yearLevelData } from './components/YearLevelData'; // Replace with your initial year level data
 
 const { Text } = Typography;
 
@@ -18,7 +18,9 @@ const YearLevelPage = () => {
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [modalData, setModalData] = useState(null);
     const [showArchived, setShowArchived] = useState(false); // Toggle archived data view
-
+    const [isPrintPreviewVisible, setIsPrintPreviewVisible] = useState(false);
+    
+    
     useEffect(() => {
         const filtered = (showArchived ? archivedData : data).filter(year =>
             year.year_level.toLowerCase().includes(searchValue.toLowerCase())
@@ -27,53 +29,234 @@ const YearLevelPage = () => {
     }, [searchValue, data, archivedData, showArchived]);
 
     const handleSearch = (value) => {
-        setSearchValue(value);
+        const filtered = (showArchived ? archivedData : data).filter((year) => {
+            const yearLevel = year.year_level; // Get the year_level
+    
+            // Ensure year_level is treated as a string, and handle undefined or null values
+            return (yearLevel && yearLevel.toString().toLowerCase().includes(value.toLowerCase()));
+        });
+    
+        setFilteredData(filtered);
     };
+    
+    const openPrintPreview = () => {
+        setIsPrintPreviewVisible(true);
+    };
+    
+    // Function to close the print preview modal
+    const closePrintPreview = () => {
+        setIsPrintPreviewVisible(false);
+    };
+    
 
     const handleReset = () => {
         setSearchValue('');
     };
 
-    const handleDeleteYearLevel = (id) => {
-        const yearToDelete = data.find(year => year.id === id);
-        if (yearToDelete) {
-            setData(data.filter(year => year.id !== id)); // Remove from active data
-            setArchivedData([...archivedData, { ...yearToDelete, isArchived: true }]); // Add to archived data
-            message.success('Year level archived successfully');
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('auth_token');
+            const response = await axios.get('/api/yearlevel', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                params: {
+                    deleted: showArchived ? 'true' : 'false', // Fetch archived data if showArchived is true
+                },
+            });
+
+            // Split the data into active and archived based on deleted_at
+            const activeData = response.data.filter(year => !year.deleted_at);
+            const archivedData = response.data.filter(year => year.deleted_at);
+
+            // Set data based on the toggle of showArchived
+            setData(activeData);
+            setArchivedData(archivedData);
+
+            // Apply filter based on search query if any
+            const filtered = (showArchived ? archivedData : activeData).filter(year =>
+                year.year_level.toLowerCase().includes(searchValue.toLowerCase())
+            );
+            setFilteredData(filtered);
+
+        } catch (error) {
+            message.error('Error fetching year levels: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleDeleteSelected = () => {
-        const selectedYears = data.filter(year => selectedRowKeys.includes(year.id));
-        const remainingYears = data.filter(year => !selectedRowKeys.includes(year.id));
+    useEffect(() => {
+        fetchData();
+    }, [showArchived, searchValue]); 
 
-        setData(remainingYears); // Remove selected from active data
-        setArchivedData([...archivedData, ...selectedYears.map(year => ({ ...year, isArchived: true }))]); // Archive selected
-        setSelectedRowKeys([]); // Clear selected keys
+    const reloadData = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('auth_token');
+            const response = await axios.get('/api/yearlevel', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                params: {
+                    deleted: showArchived ? 'true' : 'false', // Fetch archived data if showArchived is true
+                },
+            });
 
-        message.success(`${selectedYears.length} year level(s) archived successfully`);
+            // Split the data into active and archived based on deleted_at
+            const activeData = response.data.filter(year => !year.deleted_at);
+            const archivedData = response.data.filter(year => year.deleted_at);
+
+            // Set data based on the toggle of showArchived
+            setData(activeData);
+            setArchivedData(archivedData);
+
+            // Apply filter based on search query if any
+            const filtered = (showArchived ? archivedData : activeData).filter(year =>
+                year.year_level.toLowerCase().includes(searchValue.toLowerCase())
+            );
+            setFilteredData(filtered);
+
+        } catch (error) {
+            message.error('Error fetching year levels: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setLoading(false);
+        }
     };
+    
 
-    const handleRestoreSelected = () => {
-        const selectedYears = archivedData.filter(year => selectedRowKeys.includes(year.id));
-        const remainingArchivedYears = archivedData.filter(year => !selectedRowKeys.includes(year.id));
-
-        setArchivedData(remainingArchivedYears); // Remove selected from archived data
-        setData([...data, ...selectedYears.map(year => ({ ...year, isArchived: false }))]); // Add back to active data
-        setSelectedRowKeys([]); // Clear selected keys
-
-        message.success(`${selectedYears.length} year level(s) restored successfully`);
+    const handleDeleteYearLevel = async (id) => {
+        try {
+            const token = localStorage.getItem('auth_token');  // Assuming auth token is saved in localStorage
+            
+            // Send DELETE request to backend
+            const response = await axios.delete(`/api/yearlevel/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            
+            // Handle success (update the state, remove from table)
+            if (response.status === 200) {
+                message.success('Year Level deleted successfully');
+                reloadData();  // Call reloadData to refetch the updated data
+            }
+        } catch (error) {
+            message.error('Failed to delete year level: ' + error.message);
+        }
     };
+    
+
+    const handleDeleteSelected = async () => {
+        try {
+            const token = localStorage.getItem('auth_token');
+            
+            // Create an array of promises for deleting the selected rows
+            const deletePromises = selectedRowKeys.map(async (id) => {
+                return axios.delete(`/api/yearlevel/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            });
+    
+            // Wait for all promises to finish
+            await Promise.all(deletePromises);
+    
+            // Reload data after deletion
+            reloadData();
+    
+            message.success(`${selectedRowKeys.length} Year Level(s) deleted.`);
+        } catch (error) {
+            message.error('Failed to delete year levels: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setSelectedRowKeys([]); // Reset selected rows
+        }
+    };
+    
+
+    const handleRestoreYearLevel = async (id) => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('auth_token');
+            
+            // Send a POST request to restore the year level
+            const response = await axios.post(`/api/yearlevel/${id}/restore`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            // Reload the data after restoring the item
+            reloadData();
+            message.success('Year level restored successfully.');
+        } catch (error) {
+            message.error('Failed to restore year level: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+
+    const handleRestoreSelected = async () => {
+        try {
+            const token = localStorage.getItem('auth_token');
+    
+            // Create an array of promises for restoring the selected rows
+            const restorePromises = selectedRowKeys.map(async (id) => {
+                return axios.post(`/api/yearlevel/${id}/restore`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+            });
+    
+            // Wait for all promises to finish
+            await Promise.all(restorePromises);
+    
+            // Reload data after restore
+            reloadData();
+    
+            message.success(`${selectedRowKeys.length} Year Level(s) restored.`);
+        } catch (error) {
+            message.error('Failed to restore year levels: ' + (error.response?.data?.message || error.message));
+        } finally {
+            setSelectedRowKeys([]); // Reset selected rows
+        }
+    };
+    
 
     // Define the function for opening the Create Modal
-    const handleCreateYearLevel = () => {
-        setIsCreateModalVisible(true); // Show the Create Year Level Modal
+    const handleCreateYearLevel = async (values) => {
+        try {
+            const token = localStorage.getItem('auth_token');
+    
+            // Send POST request to create the year level
+            const response = await axios.post('/api/yearlevel', values, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            // Update the state with the new year level
+            setData((prevData) => [...prevData, response.data.yearLevel]);
+    
+            // Close the modal and show success message
+            setIsCreateModalVisible(false);
+            message.success('Year Level created successfully');
+        } catch (error) {
+            message.error('Failed to create Year Level: ' + (error.response?.data?.message || error.message));
+        }
     };
+    
 
     const rowSelection = {
         selectedRowKeys,
-        onChange: (keys) => setSelectedRowKeys(keys),
+        onChange: (newSelectedRowKeys) => setSelectedRowKeys(newSelectedRowKeys),
     };
+    
+    
 
     return (
         <div style={{ padding: '20px', background: '#fff' }}>
@@ -94,7 +277,14 @@ const YearLevelPage = () => {
                         onChange={(e) => setSearchValue(e.target.value)}
                         allowClear
                     />
-                    <Button icon={<FileTextOutlined />}>Print</Button>
+                    <Button 
+                        icon={<FileTextOutlined />}
+                        onClick={openPrintPreview} // Show print preview modal
+                        type="primary"
+                    >
+                        Print Preview
+                    </Button>
+
                     <Button
                         icon={<UnorderedListOutlined />}
                         onClick={() => setShowArchived(!showArchived)}
@@ -105,27 +295,43 @@ const YearLevelPage = () => {
 
                 {/* Action buttons container */}
                 <Space wrap style={{ display: 'flex', gap: '10px' }}>
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={handleCreateYearLevel}
+                <Button
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    onClick={() => setIsCreateModalVisible(true)}
+                >
+                    Create New Year Level
+                </Button>
+
+                    {!showArchived && (
+                    <Popconfirm
+                        title="Are you sure you want to delete the selected year levels?"
+                        onConfirm={handleDeleteSelected}
+                        okText="Yes"
+                        cancelText="No"
                     >
-                        Create New Year Level
-                    </Button>
-                    <Button
-                        danger
-                        disabled={selectedRowKeys.length === 0} // Disable if no rows are selected
-                        onClick={handleDeleteSelected}
-                    >
-                        Remove Selected Year Levels
-                    </Button>
-                    {showArchived && (
                         <Button
-                            disabled={selectedRowKeys.length === 0} // Disable if no rows are selected
-                            onClick={handleRestoreSelected}
+                            danger
+                            disabled={rowSelection.selectedRowKeys.length === 0}
                         >
-                            Restore Selected Year Levels
+                            Remove Selected Year Levels
                         </Button>
+                    </Popconfirm>
+                    )}
+
+                    {showArchived && (
+                        <Popconfirm
+                            title="Are you sure you want to restore the selected year levels?"
+                            onConfirm={handleRestoreSelected}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button
+                                default
+                            >
+                                Restore Selected
+                            </Button>
+                        </Popconfirm>
                     )}
                 </Space>
             </div>
@@ -135,6 +341,8 @@ const YearLevelPage = () => {
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 handleDeleteYearLevel={handleDeleteYearLevel}
+                handleRestoreYearLevel={handleRestoreYearLevel}
+                handleDeleteSelected={handleDeleteSelected}
             />
             <YearLevelModal
                 isEditModalVisible={isEditModalVisible}
@@ -145,6 +353,10 @@ const YearLevelPage = () => {
                 setData={setData}
                 modalData={modalData}
                 setModalData={setModalData}
+                handleCreateYearLevel={handleCreateYearLevel}
+                isPrintPreviewVisible={isPrintPreviewVisible}
+                setIsPrintPreviewVisible={setIsPrintPreviewVisible}
+                closePrintPreview={closePrintPreview}
             />
         </div>
     );

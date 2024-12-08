@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Input, Space, message, Typography } from 'antd';
+import { Button, Input, Space, message, Typography, Popconfirm } from 'antd';
 import { PlusOutlined, FileTextOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import RoomTagsTable from './components/RoomTagsTable';
 import RoomTagsModal from './components/RoomTagsModal';
@@ -19,11 +19,13 @@ const RoomTagsPage = () => {
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [modalData, setModalData] = useState(null);
     const [currentPage, setCurrentPage] = useState(1); 
+    const [loading, setLoading] = useState(false);
     const pageSize = 5;
 
     const token = localStorage.getItem('auth_token'); 
 
     const fetchData = async () => {
+        setLoading(true);
         try {
             const response = await axios.get('/api/roomtag', {
                 headers: {
@@ -44,10 +46,13 @@ const RoomTagsPage = () => {
         } catch (error) {
             console.error('Error fetching room tags:', error);
             message.error('Failed to load active room tags.');
+        }  finally {
+            setLoading(false);
         }
     };
 
     const fetchArchivedData = async () => {
+        setLoading(true);
         try {
             const response = await axios.get('/api/roomtag?deleted=only', {
                 headers: {
@@ -67,7 +72,9 @@ const RoomTagsPage = () => {
             }
         } catch (error) {
             console.error('Error fetching archived room tags:', error);
-            message.error('Failed to load archived room tags.');
+            message.error('No archived content available at the moment.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -245,24 +252,37 @@ const RoomTagsPage = () => {
                             >
                                 Create New Room Tag
                             </Button>
+                            <Popconfirm
+                        title="Are you sure you want to delete the selected year levels?"
+                        onConfirm={handleDeleteSelected}
+                        okText="Yes"
+                        cancelText="No"
+                    >
                             <Button
                                 danger
                                 disabled={selectedRowKeys.length === 0}
-                                onClick={handleDeleteSelected}
                             >
                                 Remove Selected Room Tags
                             </Button>
+                            </Popconfirm>
                         </>
+                        
                     )}
 
                     {showArchived && (
+                         <Popconfirm
+                         title="Are you sure you want to restore the selected year levels?"
+                         onConfirm={handleRestoreSelected}
+                         okText="Yes"
+                         cancelText="No"
+                     >
                         <Button
                             type="default"
                             disabled={selectedRowKeys.length === 0}
-                            onClick={handleRestoreSelected}
                         >
                             Restore Selected Room Tags
                         </Button>
+                        </Popconfirm>
                     )}
                 </Space>
             </div>
@@ -278,6 +298,7 @@ const RoomTagsPage = () => {
                 pageSize={pageSize}
                 setCurrentPage={setCurrentPage}
                 showArchived={showArchived}
+                loading={loading} // Make sure this is passed down
             />
 
             <RoomTagsModal

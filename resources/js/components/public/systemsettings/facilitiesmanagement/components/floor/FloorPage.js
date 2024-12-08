@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Space, Typography, message } from 'antd';
+import { Button, Input, Space, Typography, message, Popconfirm  } from 'antd';
 import { FileTextOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import FloorTable from './components/FloorTable';
@@ -23,7 +23,7 @@ const FloorPage = () => {
     const pageSize = 10;
 
     const token = localStorage.getItem('auth_token'); 
-    const selectedBuildingId = 123; // Adjust this based on your needs
+
 
     const fetchFloors = async () => {
         setLoading(true);
@@ -77,8 +77,7 @@ const FloorPage = () => {
             }
         } catch (error) {
             console.error('Error fetching archived floors:', error);
-            setError('Failed to load archived floors.');
-            message.error('Failed to load archived floors.');
+            message.error('No archived content available at the moment.');
         } finally {
             setLoading(false);
         }
@@ -320,24 +319,36 @@ const FloorPage = () => {
                             >
                                 Create New Floor
                             </Button>
+                            <Popconfirm
+                        title="Are you sure you want to delete the selected floors?"
+                        onConfirm={handleDeleteSelected}
+                        okText="Yes"
+                        cancelText="No"
+                    >
                             <Button
                                 danger
                                 disabled={selectedRowKeys.length === 0}
-                                onClick={handleDeleteSelected}
                                 style={{ width: '100%' }}
                             >
                                 Remove Selected Floors
                             </Button>
+                            </Popconfirm>
                         </>
                     )}
                     {showArchived && (
+                         <Popconfirm
+                         title="Are you sure you want to restore the selected floors?"
+                         onConfirm={handleRestoreSelected}
+                         okText="Yes"
+                         cancelText="No"
+                     >
                         <Button
                             disabled={selectedRowKeys.length === 0}
-                            onClick={handleRestoreSelected}
                             style={{ width: '100%' }}
                         >
                             Restore Selected Floors
                         </Button>
+                        </Popconfirm>
                     )}
                 </Space>
             </div>
@@ -351,7 +362,7 @@ const FloorPage = () => {
                 currentPage={currentPage}
                 pageSize={pageSize}
                 setCurrentPage={setCurrentPage}
-                loading={loading}
+                loading={loading} // Make sure this is passed down
                 showArchived={showArchived}
             />
             <FloorModal

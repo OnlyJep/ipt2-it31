@@ -12239,7 +12239,7 @@ textarea.form-control-lg {
   border-left: 4px solid #1890ff !important; /* Blue left border for selected item */
 }
 .ant-menu-submenu.ant-menu-submenu-open, .ant-menu-submenu.ant-menu-submenu-selected {
-  background-color: rgba(255, 255, 255, 0.1) !important; /* White background for selected item */
+  background-color: rgba(255, 255, 255, 0.1); /* White background for selected item */
   color: #fff; /* White color for selected and open submenu items */
   border-left: 4px solid #1890ff !important; /* Blue left border for selected item */
 }

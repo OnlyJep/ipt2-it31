@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Space, Button, Typography } from 'antd';
+import { Table, Space, Button, Typography, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
@@ -14,7 +14,8 @@ const RoomTagsTable = ({
     currentPage,
     pageSize,
     setCurrentPage,
-    showArchived
+    showArchived,
+    loading,
 }) => {
     const handleEdit = (record) => {
         setModalData(record);
@@ -42,22 +43,35 @@ const RoomTagsTable = ({
 
                     {/* Delete Button */}
                     {!record.isArchived && (
+                        <Popconfirm
+                        title="Are you sure you want to delete this room tag?"
+                        onConfirm={() => handleDeleteRoomTag(record.id)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
                         <Button
                             type="danger"
                             icon={<DeleteOutlined />}
-                            onClick={() => handleDeleteRoomTag(record.id)}
+
                         />
+                        </Popconfirm>
                     )}
 
                     {/* Restore Button */}
                     {record.isArchived && (
+                         <Popconfirm
+                         title="Are you sure you want to restore this room tag?"
+                         onConfirm={() => handleRestoreRoomTag(record.id)}  // Trigger restore with year level ID
+                         okText="Yes"
+                         cancelText="No"
+                     >
                         <Button
                             type="default"
                             icon={<ReloadOutlined />}
-                            onClick={() => handleRestoreRoomTag(record.id)} // use restore function
                         >
                             Restore
                         </Button>
+                        </Popconfirm>
                     )}
                 </Space>
             ),
@@ -118,6 +132,7 @@ const RoomTagsTable = ({
                 onChange: handlePageChange,
                 position: ['topRight'],
             }}
+            loading={loading} // Add this line
             style={{ color: '#000' }}
             rowKey="id"
             scroll={{ x: 'max-content' }}
