@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'antd';
-import { CalendarOutlined, ReadOutlined } from '@ant-design/icons'; // Import icons
-import SemestralPeriodsPage from './components/semestralperiod/SemestralPeriodPage.js'; // Import Semestral Periods component
+import { CalendarOutlined, ReadOutlined } from '@ant-design/icons'; 
+import SemestralPeriodsPage from './components/semestralperiod/SemestralPeriodPage.js'; 
 import AcademicYearPage from './components/academicyear/AcademicYearPage';
 import MainDashboard from '../../dashboard/components/MainDashboard.js';
 
@@ -13,7 +13,7 @@ const TermsManagementPage = () => {
       <div style={{ padding: '20px', background: '#f5f5f5', minHeight: '100vh' }}>
         <h1>Terms Management</h1>
 
-        {/* Blue Divider with 10% length */}
+        {}
         <div style={{
           borderBottom: '2px solid #1890ff', 
           width: '10%', 

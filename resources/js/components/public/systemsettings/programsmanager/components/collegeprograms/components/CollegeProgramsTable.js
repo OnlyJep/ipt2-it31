@@ -1,4 +1,4 @@
-// CollegeProgramsTable.js
+
 import React from 'react';
 import { Table, Button, Space, Typography, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
@@ -11,7 +11,7 @@ const CollegeProgramsTable = ({
     setIsEditModalVisible,
     setModalData,
     handleDeleteProgram,
-    handleRestoreCollegeProgram, // Handler for restoring a college program
+    handleRestoreCollegeProgram, 
     currentPage,
     pageSize,
     setCurrentPage,
@@ -19,21 +19,21 @@ const CollegeProgramsTable = ({
     loading
 }) => {
 
-    // Handle page change
+    
     const handlePageChange = (page) => {
-        setCurrentPage(page); // Update the current page when the page is changed
+        setCurrentPage(page); 
     };
 
-    // Handle edit action
+    
     const handleEdit = (record) => {
         setModalData(record);
         setIsEditModalVisible(true);
     };
 
-    // Define table columns
+    
     const baseColumns = [
         {
-            title: <span style={{ color: '#1890ff' }}>Actions</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Actions</span>, 
             key: 'actions',
             render: (_, record) => (
                 <Space size="middle">
@@ -60,7 +60,7 @@ const CollegeProgramsTable = ({
                     ) : (
                         <Popconfirm
                             title="Are you sure you want to restore this year level?"
-                            onConfirm={() => handleRestoreCollegeProgram(record.id)}  // Trigger restore with year level ID
+                            onConfirm={() => handleRestoreCollegeProgram(record.id)}  
                             okText="Yes"
                             cancelText="No"
                         >
@@ -75,28 +75,28 @@ const CollegeProgramsTable = ({
                 </Space>
             ),
         },
+        // {
+        //     title: <span style={{ color: '#1890ff' }}>ID</span>, 
+        //     dataIndex: 'id',
+        //     key: 'id',
+        // },
         {
-            title: <span style={{ color: '#1890ff' }}>ID</span>, // Blue title
-            dataIndex: 'id',
-            key: 'id',
-        },
-        {
-            title: <span style={{ color: '#1890ff' }}>College Program</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>College Program</span>, 
             dataIndex: 'college_programs',
             key: 'college_programs',
         },
         {
-            title: <span style={{ color: '#1890ff' }}>Study Type</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Study Type</span>, 
             dataIndex: 'study_type',
             key: 'study_type',
         },
     ];
 
-    // Additional columns based on view
+    
     const extraColumns = showArchived
         ? [
             {
-                title: <span style={{ color: '#1890ff' }}>Deleted At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Deleted At</span>, 
                 dataIndex: 'deleted_at',
                 key: 'deleted_at',
                 render: (value) => value ? new Date(value).toLocaleString() : 'None'
@@ -104,51 +104,51 @@ const CollegeProgramsTable = ({
         ]
         : [
             {
-                title: <span style={{ color: '#1890ff' }}>Created At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Created At</span>, 
                 dataIndex: 'created_at',
                 key: 'created_at',
                 render: (text) => (
-                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> // Format the date
+                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> 
                 ),
             },
             {
-                title: <span style={{ color: '#1890ff' }}>Updated At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Updated At</span>, 
                 dataIndex: 'updated_at',
                 key: 'updated_at',
                 render: (text) => (
-                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> // Format the date
+                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> 
                 ),
             },
         ];
 
-    // Combine all columns
+    
     const columns = [...baseColumns, ...extraColumns];
 
     return (
         <Table
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={data} // Data is already filtered and managed by parent
-            rowKey="id" // Ensure each row is keyed by the unique college program ID
+            dataSource={data} 
+            rowKey="id" 
             pagination={{
                 current: currentPage,
                 pageSize: pageSize,
                 total: data.length,
-                onChange: handlePageChange, // Update the page when changed
+                onChange: handlePageChange, 
                 position: ['topRight'],
-                showSizeChanger: false, // Hide page size changer if handled server-side
+                showSizeChanger: false, 
             }}
             footer={() => (
                 <div style={{ textAlign: 'left' }}>
-                    {/* Page Info at Bottom Left */}
+                    {}
                     <Text>{`Page ${currentPage} of ${Math.ceil(data.length / pageSize)}`}</Text>
                 </div>
             )}
-            scroll={{ x: 800 }} // Allows horizontal scrolling on smaller screens if needed
+            scroll={{ x: 800 }} 
             loading={{
-                spinning: loading, // Controls if the table should show loading spinner
-                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
-                tip: "Loading data..." // Loading message
+                spinning: loading, 
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, 
+                tip: "Loading data..." 
             }}
             bordered
         />

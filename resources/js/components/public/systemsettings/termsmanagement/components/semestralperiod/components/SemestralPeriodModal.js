@@ -17,33 +17,33 @@ const SemesterModal = ({
 
     useEffect(() => {
         if (isEditModalVisible && modalData) {
-            // Pre-fill the form with data when editing
+            
             form.setFieldsValue({
-                semester_period: modalData.semester_period, // Editable semester period
+                semester_period: modalData.semester_period, 
             });
         }
     }, [isEditModalVisible, modalData, form]);
 
     const handleOk = () => {
         form.validateFields().then((values) => {
-            // Ensure the semester_period is trimmed to avoid issues with extra spaces
+            
             const semesterPeriodName = values.semester_period.trim();
     
-            // Only send necessary data to the backend (just semester_period)
+            
             const sanitizedValues = { semester_period: semesterPeriodName };
     
             if (isEditModalVisible) {
-                // Handle the update logic for an existing semester
+                
                 handleEditSemester(modalData.id, sanitizedValues);
             } else {
-                // Handle the create logic for a new semester
+                
                 handleCreateSemester(sanitizedValues);
             }
     
-            // Reset the form fields after submission
+            
             form.resetFields();
         }).catch((info) => {
-            // Catch any form validation errors
+            
             console.log('Validate Failed:', info);
         });
     };
@@ -55,9 +55,9 @@ const SemesterModal = ({
     
     
     const handleCancel = () => {
-        form.resetFields(); // Reset the form fields when the modal is closed
-        setIsCreateModalVisible(false); // Close the "Create" modal
-        setIsEditModalVisible(false); // Close the "Edit" modal
+        form.resetFields(); 
+        setIsCreateModalVisible(false); 
+        setIsEditModalVisible(false); 
     };
     
     

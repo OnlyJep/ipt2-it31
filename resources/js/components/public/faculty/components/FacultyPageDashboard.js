@@ -1,90 +1,92 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Import axios for API requests
-import { Layout, Row, Col, Input, Tabs, Spin, Alert, Card } from 'antd'; // Import necessary Ant Design components
-import { debounce } from 'lodash'; // Debounce function to prevent excessive search calls
-import TeacherTimetable from './TeacherTimetable'; // Import TeacherTimetable component
-import TeacherProfiles from './TeacherProfiles'; // Import TeacherProfiles component
-import TeacherAssignment from './TeacherAssignment'; // Import TeacherAssignment component
+import axios from 'axios'; 
+import { Layout, Row, Col, Input, Tabs, Spin, Alert, Card, Button } from 'antd'; 
+import { debounce } from 'lodash'; 
+import { useNavigate } from 'react-router-dom';  // Import useNavigate hook
+import TeacherTimetable from './TeacherTimetable'; 
+import TeacherProfiles from './TeacherProfiles'; 
+import TeacherAssignment from './TeacherAssignment'; 
 
 const { Content } = Layout;
 const { Search } = Input;
 const { TabPane } = Tabs;
 
 const FacultyPageDashboard = () => {
-    const [searchQuery, setSearchQuery] = useState(''); // State to store search query
-    const [teachers, setTeachers] = useState([]); // State to store fetched teacher profiles
-    const [timetable, setTimetable] = useState([]); // State to store fetched teacher timetables
-    const [assignments, setAssignments] = useState([]); // State to store teacher assignments
-    const [loading, setLoading] = useState(true); // Loading state for API calls
-    const [error, setError] = useState(null); // Error state
+    const [searchQuery, setSearchQuery] = useState(''); 
+    const [teachers, setTeachers] = useState([]); 
+    const [timetable, setTimetable] = useState([]); 
+    const [assignments, setAssignments] = useState([]); 
+    const [loading, setLoading] = useState(true); 
+    const [error, setError] = useState(null); 
 
-    // Fetch data from API when the component mounts
+    const navigate = useNavigate();  // Initialize navigate hook for redirection
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true); // Start loading
+                setLoading(true); 
 
-                // Fetch teacher profiles
-                const teacherResponse = await axios.get('https://api.example.com/teachers'); // Replace with your API endpoint
+                const teacherResponse = await axios.get('https://api.example.com/teachers'); 
                 setTeachers(teacherResponse.data);
 
-                // Fetch teacher timetable
-                const timetableResponse = await axios.get('https://api.example.com/timetable'); // Replace with your API endpoint
+                const timetableResponse = await axios.get('https://api.example.com/timetable'); 
                 setTimetable(timetableResponse.data);
 
-                // Fetch teacher assignments
-                const assignmentsResponse = await axios.get('https://api.example.com/assignments'); // Replace with your API endpoint
+                const assignmentsResponse = await axios.get('https://api.example.com/assignments'); 
                 setAssignments(assignmentsResponse.data);
 
             } catch (err) {
                 console.error('Error fetching data:', err);
                 setError('Failed to fetch data. Please try again later.');
             } finally {
-                setLoading(false); // End loading
+                setLoading(false); 
             }
         };
 
         fetchData();
-    }, []); // Empty dependency array ensures this runs only once
+    }, []); 
 
-    // Debounced search query handler (to reduce the frequency of API calls)
     const handleSearchChange = debounce((value) => {
-        setSearchQuery(value); // Update the search query in state
-    }, 500); // Delay the search for 500ms after the user stops typing
+        setSearchQuery(value); 
+    }, 500); 
 
     return (
         <Content style={{ padding: '20px', minHeight: '280px' }}>
-            {/* Search Bar */}
             <Row gutter={16} style={{ marginBottom: '20px' }}>
-                <Col span={24}>
+                <Col span={20}>
                     <Search
                         placeholder="Search for profiles, timetable, or assignments"
-                        onSearch={handleSearchChange} // Trigger search on pressing enter
-                        onChange={(e) => handleSearchChange(e.target.value)} // Trigger search as user types
+                        onSearch={handleSearchChange} 
+                        onChange={(e) => handleSearchChange(e.target.value)} 
                         value={searchQuery}
                         enterButton="Search"
-                        size="large"  // Adjusting the size of the search bar to 'large'
+                        size="large"  
                         style={{
-                            width: '100%',  // Makes the search bar take the full width of its container
-                            maxWidth: '600px', // Limit the width of the search bar to a max of 600px
+                            width: '100%',  
+                            maxWidth: '600px', 
                         }}
                     />
                 </Col>
+                <Col span={4}>
+                    <Button
+                        type="primary"
+                        onClick={() => navigate('/add-faculty')} 
+                        style={{ width: '100%' }}
+                    >
+                        Add Teacher
+                    </Button>
+                </Col>
             </Row>
 
-            {/* Loading Spinner */}
             {loading && (
                 <div style={{ textAlign: 'center' }}>
                     <Spin size="large" />
                 </div>
             )}
 
-            {/* Error Message */}
             {error && <Alert message={error} type="error" showIcon />}
 
-            {/* Tabs Layout */}
             <Tabs defaultActiveKey="1">
-                {/* Teacher Profiles Tab */}
                 <TabPane tab="Teacher Profiles" key="1">
                     <Row gutter={[16, 16]}>
                         {teachers
@@ -98,7 +100,7 @@ const FacultyPageDashboard = () => {
                                     xl={4}
                                     key={teacher.id}
                                     style={{
-                                        padding: '8px', // Add padding between items
+                                        padding: '8px', 
                                     }}
                                 >
                                     <Card
@@ -107,7 +109,7 @@ const FacultyPageDashboard = () => {
                                         extra={<a href="#">More</a>}
                                         style={{
                                             width: '100%',
-                                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)', // Shadow effect for the card
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)', 
                                         }}
                                     >
                                         <p>{teacher.subject}</p>
@@ -119,12 +121,10 @@ const FacultyPageDashboard = () => {
                     </Row>
                 </TabPane>
 
-                {/* Teacher Timetable Tab */}
                 <TabPane tab="Teacher Timetable" key="2">
                     <TeacherTimetable timetable={timetable} searchQuery={searchQuery} />
                 </TabPane>
 
-                {/* Teacher Assignments Tab */}
                 <TabPane tab="Teacher Assignments" key="3">
                     <TeacherAssignment assignments={assignments} searchQuery={searchQuery} />
                 </TabPane>

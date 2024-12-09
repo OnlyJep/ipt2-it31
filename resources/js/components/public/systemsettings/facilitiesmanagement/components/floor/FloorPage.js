@@ -236,7 +236,7 @@ const FloorPage = () => {
         printWindow.document.write('<html><head><title>Floor Table</title></head><body>');
         printWindow.document.write('<h2>Floor Data</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">');
-        printWindow.document.write('<thead><tr><th>ID</th><th>Floor Level</th>');
+        printWindow.document.write('<thead><tr><th>Floor Level</th>');
         if (!showArchived) {
             printWindow.document.write('<th>Created At</th><th>Updated At</th>');
         } else {
@@ -246,7 +246,7 @@ const FloorPage = () => {
 
         filteredData.forEach(floor => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${floor.id ?? ''}</td>`);
+            // printWindow.document.write(`<td>${floor.id ?? ''}</td>`);
             printWindow.document.write(`<td>${floor.floor_level ?? ''}</td>`);
             if (!showArchived) {
                 printWindow.document.write(`<td>${floor.created_at ?? ''}</td>`);

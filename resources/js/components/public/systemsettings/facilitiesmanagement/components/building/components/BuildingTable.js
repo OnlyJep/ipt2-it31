@@ -5,6 +5,14 @@ import { EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons'
 
 const { Text } = Typography;
 
+// Helper function to convert number to ordinal string
+const getOrdinalFloor = (num) => {
+    if (typeof num !== 'number') return 'No Floor';
+    const suffixes = ["th", "st", "nd", "rd"];
+    const v = num % 100;
+    return num + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]) + ' floor';
+};
+
 const BuildingTable = ({
     rowSelection,
     data,
@@ -13,6 +21,7 @@ const BuildingTable = ({
     handleDeleteBuilding,
     handleRestoreBuilding,
     loading, // Receive loading state from parent
+    reloadData,
 }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 10;
@@ -20,7 +29,6 @@ const BuildingTable = ({
     const handlePageChange = (page) => {
         setCurrentPage(page); // Update the current page when the page is changed
     };
-    
 
     const columns = [
         {
@@ -68,21 +76,18 @@ const BuildingTable = ({
                 </Space>
             ),
         },
-        {
-            title: <span style={{ color: '#1890ff' }}>ID</span>, // Blue title
-            dataIndex: 'id',
-            key: 'id',
-        },
+        
         {
             title: <span style={{ color: '#1890ff' }}>Building Name</span>, // Blue title
             dataIndex: 'building_name',
             key: 'building_name',
         },
         {
-            title: <span style={{ color: '#1890ff' }}>Floor ID</span>, // Blue title
-            dataIndex: 'floor_id',
-            key: 'floor_id',
-        },
+            title: <span style={{ color: '#1890ff' }}>Maximum Floor</span>, // Blue title
+            dataIndex: 'floor_level', // Use 'floor_level' from the data
+            key: 'floor',
+            render: (text, record) => getOrdinalFloor(record.floor ? record.floor.floor_level : null),  // Show ordinal floor or 'No Floor' if not available
+        },        
         {
             title: <span style={{ color: '#1890ff' }}>Created At</span>, // Blue title
             dataIndex: 'created_at',

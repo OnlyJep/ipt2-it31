@@ -1,38 +1,37 @@
-// PostEventPage.js
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Space, Typography, message, Popconfirm } from 'antd';
 import { PlusOutlined, UnorderedListOutlined, FileTextOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import PostEventTable from './components/PostEventTable'; // Import the PostEventTable component
-import PostEventModal from './components/PostEventModal'; // Import the PostEventModal component
-import moment from 'moment'; // Ensure moment is installed: npm install moment
+import PostEventTable from './components/PostEventTable'; 
+import PostEventModal from './components/PostEventModal'; 
+import moment from 'moment'; 
 
 const { Text } = Typography;
 
 const PostEventPage = () => {
-    // State Management
-    const [data, setData] = useState([]); // Active events
-    const [archivedData, setArchivedData] = useState([]); // Archived events
-    const [filteredData, setFilteredData] = useState([]); // Filtered data based on search and view
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Selected rows for batch actions
-    const [searchValue, setSearchValue] = useState(''); // Search input value
-    const [loading, setLoading] = useState(false); // Loading state
-    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false); // Visibility for Create Modal
-    const [isEditModalVisible, setIsEditModalVisible] = useState(false); // Visibility for Edit Modal
-    const [modalData, setModalData] = useState(null); // Data to prefill in Edit Modal
-    const [showArchived, setShowArchived] = useState(false); // Toggle between active and archived view
-    const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
-    const [error, setError] = useState(null); // Error state
-    const pageSize = 10; // Number of items per page
+    
+    const [data, setData] = useState([]); 
+    const [archivedData, setArchivedData] = useState([]); 
+    const [filteredData, setFilteredData] = useState([]); 
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]); 
+    const [searchValue, setSearchValue] = useState(''); 
+    const [loading, setLoading] = useState(false); 
+    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false); 
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false); 
+    const [modalData, setModalData] = useState(null); 
+    const [showArchived, setShowArchived] = useState(false); 
+    const [currentPage, setCurrentPage] = useState(1); 
+    const [error, setError] = useState(null); 
+    const pageSize = 10; 
 
-    const token = localStorage.getItem('auth_token'); // Authorization token
+    const token = localStorage.getItem('auth_token'); 
 
-    // Fetch Active Events
+   
     const fetchEvents = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null); 
         try {
-            const response = await axios.get('/api/event', { // Adjust endpoint as per your API
+            const response = await axios.get('/api/event', { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -44,9 +43,9 @@ const PostEventPage = () => {
             setData(activeEvents);
             setArchivedData(archivedEvents);
 
-            // Set filtered data based on current view
+            
             setFilteredData(showArchived ? archivedEvents : activeEvents);
-            setCurrentPage(1); // Reset to first page on data fetch
+            setCurrentPage(1); 
         } catch (err) {
             console.error('Error fetching events:', err);
             setError('Failed to fetch event data.');
@@ -56,12 +55,12 @@ const PostEventPage = () => {
         }
     };
 
-    // Fetch Archived Events Only
+   
     const fetchArchivedEvents = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null); 
         try {
-            const response = await axios.get('/api/event?deleted=only', { // Adjust endpoint as per your API
+            const response = await axios.get('/api/event?deleted=only', { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -86,22 +85,22 @@ const PostEventPage = () => {
         }
     };
 
-    // Initial Data Fetch
+   
     useEffect(() => {
         fetchEvents();
     }, []);
 
-    // Re-filter Data on Dependencies Change
+    
     useEffect(() => {
         const baseData = showArchived ? archivedData : data;
         const filtered = baseData.filter(event =>
             String(event.event_name || '').toLowerCase().includes(searchValue.toLowerCase())
         );
         setFilteredData(filtered);
-        setCurrentPage(1); // Reset to first page on filter
+        setCurrentPage(1); 
     }, [searchValue, data, archivedData, showArchived]);
 
-    // Re-fetch Data When Toggling Archived View
+    
     useEffect(() => {
         if (showArchived) {
             fetchArchivedEvents();
@@ -110,20 +109,19 @@ const PostEventPage = () => {
         }
     }, [showArchived]);
 
-    // Handlers
+   
 
-    // Search Handler
+    
     const handleSearch = (value) => {
         setSearchValue(value);
     };
 
-    // Delete (Archive) a Single Event
     const handleDeleteEvent = async (id) => {
         const eventToDelete = data.find(event => event.id === id);
         if (!eventToDelete) return;
 
         try {
-            await axios.delete(`/api/event/${id}`, { // Adjust endpoint as per your API
+            await axios.delete(`/api/event/${id}`, { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -138,7 +136,7 @@ const PostEventPage = () => {
         }
     };
 
-    // Bulk Delete (Archive) Selected Events
+    
     const handleDeleteSelected = async () => {
         const selectedEvents = data.filter(event => selectedRowKeys.includes(event.id));
         if (selectedEvents.length === 0) return;
@@ -146,7 +144,7 @@ const PostEventPage = () => {
         try {
             await Promise.all(
                 selectedEvents.map(event =>
-                    axios.delete(`/api/event/${event.id}`, { // Adjust endpoint as per your API
+                    axios.delete(`/api/event/${event.id}`, { 
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 )
@@ -174,21 +172,21 @@ const PostEventPage = () => {
         }
     };
 
-    // Restore a Single Archived Event
+    
     const handleRestoreEvent = async (id) => {
         try {
-            await axios.post(`/api/event/${id}/restore`, {}, { // Adjust endpoint as per your API
+            await axios.post(`/api/event/${id}/restore`, {}, { 
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Remove from archivedData and add back to data
+            
             const eventToRestore = archivedData.find(event => event.id === id);
             if (eventToRestore) {
                 const updatedArchived = archivedData.filter(event => event.id !== id);
                 const restoredEvent = { 
                     ...eventToRestore, 
                     isArchived: false,
-                    deleted_at: undefined, // Remove deleted_at field
+                    deleted_at: undefined, 
                 };
                 setArchivedData(updatedArchived);
                 setData([...data, restoredEvent]);
@@ -200,7 +198,7 @@ const PostEventPage = () => {
         }
     };
 
-    // Bulk Restore Selected Archived Events
+    
     const handleRestoreSelected = async () => {
         const selectedEvents = archivedData.filter(event => selectedRowKeys.includes(event.id));
         if (selectedEvents.length === 0) return;
@@ -208,7 +206,7 @@ const PostEventPage = () => {
         try {
             await Promise.all(
                 selectedEvents.map(event =>
-                    axios.post(`/api/event/${event.id}/restore`, {}, { // Adjust endpoint as per your API
+                    axios.post(`/api/event/${event.id}/restore`, {}, { 
                         headers: { Authorization: `Bearer ${token}` },
                     })
                 )
@@ -230,9 +228,9 @@ const PostEventPage = () => {
         }
     };
 
-    // Handle Create Event
+    
     const handleCreateEvent = async (eventData) => {
-        // Client-side duplicate check
+        
         const duplicate = data.some(event => event.event_name.toLowerCase() === eventData.event_name.toLowerCase()) ||
                           archivedData.some(event => event.event_name.toLowerCase() === eventData.event_name.toLowerCase());
 
@@ -242,21 +240,21 @@ const PostEventPage = () => {
         }
 
         try {
-            const response = await axios.post('/api/event', eventData, { // Adjust endpoint as per your API
+            const response = await axios.post('/api/event', eventData, { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const newEvent = response.data; // Assuming the API returns the created event
+            const newEvent = response.data; 
 
             message.success('New event created successfully');
             setIsCreateModalVisible(false);
 
-            // Refresh the data by fetching active events
+            
             fetchEvents();
         } catch (error) {
             console.error('Error creating event:', error);
-            if (error.response && error.response.status === 409) { // Assuming 409 Conflict for duplicates
+            if (error.response && error.response.status === 409) { 
                 message.error('This Event already exists.');
             } else {
                 message.error('Failed to create event.');
@@ -264,9 +262,9 @@ const PostEventPage = () => {
         }
     };
 
-    // Handle Edit Event
+    
     const handleEditEvent = async (id, updatedData) => {
-        // Client-side duplicate check
+        
         const duplicate = data.some(event => 
             event.event_name.toLowerCase() === updatedData.event_name.toLowerCase() && event.id !== id
         ) ||
@@ -280,11 +278,11 @@ const PostEventPage = () => {
         }
 
         try {
-            await axios.put(`/api/event/${id}`, updatedData, { // Adjust endpoint as per your API
+            await axios.put(`/api/event/${id}`, updatedData, { 
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Update the event in the active data
+            
             const updatedEvents = data.map(event => 
                 event.id === id ? { ...event, ...updatedData, updated_at: new Date().toISOString() } : event
             );
@@ -293,7 +291,7 @@ const PostEventPage = () => {
             message.success('Event updated successfully');
         } catch (error) {
             console.error('Error updating event:', error);
-            if (error.response && error.response.status === 409) { // Assuming 409 Conflict for duplicates
+            if (error.response && error.response.status === 409) { 
                 message.error('This Event already exists.');
             } else {
                 message.error('Failed to update event.');
@@ -301,15 +299,15 @@ const PostEventPage = () => {
         }
     };
 
-    // Handle Print Functionality
+    
     const handlePrint = () => {
-        const printWindow = window.open('', '', 'height=650,width=1300'); // Adjust width based on columns
+        const printWindow = window.open('', '', 'height=650,width=1300'); 
         printWindow.document.write('<html><head><title>Event Table</title></head><body>');
         printWindow.document.write('<h2>Event Data</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">');
         printWindow.document.write('<thead><tr>');
-        // Define table headers based on current view
-        printWindow.document.write('<th>ID</th><th>Event Name</th><th>Date Start</th><th>Date End</th><th>Time Start</th><th>Time End</th>');
+        
+        printWindow.document.write('<th>Event Name</th><th>Date Start</th><th>Date End</th><th>Time Start</th><th>Time End</th>');
         if (!showArchived) {
             printWindow.document.write('<th>Created At</th><th>Updated At</th>');
         } else {
@@ -319,7 +317,6 @@ const PostEventPage = () => {
 
         filteredData.forEach(event => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${event.id ?? ''}</td>`);
             printWindow.document.write(`<td>${event.event_name ?? ''}</td>`);
             printWindow.document.write(`<td>${event.date_start ? moment(event.date_start).format('MMMM Do YYYY') : 'N/A'}</td>`);
             printWindow.document.write(`<td>${event.date_end ? moment(event.date_end).format('MMMM Do YYYY') : 'N/A'}</td>`);
@@ -342,7 +339,7 @@ const PostEventPage = () => {
         printWindow.close();
     };
 
-    // Row Selection Configuration
+    
     const rowSelectionConfig = {
         selectedRowKeys,
         onChange: (keys) => setSelectedRowKeys(keys),
@@ -350,7 +347,7 @@ const PostEventPage = () => {
 
     return (
         <div style={{ padding: '20px', background: '#fff' }}>
-            {/* Top Controls: Search and Buttons */}
+            {}
             <div style={{
                 marginBottom: '20px',
                 display: 'flex',
@@ -429,32 +426,32 @@ const PostEventPage = () => {
                     )}
                 </Space>
             </div>
-            {/* Event Table */}
+            {}
             <PostEventTable
                 rowSelection={rowSelectionConfig}
                 data={filteredData}
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 handleDeleteEvent={handleDeleteEvent}
-                handleRestoreEvent={handleRestoreEvent} // Pass restore function
+                handleRestoreEvent={handleRestoreEvent} 
                 currentPage={currentPage}
                 pageSize={pageSize}
                 setCurrentPage={setCurrentPage}
                 showArchived={showArchived}
                 loading={loading}
             />
-            {/* Event Modal */}
+            {}
             <PostEventModal
                 isEditModalVisible={isEditModalVisible}
                 setIsEditModalVisible={setIsEditModalVisible}
                 isCreateModalVisible={isCreateModalVisible}
                 setIsCreateModalVisible={setIsCreateModalVisible}
                 modalData={modalData}
-                handleCreateEvent={handleCreateEvent} // Pass create handler
-                handleEditEvent={handleEditEvent}     // Pass edit handler
-                existingEvents={[...data, ...archivedData]} // Pass existing events for duplicate check
+                handleCreateEvent={handleCreateEvent} 
+                handleEditEvent={handleEditEvent}   
+                existingEvents={[...data, ...archivedData]} 
             />
-            {/* Error Message Display */}
+            {}
             {error && <Text type="danger">{error}</Text>}
         </div>
     )};

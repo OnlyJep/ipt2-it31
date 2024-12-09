@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Row, Col, Tabs, Table, Tag, Space, Button, Input, Spin, Alert } from 'antd';
-import { SearchOutlined } from '@ant-design/icons'; // Import the search icon
+import { SearchOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 
 const { Content } = Layout;
 const { TabPane } = Tabs;
 
 const StudentISPageDashboard = () => {
-  // Available courses (for enrollment)
+  
   const availableCourses = [
     { courseID: 'CSE101', courseName: 'Introduction to Computer Science' },
     { courseID: 'CSE102', courseName: 'Data Structures and Algorithms' },
     { courseID: 'MATH101', courseName: 'Calculus I' },
   ];
 
-  // State for student data (with enrollment tracking)
   const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true); 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [activeTabKey, setActiveTabKey] = useState('1');
 
-  // Fetch student data (mock data or API)
+  const navigate = useNavigate();  // Initialize navigate hook for redirection
+
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      // Simulating API data fetch
       setStudents([
         {
           key: '1',
@@ -52,16 +52,14 @@ const StudentISPageDashboard = () => {
         }
       ]);
       setLoading(false);
-    }, 1500); // Simulate API delay
+    }, 1500); 
   }, []);
 
-  // Filtered students based on search query
   const filteredStudents = students.filter(student => 
     student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     student.studentID.includes(searchQuery)
   );
 
-  // Table columns for displaying students
   const studentColumns = [
     {
       title: 'Name',
@@ -112,7 +110,7 @@ const StudentISPageDashboard = () => {
             size="small" 
             onClick={() => {
               setSelectedStudent(record);
-              setActiveTabKey('2'); // Automatically switch to the Enrollment Tracking tab
+              setActiveTabKey('2'); 
             }}
           >
             Track Enrollment
@@ -124,30 +122,35 @@ const StudentISPageDashboard = () => {
 
   return (
     <Content style={{ padding: '20px' }}>
-      <Tabs activeKey={activeTabKey} onChange={setActiveTabKey}>
-        {/* Tab for Student Profile */}
-        <TabPane tab="Student Profile" key="1">
-          <Row gutter={16}>
-            <Col xs={24} sm={12} md={8}>
-              {/* Search Input with custom size, width, and an icon */}
-              <Input
-                placeholder="Search student by name or ID"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                size="large"
-                style={{ marginBottom: '20px', width: '100%' }}
-                prefix={<SearchOutlined />}
-              />
-            </Col>
-          </Row>
+      <Row gutter={16} style={{ marginBottom: '20px' }}>
+        <Col span={20}>
+          <Input
+            placeholder="Search student by name or ID"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            size="large"
+            style={{ width: '100%' }}
+            prefix={<SearchOutlined />}
+          />
+        </Col>
+        <Col span={4}>
+          <Button
+            type="primary"
+            onClick={() => navigate('/add-student')}  // Redirect to /add-student page
+            style={{ width: '100%' }}
+          >
+            Add Student
+          </Button>
+        </Col>
+      </Row>
 
-          {/* Loading Spinner */}
+      <Tabs activeKey={activeTabKey} onChange={setActiveTabKey}>
+        <TabPane tab="Student Profile" key="1">
           {loading ? (
             <div style={{ textAlign: 'center' }}>
               <Spin size="large" />
             </div>
           ) : (
-            // Conditionally render the student table only if there are search results
             searchQuery && filteredStudents.length > 0 ? (
               <Table
                 columns={studentColumns}
@@ -160,7 +163,7 @@ const StudentISPageDashboard = () => {
                     setActiveTabKey('2');
                   }
                 })}
-                scroll={{ x: 'max-content' }} // Enable horizontal scrolling
+                scroll={{ x: 'max-content' }} 
               />
             ) : (
               <Alert message="No students found" type="warning" showIcon />
@@ -168,7 +171,6 @@ const StudentISPageDashboard = () => {
           )}
         </TabPane>
 
-        {/* Tab for Enrollment Tracking */}
         <TabPane tab="Enrollment Tracking" key="2">
           <Row gutter={16}>
             <Col xs={24}>
@@ -187,7 +189,7 @@ const StudentISPageDashboard = () => {
                     ]}
                     pagination={false}
                     rowKey="courseID"
-                    scroll={{ x: 'max-content' }}  // Enable horizontal scrolling for mobile
+                    scroll={{ x: 'max-content' }}  
                   />
                 </div>
               ) : (

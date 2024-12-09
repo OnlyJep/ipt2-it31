@@ -1,4 +1,4 @@
-// AnnouncementTable.js
+
 import React from 'react';
 import { Table, Button, Space, Typography, Popconfirm, Tooltip } from 'antd';
 import { EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
@@ -12,7 +12,7 @@ const AnnouncementTable = ({
     setIsEditModalVisible,
     setModalData,
     handleDeleteAnnouncement,
-    handleRestoreAnnouncement, // New prop for restoring
+    handleRestoreAnnouncement, 
     currentPage,
     pageSize,
     setCurrentPage,
@@ -21,7 +21,7 @@ const AnnouncementTable = ({
 }) => {
 
     const handlePageChange = (page) => {
-        setCurrentPage(page); // Update the current page when the page is changed
+        setCurrentPage(page); 
     };
 
     const handleEdit = (record) => {
@@ -31,7 +31,7 @@ const AnnouncementTable = ({
 
     const baseColumns = [
         {
-            title: <span style={{ color: '#1890ff' }}>Actions</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Actions</span>, 
             key: 'actions',
             render: (_, record) => (
                 <Space size="middle">
@@ -62,7 +62,7 @@ const AnnouncementTable = ({
                     ) : (
                         <Popconfirm
                             title="Are you sure you want to restore this announcement?"
-                            onConfirm={() => handleRestoreAnnouncement(record.id)}  // Trigger restore with announcement ID
+                            onConfirm={() => handleRestoreAnnouncement(record.id)}  
                             okText="Yes"
                             cancelText="No"
                         >
@@ -80,18 +80,12 @@ const AnnouncementTable = ({
             ),
         },
         {
-            title: <span style={{ color: '#1890ff' }}>ID</span>, // Blue title
-            dataIndex: 'id',
-            key: 'id',
-            sorter: (a, b) => a.id - b.id, // Optional: Add sorting
-        },
-        {
-            title: <span style={{ color: '#1890ff' }}>Announcement</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Announcement</span>, 
             dataIndex: 'announcement',
             key: 'announcement',
-            sorter: (a, b) => a.announcement.localeCompare(b.announcement), // Optional: Add sorting
+            sorter: (a, b) => a.announcement.localeCompare(b.announcement), 
             render: (text) => (
-                <Text>{text}</Text> // Display the announcement text
+                <Text>{text}</Text> 
             ),
         },
     ];
@@ -99,31 +93,31 @@ const AnnouncementTable = ({
     const extraColumns = showArchived
         ? [
             {
-                title: <span style={{ color: '#1890ff' }}>Deleted At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Deleted At</span>, 
                 dataIndex: 'deleted_at',
                 key: 'deleted_at',
                 render: (value) => (value ? new Date(value).toLocaleString() : 'N/A'),
-                sorter: (a, b) => new Date(a.deleted_at) - new Date(b.deleted_at), // Optional: Add sorting
+                sorter: (a, b) => new Date(a.deleted_at) - new Date(b.deleted_at), 
             },
         ]
         : [
             {
-                title: <span style={{ color: '#1890ff' }}>Created At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Created At</span>, 
                 dataIndex: 'created_at',
                 key: 'created_at',
                 render: (text) => (
-                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> // Format the date
+                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> 
                 ),
-                sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at), // Optional: Add sorting
+                sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at), 
             },
             {
-                title: <span style={{ color: '#1890ff' }}>Updated At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Updated At</span>, 
                 dataIndex: 'updated_at',
                 key: 'updated_at',
                 render: (text) => (
-                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> // Format the date
+                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> 
                 ),
-                sorter: (a, b) => new Date(a.updated_at) - new Date(b.updated_at), // Optional: Add sorting
+                sorter: (a, b) => new Date(a.updated_at) - new Date(b.updated_at), 
             },
         ];
 
@@ -133,27 +127,27 @@ const AnnouncementTable = ({
         <Table
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={data} // Data is already filtered and managed by parent
-            rowKey="id" // Ensure each row is keyed by the unique announcement ID
+            dataSource={data} 
+            rowKey="id" 
             pagination={{
                 current: currentPage,
                 pageSize: pageSize,
                 total: data.length,
-                onChange: handlePageChange, // Update the page when changed
+                onChange: handlePageChange, 
                 position: ['topRight'],
-                showSizeChanger: false, // Hide page size changer if handled server-side
+                showSizeChanger: false, 
             }}
             footer={() => (
                 <div style={{ textAlign: 'left' }}>
-                    {/* Page Info at Bottom Left */}
+                    {}
                     <Text>{`Page ${currentPage} of ${Math.ceil(data.length / pageSize)}`}</Text>
                 </div>
             )}
-            scroll={{ x: 'max-content' }} // Allows horizontal scrolling on smaller screens if needed
+            scroll={{ x: 'max-content' }} 
             loading={{
-                spinning: loading, // Controls if the table should show loading spinner
-                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
-                tip: "Loading data..." // Loading message
+                spinning: loading, 
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, 
+                tip: "Loading data..." 
             }}
             bordered
             locale={{
@@ -171,12 +165,12 @@ AnnouncementTable.propTypes = {
     setIsEditModalVisible: PropTypes.func.isRequired,
     setModalData: PropTypes.func.isRequired,
     handleDeleteAnnouncement: PropTypes.func.isRequired,
-    handleRestoreAnnouncement: PropTypes.func.isRequired, // Ensure this prop is received
+    handleRestoreAnnouncement: PropTypes.func.isRequired,
     currentPage: PropTypes.number.isRequired,
     pageSize: PropTypes.number.isRequired,
     setCurrentPage: PropTypes.func.isRequired,
     showArchived: PropTypes.bool.isRequired,
-    //loading: PropTypes.bool.isRequired,
+    
 };
 
 export default AnnouncementTable;

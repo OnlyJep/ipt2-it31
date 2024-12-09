@@ -1,8 +1,8 @@
-// FloorTable.js
+
 import React from 'react';
 import { Table, Space, Button, Typography, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
-import { toOrdinal } from './FloorUtils'; // Ensure the path is correct
+import { toOrdinal } from './FloorUtils'; 
 
 const { Text } = Typography;
 
@@ -12,7 +12,7 @@ const FloorTable = ({
     setIsEditModalVisible,
     setModalData,
     handleDeleteFloor,
-    handleRestoreFloor, // Accept the restore prop
+    handleRestoreFloor, 
     currentPage,
     pageSize,
     setCurrentPage,
@@ -78,18 +78,13 @@ const FloorTable = ({
                 </Space>
             ),
         },
-        {
-            title: <span style={{ color: '#1890ff' }}>ID</span>,
-            dataIndex: 'id',
-            key: 'id',
-            sorter: (a, b) => a.id - b.id, // Enable sorting
-        },
+        
         {
             title: <span style={{ color: '#1890ff' }}>Floor Level</span>,
             dataIndex: 'floor_level',
             key: 'floor_level',
-            render: (floorLevel) => `${toOrdinal(floorLevel)} Floor`, // Format floor_level
-            sorter: (a, b) => a.floor_level - b.floor_level, // Enable sorting
+            render: (floorLevel) => `${toOrdinal(floorLevel)} Floor`, 
+            sorter: (a, b) => a.floor_level - b.floor_level, 
         },
     ];
 
@@ -100,7 +95,7 @@ const FloorTable = ({
                 dataIndex: 'deleted_at',
                 key: 'deleted_at',
                 render: (value) => value ? new Date(value).toLocaleString() : 'None',
-                sorter: (a, b) => new Date(a.deleted_at) - new Date(b.deleted_at), // Enable sorting
+                sorter: (a, b) => new Date(a.deleted_at) - new Date(b.deleted_at), 
             }
         ]
         : [
@@ -109,14 +104,14 @@ const FloorTable = ({
                 dataIndex: 'created_at',
                 key: 'created_at',
                 render: (value) => value ? new Date(value).toLocaleString() : 'None',
-                sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at), // Enable sorting
+                sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at), 
             },
             {
                 title: <span style={{ color: '#1890ff' }}>Updated At</span>,
                 dataIndex: 'updated_at',
                 key: 'updated_at',
                 render: (value) => value ? new Date(value).toLocaleString() : 'None',
-                sorter: (a, b) => new Date(a.updated_at) - new Date(b.updated_at), // Enable sorting
+                sorter: (a, b) => new Date(a.updated_at) - new Date(b.updated_at), 
             }
         ];
 
@@ -136,10 +131,10 @@ const FloorTable = ({
                 position: ['topRight'],
             }}
             loading={{
-                spinning: loading, // Controls if the table should show loading spinner
-                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
-                tip: "Loading data..." // Loading message
-            }} // Loading state
+                spinning: loading, 
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, 
+                tip: "Loading data..." 
+            }} 
             style={{ color: '#000' }}
             rowKey="id"
             scroll={{ x: 'max-content' }}

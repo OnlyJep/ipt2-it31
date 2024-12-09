@@ -1,4 +1,4 @@
-// SectionCatalogModal.js
+
 import React, { useEffect } from 'react';
 import { Modal, Input, Form, message } from 'antd';
 
@@ -7,47 +7,47 @@ const SectionCatalogModal = ({
     setIsCreateModalVisible,
     isEditModalVisible,
     setIsEditModalVisible,
-    handleCreateSection, // Handler for creating a section
-    handleEditSection,   // Handler for editing a section
-    modalData,           // Data to prefill the form when editing
+    handleCreateSection, 
+    handleEditSection,   
+    modalData,           
 }) => {
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (isEditModalVisible && modalData) {
-            // Pre-fill the form with existing section data when editing
+            
             form.setFieldsValue({
                 section_name: modalData.section_name,
             });
         } else if (isCreateModalVisible) {
-            form.resetFields(); // Reset form fields when creating
+            form.resetFields(); 
         }
     }, [isEditModalVisible, isCreateModalVisible, modalData, form]);
 
-    // Handle form submission
+    
     const handleOk = () => {
         form.validateFields().then((values) => {
             const sectionName = values.section_name.trim();
 
             if (isEditModalVisible) {
-                // Invoke the edit handler with section ID and updated data
+                
                 handleEditSection(modalData.id, { section_name: sectionName });
             } else {
-                // Invoke the create handler with new section data
+                
                 handleCreateSection({ section_name: sectionName });
             }
 
-            form.resetFields(); // Reset the form after submission
+            form.resetFields(); 
         }).catch((info) => {
             console.log('Validate Failed:', info);
         });
     };
 
-    // Handle modal cancellation
+    
     const handleCancel = () => {
         setIsCreateModalVisible(false);
         setIsEditModalVisible(false);
-        form.resetFields(); // Reset the form when modal is closed
+        form.resetFields(); 
     };
 
     return (
@@ -58,7 +58,7 @@ const SectionCatalogModal = ({
             onCancel={handleCancel}
             okText={isEditModalVisible ? 'Save Changes' : 'Create Section'}
             cancelText="Cancel"
-            destroyOnClose // Ensure form is reset when modal is closed
+            destroyOnClose 
         >
             <Form form={form} layout="vertical" name="sectionCatalogForm">
                 <Form.Item

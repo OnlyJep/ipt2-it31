@@ -6,68 +6,68 @@ import { handleLogin } from './../../private/loginportal/UserLoginService';
 
 const { Content } = Layout;
 
-// Lazy load components
+
 const LoginPageBackground = lazy(() => import('./components/LoginPageBackground'));
 const LoginLogo = lazy(() => import('./components/LoginLogo'));
 const LoginLoader = lazy(() => import('./components/LoginLoader'));
 
 const UserLogin = ({ setUserRole }) => {
-  const [showPassword, setShowPassword] = useState(false); // Show password toggle
-  const [loading, setLoading] = useState(false); // Login loading spinner
-  const [pageLoading, setPageLoading] = useState(true); // Page load state
-  const [showContent, setShowContent] = useState(false); // State to control when to show login content
-  const [errorMessage, setErrorMessage] = useState(''); // Track error message state
-  const navigate = useNavigate(); // Initialize navigate function
+  const [showPassword, setShowPassword] = useState(false); 
+  const [loading, setLoading] = useState(false); 
+  const [pageLoading, setPageLoading] = useState(true); 
+  const [showContent, setShowContent] = useState(false); 
+  const [errorMessage, setErrorMessage] = useState(''); 
+  const navigate = useNavigate(); 
 
-  // Simulate page load (replace with real data fetching or async tasks as needed)
+  
   useEffect(() => {
     const loadPageContent = async () => {
       try {
         await fetchDataForPage();
-        setShowContent(true); // Show login content
-        setPageLoading(false); // Hide page loader
+        setShowContent(true); 
+        setPageLoading(false); 
       } catch (error) {
         console.error('Error loading page content:', error);
-        setPageLoading(false); // Ensure page loads even in case of error
+        setPageLoading(false); 
       }
     };
 
-    loadPageContent(); // Call the async function on component mount
+    loadPageContent(); 
   }, []);
 
-  // Simulate a 2-second delay to let the background and other components load
+  
   const fetchDataForPage = async () => {
-    return new Promise((resolve) => setTimeout(resolve, 2000)); // 2 seconds delay
+    return new Promise((resolve) => setTimeout(resolve, 2000)); 
   };
 
   const onFinish = async (values) => {
-    setLoading(true); // Show spinner when login is in progress
-    setErrorMessage(''); // Reset error message before each submission
+    setLoading(true); 
+    setErrorMessage(''); 
   
     try {
-      const response = await handleLogin(values); // Call the backend logic
+      const response = await handleLogin(values); 
   
       if (response.status === 200) {
         message.success('Login successful!');
         
-        // Store the response data in localStorage
-        localStorage.setItem('auth_token', response.data.token); // Store the authentication token
-        localStorage.setItem('user_role', response.data.role); // Store the role
-        localStorage.setItem('user_id', response.data.user_id); // Store user_id from profile
-        localStorage.setItem('profile_id', response.data.profile_id); // Store profile_id from profile
+       
+        localStorage.setItem('auth_token', response.data.token); 
+        localStorage.setItem('user_role', response.data.role); 
+        localStorage.setItem('user_id', response.data.user_id); 
+        localStorage.setItem('profile_id', response.data.profile_id); 
   
-        // Set user role state in the parent component
+        
         setUserRole(response.data.role);
   
-        // Use the navigate hook to redirect based on user role
+        
         navigate(`/${response.data.role}/dashboard`);
         window.location.reload();
       }
     } catch (error) {
-      setErrorMessage(error.message); // Set error message
-      message.error(error.message); // Show error message
+      setErrorMessage(error.message); 
+      message.error(error.message); 
     } finally {
-      setLoading(false); // Hide spinner after login attempt
+      setLoading(false); 
     }
   };
 
@@ -75,22 +75,22 @@ const UserLogin = ({ setUserRole }) => {
     if (!errorMessage) {
       message.error('Login failed. Please check your Username and Password credentials.');
     }
-    console.log('Failed:', errorInfo); // Optional: Log validation error information
+    console.log('Failed:', errorInfo); 
   };
 
   return (
     <>
       {pageLoading && (
-        <Suspense fallback={<LoginLoader />}> {/* Lazy load LoginPageBackground and Loader */}
+        <Suspense fallback={<LoginLoader />}> {}
           <LoginPageBackground>
-            <LoginLogo /> {/* Display logo first */}
-            <LoginLoader /> {/* Display loader on top of the background */}
+            <LoginLogo /> {}
+            <LoginLoader /> {}
           </LoginPageBackground>
         </Suspense>
       )}
 
       {!pageLoading && (
-        <Suspense fallback={<LoginLoader />}> {/* Lazy load the content once the page is ready */}
+        <Suspense fallback={<LoginLoader />}> {}
           <LoginPageBackground>
             {showContent && (
               <Content

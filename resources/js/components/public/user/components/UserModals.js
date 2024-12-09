@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, message, Row, Col, Select } from 'antd';
 import axios from 'axios';
-import DropdownReligion from '../../profile/components/DropdownReligion';  // Import the DropdownReligion component
+import DropdownReligion from '../../profile/components/DropdownReligion';  
 
 const { Option } = Select;
 
@@ -22,7 +22,7 @@ const UserModals = ({
 
     useEffect(() => {
         if (modalData) {
-            // Pre-fill form fields only when modalData is not null
+            
             form.setFieldsValue({
                 username: modalData.username || '',
                 role_id: modalData.role_id,
@@ -58,7 +58,7 @@ const UserModals = ({
                     username: values.username,
                     email: `${values.username}@urios.edu.ph`,
                     password: values.password,
-                    role_id: values.role_id, // Correct field for role_id
+                    role_id: values.role_id, 
                     first_name: values.first_name,
                     last_name: values.last_name,
                     middle_initial: values.middle_initial,
@@ -70,40 +70,40 @@ const UserModals = ({
                     address: values.address,
                 };
     
-                // Get the auth token from localStorage
+               
                 const token = localStorage.getItem('auth_token');
                 if (!token) {
                     message.error('No auth token found. Please log in.');
                     return;
                 }
     
-                // Perform the POST request to create user and profile
+                
                 axios.post('/api/user-with-profile', userData, {
                     headers: {
-                        Authorization: `Bearer ${token}`,  // Attach token to the request header
+                        Authorization: `Bearer ${token}`,  
                     },
                 })
                     .then((response) => {
                         message.success('User created successfully!');
-                        setIsCreateModalVisible(false); // Close the modal
-                        setModalData(null); // Clear modal data
+                        setIsCreateModalVisible(false); 
+                        setModalData(null); 
     
-                        // Call the reloadData function to refresh the user list
-                        reloadData(); // Add this line to refresh the table data
+                        
+                        reloadData(); 
 
                         form.resetFields();
     
                     })
                     .catch((error) => {
                         if (error.response && error.response.status === 422) {
-                            // If validation errors occur, show them to the user
-                            const errors = error.response.data.errors; // Adjust based on your response structure
+                            
+                            const errors = error.response.data.errors; 
                             Object.keys(errors).forEach((field) => {
-                                // Display error messages for each field
+                                
                                 message.error(`${field}: ${errors[field].join(', ')}`);
                             });
                         } else {
-                            // Generic error message for other types of errors
+                            
                             message.error('Failed to create user and profile');
                         }
                         console.error('Error:', error);
@@ -128,7 +128,7 @@ const UserModals = ({
             }}
             onOk={handleCreateUser}
             okText={isCreateModalVisible ? 'Create' : 'Update'}
-            width={1000}  // Set width for landscape mode
+            width={1000}  
         >
             <Form form={form} layout="vertical" name="userForm">
                 <Row gutter={24}>

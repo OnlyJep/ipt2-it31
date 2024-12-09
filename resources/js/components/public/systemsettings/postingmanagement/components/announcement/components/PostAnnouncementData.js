@@ -23,5 +23,5 @@ export const postAnnouncementData = [
         created_at: "2024-12-04T11:00:00Z",
         updated_at: "2024-12-04T11:00:00Z",
     },
-    // Add more announcements as needed
+    
 ];

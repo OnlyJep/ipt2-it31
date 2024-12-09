@@ -1,7 +1,7 @@
 export function generatePrintHTML(filteredData) {
     // Generate table rows
     const tableRows = filteredData.map((tag) => {
-        const id = tag.id || 'None';
+        // const id = tag.id || 'None';
         const roomTag = tag.room_tag || 'None';
         const roomTagType = tag.room_tag_type || 'None';
         const createdAt = tag.created_at || 'None';
@@ -9,7 +9,7 @@ export function generatePrintHTML(filteredData) {
 
         return `
             <tr>
-                <td>${id}</td>
+                
                 <td>${roomTag}</td>
                 <td>${roomTagType}</td>
                 <td>${createdAt}</td>
@@ -53,7 +53,7 @@ export function generatePrintHTML(filteredData) {
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            
                             <th>Room Tag</th>
                             <th>Room Tag Type</th>
                             <th>Created At</th>

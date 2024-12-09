@@ -1,4 +1,4 @@
-// AcademicYearPage.js
+
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Space, Typography, message, Popconfirm } from 'antd';
 import { FileTextOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
@@ -9,28 +9,28 @@ import AcademicYearModal from './components/AcademicYearModal';
 const { Text } = Typography;
 
 const AcademicYearPage = () => {
-    const [data, setData] = useState([]); // Active academic years
-    const [archivedData, setArchivedData] = useState([]); // Archived academic years
-    const [filteredData, setFilteredData] = useState([]); // Filtered data based on search
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Selected rows for bulk actions
-    const [searchValue, setSearchValue] = useState(''); // Search input value
-    const [loading, setLoading] = useState(false); // Loading state
-    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false); // Visibility for Create Modal
-    const [isEditModalVisible, setIsEditModalVisible] = useState(false); // Visibility for Edit Modal
-    const [modalData, setModalData] = useState(null); // Data to prefill in Edit Modal
-    const [showArchived, setShowArchived] = useState(false); // Toggle between active and archived view
-    const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
-    const [error, setError] = useState(null); // Error state
-    const pageSize = 10; // Number of items per page
+    const [data, setData] = useState([]); 
+    const [archivedData, setArchivedData] = useState([]); 
+    const [filteredData, setFilteredData] = useState([]); 
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]); 
+    const [searchValue, setSearchValue] = useState(''); 
+    const [loading, setLoading] = useState(false); 
+    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false); 
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false); 
+    const [modalData, setModalData] = useState(null); 
+    const [showArchived, setShowArchived] = useState(false); 
+    const [currentPage, setCurrentPage] = useState(1); 
+    const [error, setError] = useState(null); 
+    const pageSize = 10; 
 
-    const token = localStorage.getItem('auth_token'); // Authorization token
+    const token = localStorage.getItem('auth_token'); 
 
-    // Fetch Active Academic Years
+    
     const fetchAcademicYears = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null); 
         try {
-            const response = await axios.get('/api/academicyear', { // Adjust endpoint as per your API
+            const response = await axios.get('/api/academicyear', { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -42,9 +42,9 @@ const AcademicYearPage = () => {
             setData(activeAcademicYears);
             setArchivedData(archivedAcademicYears);
 
-            // Set filtered data based on current view
+            
             setFilteredData(showArchived ? archivedAcademicYears : activeAcademicYears);
-            setCurrentPage(1); // Reset to first page on data fetch
+            setCurrentPage(1); 
         } catch (err) {
             console.error('Error fetching academic years:', err);
             setError('Failed to fetch academic year data.');
@@ -54,12 +54,12 @@ const AcademicYearPage = () => {
         }
     };
 
-    // Fetch Archived Academic Years Only
+    
     const fetchArchivedAcademicYears = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null); 
         try {
-            const response = await axios.get('/api/academicyear?deleted=only', { // Adjust endpoint as per your API
+            const response = await axios.get('/api/academicyear?deleted=only', { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -77,29 +77,29 @@ const AcademicYearPage = () => {
             }
         } catch (err) {
             console.error('Error fetching archived academic years:', err);
-            setError('No archived content available at the moment.');
-            message.error('No archived content available at the moment.');
+            setError('Failed to fetch archived academic years.');
+            message.error('Failed to fetch archived academic years.');
         } finally {
             setLoading(false);
         }
     };
 
-    // Initial Data Fetch
+    
     useEffect(() => {
         fetchAcademicYears();
     }, []);
 
-    // Re-filter Data on Dependencies Change
+    
     useEffect(() => {
         const baseData = showArchived ? archivedData : data;
         const filtered = baseData.filter(year =>
             String(year.academic_year || '').toLowerCase().includes(searchValue.toLowerCase())
         );
         setFilteredData(filtered);
-        setCurrentPage(1); // Reset to first page on filter
+        setCurrentPage(1); 
     }, [searchValue, data, archivedData, showArchived]);
 
-    // Re-fetch Data When Toggling Archived View
+    
     useEffect(() => {
         if (showArchived) {
             fetchArchivedAcademicYears();
@@ -108,18 +108,18 @@ const AcademicYearPage = () => {
         }
     }, [showArchived]);
 
-    // Handlers
+    
 
-    // Search Handler
+    
     const handleSearch = (value) => {
         setSearchValue(value);
     };
 
-    // Delete (Archive) a Single Academic Year
+    
     const handleDeleteAcademicYear = async (id) => {
-        setError(null); // Reset error before attempting deletion
+        setError(null); 
         try {
-            await axios.delete(`/api/academicyear/${id}`, { // Adjust endpoint as per your API
+            await axios.delete(`/api/academicyear/${id}`, { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -138,16 +138,16 @@ const AcademicYearPage = () => {
         }
     };
 
-    // Bulk Delete (Archive) Selected Academic Years
+    
     const handleDeleteSelected = async () => {
         const selectedYears = data.filter(year => selectedRowKeys.includes(year.id));
         if (selectedYears.length === 0) return;
 
-        setError(null); // Reset error before attempting bulk deletion
+        setError(null); 
         try {
             await Promise.all(
                 selectedYears.map(year =>
-                    axios.delete(`/api/academicyear/${year.id}`, { // Adjust endpoint as per your API
+                    axios.delete(`/api/academicyear/${year.id}`, { 
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 )
@@ -168,11 +168,11 @@ const AcademicYearPage = () => {
         }
     };
 
-    // Restore a Single Archived Academic Year
+    
     const handleRestoreAcademicYear = async (id) => {
-        setError(null); // Reset error before attempting restoration
+        setError(null); 
         try {
-            await axios.post(`/api/academicyear/${id}/restore`, {}, { // Adjust endpoint as per your API
+            await axios.post(`/api/academicyear/${id}/restore`, {}, { 
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -192,16 +192,16 @@ const AcademicYearPage = () => {
         }
     };
 
-    // Bulk Restore Selected Archived Academic Years
+    
     const handleRestoreSelected = async () => {
         const selectedYears = archivedData.filter(year => selectedRowKeys.includes(year.id));
         if (selectedYears.length === 0) return;
 
-        setError(null); // Reset error before attempting restoration
+        setError(null); 
         try {
             await Promise.all(
                 selectedYears.map(year =>
-                    axios.post(`/api/academicyear/${year.id}/restore`, {}, { // Adjust endpoint as per your API
+                    axios.post(`/api/academicyear/${year.id}/restore`, {}, { 
                         headers: { Authorization: `Bearer ${token}` },
                     })
                 )
@@ -224,10 +224,10 @@ const AcademicYearPage = () => {
         }
     };
 
-    // Handle Create Academic Year
+    
     const handleCreateAcademicYear = async (yearData) => {
-        setError(null); // Reset error before attempting creation
-        // Client-side duplicate check
+        setError(null); 
+        
         const duplicate = data.some(year => year.academic_year.toLowerCase() === yearData.academic_year.toLowerCase()) ||
                           archivedData.some(year => year.academic_year.toLowerCase() === yearData.academic_year.toLowerCase());
 
@@ -237,21 +237,21 @@ const AcademicYearPage = () => {
         }
 
         try {
-            const response = await axios.post('/api/academicyear', yearData, { // Adjust endpoint as per your API
+            const response = await axios.post('/api/academicyear', yearData, { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const newAcademicYear = response.data; // Assuming the API returns the created academic year
+            const newAcademicYear = response.data; 
 
             message.success('New academic year created successfully');
             setIsCreateModalVisible(false);
 
-            // Refresh the data by fetching active academic years
+            
             fetchAcademicYears();
         } catch (error) {
             console.error('Error creating academic year:', error);
-            if (error.response && error.response.status === 409) { // Assuming 409 Conflict for duplicates
+            if (error.response && error.response.status === 409) { 
                 message.error('This Academic Year already exists.');
             } else {
                 setError('Failed to create academic year.');
@@ -260,10 +260,10 @@ const AcademicYearPage = () => {
         }
     };
 
-    // Handle Edit Academic Year
+    
     const handleEditAcademicYear = async (id, updatedData) => {
-        setError(null); // Reset error before attempting update
-        // Client-side duplicate check
+        setError(null); 
+        
         const duplicate = data.some(year => 
             year.academic_year.toLowerCase() === updatedData.academic_year.toLowerCase() && year.id !== id
         ) ||
@@ -277,11 +277,11 @@ const AcademicYearPage = () => {
         }
 
         try {
-            await axios.put(`/api/academicyear/${id}`, updatedData, { // Adjust endpoint as per your API
+            await axios.put(`/api/academicyear/${id}`, updatedData, { 
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Update the academic year in the active data
+            
             const updatedAcademicYears = data.map(year => 
                 year.id === id ? { ...year, ...updatedData, updated_at: new Date().toISOString() } : year
             );
@@ -290,7 +290,7 @@ const AcademicYearPage = () => {
             message.success('Academic year updated successfully');
         } catch (error) {
             console.error('Error updating academic year:', error);
-            if (error.response && error.response.status === 409) { // Assuming 409 Conflict for duplicates
+            if (error.response && error.response.status === 409) { 
                 message.error('This Academic Year already exists.');
             } else {
                 setError('Failed to update academic year.');
@@ -299,13 +299,13 @@ const AcademicYearPage = () => {
         }
     };
 
-    // Handle Print Functionality
+    
     const handlePrint = () => {
         const printWindow = window.open('', '', 'height=650,width=900');
         printWindow.document.write('<html><head><title>Academic Year Table</title></head><body>');
         printWindow.document.write('<h2>Academic Year Data</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">');
-        printWindow.document.write('<thead><tr><th>ID</th><th>Academic Year</th>');
+        printWindow.document.write('<thead><tr><th>Academic Year</th>');
         if (!showArchived) {
             printWindow.document.write('<th>Created At</th><th>Updated At</th>');
         } else {
@@ -315,7 +315,7 @@ const AcademicYearPage = () => {
 
         filteredData.forEach(year => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${year.id ?? ''}</td>`);
+            // printWindow.document.write(`<td>${year.id ?? ''}</td>`);
             printWindow.document.write(`<td>${year.academic_year ?? ''}</td>`);
             if (!showArchived) {
                 printWindow.document.write(`<td>${year.created_at ? new Date(year.created_at).toLocaleString() : ''}</td>`);
@@ -334,7 +334,7 @@ const AcademicYearPage = () => {
         printWindow.close();
     };
 
-    // Row Selection Configuration
+    
     const rowSelectionConfig = {
         selectedRowKeys,
         onChange: (keys) => setSelectedRowKeys(keys),
@@ -342,7 +342,7 @@ const AcademicYearPage = () => {
 
     return (
         <div style={{ padding: '20px', background: '#fff' }}>
-            {/* Top Controls: Search and Buttons */}
+            {}
             <div style={{
                 marginBottom: '20px',
                 display: 'flex',
@@ -421,32 +421,32 @@ const AcademicYearPage = () => {
                     )}
                 </Space>
             </div>
-            {/* Academic Years Table */}
+            {}
             <AcademicYearTable
                 rowSelection={rowSelectionConfig}
                 data={filteredData}
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 handleDeleteAcademicYear={handleDeleteAcademicYear}
-                handleRestoreAcademicYear={handleRestoreAcademicYear} // Pass restore function
+                handleRestoreAcademicYear={handleRestoreAcademicYear} 
                 currentPage={currentPage}
                 pageSize={pageSize}
                 setCurrentPage={setCurrentPage}
                 showArchived={showArchived}
                 loading={loading}
             />
-            {/* Academic Years Modal */}
+            {}
             <AcademicYearModal
                 isEditModalVisible={isEditModalVisible}
                 setIsEditModalVisible={setIsEditModalVisible}
                 isCreateModalVisible={isCreateModalVisible}
                 setIsCreateModalVisible={setIsCreateModalVisible}
                 modalData={modalData}
-                handleCreateAcademicYear={handleCreateAcademicYear} // Pass create handler
-                handleEditAcademicYear={handleEditAcademicYear}     // Pass edit handler
-                existingAcademicYears={[...data, ...archivedData]} // Pass existing academic years for duplicate check
+                handleCreateAcademicYear={handleCreateAcademicYear} 
+                handleEditAcademicYear={handleEditAcademicYear}     
+                existingAcademicYears={[...data, ...archivedData]} 
             />
-            {/* Error Message Display */}
+            {}
             {error && <Text type="danger">{error}</Text>}
         </div>
     )};

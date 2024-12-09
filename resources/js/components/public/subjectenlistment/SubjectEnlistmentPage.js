@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Layout, Row, Col, Input, Select, Button, Space, DatePicker, Table, Pagination } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Row, Col, Input, Button, Pagination } from 'antd';
 import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
-import axios from 'axios'; // Import Axios
-import MainDashboard from '../dashboard/components/MainDashboard'; // Import MainDashboard
-import SubjectTable from './components/SubjectTable'; // Import the SubjectTable component
+import axios from 'axios'; 
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import MainDashboard from '../dashboard/components/MainDashboard'; 
+import SubjectTable from './components/SubjectTable'; 
 
 const { Content } = Layout;
-const { Option } = Select;
 
 const SubjectEnlistmentPage = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -14,12 +14,13 @@ const SubjectEnlistmentPage = () => {
   const [filterType, setFilterType] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalRecords, setTotalRecords] = useState(0); // Total records for pagination
+  const [totalRecords, setTotalRecords] = useState(0); 
   const pageSize = 5;
 
   const [data, setData] = useState([]);
 
-  // Axios request to fetch subject data from the API
+  const navigate = useNavigate();  // Initialize the useNavigate hook
+
   const fetchSubjects = async () => {
     try {
       const response = await axios.get('/api/subjects', {
@@ -31,8 +32,8 @@ const SubjectEnlistmentPage = () => {
           sort: sortOrder,
         },
       });
-      setData(response.data.subjects); // Assuming API returns data in 'subjects' key
-      setTotalRecords(response.data.total); // Assuming total number of records is returned
+      setData(response.data.subjects); 
+      setTotalRecords(response.data.total); 
     } catch (error) {
       console.error('Error fetching subjects:', error);
     }
@@ -40,11 +41,11 @@ const SubjectEnlistmentPage = () => {
 
   useEffect(() => {
     fetchSubjects();
-  }, [currentPage, searchText, filterType, sortOrder]); // Fetch when these values change
+  }, [currentPage, searchText, filterType, sortOrder]); 
 
   const onSearchChange = (e) => {
     setSearchText(e.target.value);
-    setCurrentPage(1); // Reset to page 1 when search changes
+    setCurrentPage(1); 
   };
 
   const onPageChange = (page) => {
@@ -52,7 +53,6 @@ const SubjectEnlistmentPage = () => {
   };
 
   const onSortChange = (columnKey) => {
-    // Handle sorting logic, set the sortOrder based on the column
     const newSortOrder = sortOrder === 'ascend' ? 'descend' : 'ascend';
     setSortOrder(newSortOrder);
   };
@@ -73,7 +73,7 @@ const SubjectEnlistmentPage = () => {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => console.log('Create Subject')}
+              onClick={() => navigate('/add-subject')}  // Use navigate for redirection
             >
               Add Subject
             </Button>

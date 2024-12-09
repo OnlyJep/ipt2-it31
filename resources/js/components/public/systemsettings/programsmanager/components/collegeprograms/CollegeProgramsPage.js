@@ -1,4 +1,3 @@
-// CollegeProgramsPage.js
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Space, Typography, message, Popconfirm } from 'antd';
 import { FileTextOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
@@ -9,28 +8,28 @@ import CollegeProgramsModal from './components/CollegeProgramsModal';
 const { Text } = Typography;
 
 const CollegeProgramsPage = () => {
-    const [data, setData] = useState([]); // Active college programs
-    const [archivedData, setArchivedData] = useState([]); // Archived college programs
-    const [filteredData, setFilteredData] = useState([]); // Filtered data based on search
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Selected rows for bulk actions
-    const [searchValue, setSearchValue] = useState(''); // Search input value
-    const [loading, setLoading] = useState(false); // Loading state
-    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false); // Visibility for Create Modal
-    const [isEditModalVisible, setIsEditModalVisible] = useState(false); // Visibility for Edit Modal
-    const [modalData, setModalData] = useState(null); // Data to prefill in Edit Modal
-    const [showArchived, setShowArchived] = useState(false); // Toggle between active and archived view
-    const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
-    const [error, setError] = useState(null); // Error state
-    const pageSize = 10; // Number of items per page
+    const [data, setData] = useState([]); 
+    const [archivedData, setArchivedData] = useState([]); 
+    const [filteredData, setFilteredData] = useState([]); 
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]); 
+    const [searchValue, setSearchValue] = useState(''); 
+    const [loading, setLoading] = useState(false); 
+    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false); 
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false); 
+    const [modalData, setModalData] = useState(null); 
+    const [showArchived, setShowArchived] = useState(false); 
+    const [currentPage, setCurrentPage] = useState(1); 
+    const [error, setError] = useState(null); 
+    const pageSize = 10; 
 
-    const token = localStorage.getItem('auth_token'); // Authorization token
+    const token = localStorage.getItem('auth_token'); 
 
-    // Fetch Active College Programs
+    
     const fetchCollegePrograms = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null); 
         try {
-            const response = await axios.get('/api/collegeprogram', { // Adjust endpoint as per your API
+            const response = await axios.get('/api/collegeprogram', { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -42,9 +41,9 @@ const CollegeProgramsPage = () => {
             setData(activePrograms);
             setArchivedData(archivedPrograms);
 
-            // Set filtered data based on current view
+            
             setFilteredData(showArchived ? archivedPrograms : activePrograms);
-            setCurrentPage(1); // Reset to first page on data fetch
+            setCurrentPage(1); 
         } catch (err) {
             console.error('Error fetching college programs:', err);
             setError('Failed to fetch college program data.');
@@ -54,12 +53,12 @@ const CollegeProgramsPage = () => {
         }
     };
 
-    // Fetch Archived College Programs Only
+    
     const fetchArchivedCollegePrograms = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null); 
         try {
-            const response = await axios.get('/api/collegeprogram?deleted=only', { // Adjust endpoint as per your API
+            const response = await axios.get('/api/collegeprogram?deleted=only', { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -84,22 +83,22 @@ const CollegeProgramsPage = () => {
         }
     };
 
-    // Initial Data Fetch
+    
     useEffect(() => {
         fetchCollegePrograms();
     }, []);
 
-    // Re-filter Data on Dependencies Change
+    
     useEffect(() => {
         const baseData = showArchived ? archivedData : data;
         const filtered = baseData.filter(program =>
             String(program.college_programs || '').toLowerCase().includes(searchValue.toLowerCase())
         );
         setFilteredData(filtered);
-        setCurrentPage(1); // Reset to first page on filter
+        setCurrentPage(1); 
     }, [searchValue, data, archivedData, showArchived]);
 
-    // Re-fetch Data When Toggling Archived View
+    
     useEffect(() => {
         if (showArchived) {
             fetchArchivedCollegePrograms();
@@ -108,18 +107,18 @@ const CollegeProgramsPage = () => {
         }
     }, [showArchived]);
 
-    // Handlers
+    
 
-    // Search Handler
+    
     const handleSearch = (value) => {
         setSearchValue(value);
     };
 
-    // Delete (Archive) a Single College Program
+    
     const handleDeleteCollegeProgram = async (id) => {
-        setError(null); // Reset error before attempting deletion
+        setError(null); 
         try {
-            await axios.delete(`/api/collegeprogram/${id}`, { // Adjust endpoint as per your API
+            await axios.delete(`/api/collegeprogram/${id}`, { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -138,16 +137,16 @@ const CollegeProgramsPage = () => {
         }
     };
 
-    // Bulk Delete (Archive) Selected College Programs
+    
     const handleDeleteSelected = async () => {
         const selectedPrograms = data.filter(program => selectedRowKeys.includes(program.id));
         if (selectedPrograms.length === 0) return;
 
-        setError(null); // Reset error before attempting bulk deletion
+        setError(null); 
         try {
             await Promise.all(
                 selectedPrograms.map(program =>
-                    axios.delete(`/api/collegeprogram/${program.id}`, { // Adjust endpoint as per your API
+                    axios.delete(`/api/collegeprogram/${program.id}`, { 
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 )
@@ -168,11 +167,11 @@ const CollegeProgramsPage = () => {
         }
     };
 
-    // Restore a Single Archived College Program
+    
     const handleRestoreCollegeProgram = async (id) => {
-        setError(null); // Reset error before attempting restoration
+        setError(null); 
         try {
-            await axios.post(`/api/collegeprogram/${id}/restore`, {}, { // Adjust endpoint as per your API
+            await axios.post(`/api/collegeprogram/${id}/restore`, {}, { 
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -192,16 +191,16 @@ const CollegeProgramsPage = () => {
         }
     };
 
-    // Bulk Restore Selected Archived College Programs
+    
     const handleRestoreSelected = async () => {
         const selectedPrograms = archivedData.filter(program => selectedRowKeys.includes(program.id));
         if (selectedPrograms.length === 0) return;
 
-        setError(null); // Reset error before attempting restoration
+        setError(null); 
         try {
             await Promise.all(
                 selectedPrograms.map(program =>
-                    axios.post(`/api/collegeprogram/${program.id}/restore`, {}, { // Adjust endpoint as per your API
+                    axios.post(`/api/collegeprogram/${program.id}/restore`, {}, { 
                         headers: { Authorization: `Bearer ${token}` },
                     })
                 )
@@ -224,21 +223,21 @@ const CollegeProgramsPage = () => {
         }
     };
 
-    // Handle Create College Program
+    
     const handleCreateCollegeProgram = async (programData) => {
-        setError(null); // Reset error before attempting creation
+        setError(null); 
         try {
-            const response = await axios.post('/api/collegeprogram', programData, { // Adjust endpoint as per your API
+            const response = await axios.post('/api/collegeprogram', programData, { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const newProgram = response.data; // Assuming the API returns the created program
+            const newProgram = response.data; 
 
             message.success('New college program created successfully');
             setIsCreateModalVisible(false);
 
-            // Refresh the data by fetching active college programs
+            
             fetchCollegePrograms();
         } catch (error) {
             console.error('Error creating college program:', error);
@@ -247,15 +246,15 @@ const CollegeProgramsPage = () => {
         }
     };
 
-    // Handle Edit College Program
+    
     const handleEditCollegeProgram = async (id, updatedData) => {
-        setError(null); // Reset error before attempting update
+        setError(null); 
         try {
-            await axios.put(`/api/collegeprogram/${id}`, updatedData, { // Adjust endpoint as per your API
+            await axios.put(`/api/collegeprogram/${id}`, updatedData, { 
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Update the program in the active data
+            
             const updatedPrograms = data.map(program => 
                 program.id === id ? { ...program, ...updatedData, updated_at: new Date().toISOString() } : program
             );
@@ -269,13 +268,13 @@ const CollegeProgramsPage = () => {
         }
     };
 
-    // Handle Print Functionality
+    
     const handlePrint = () => {
         const printWindow = window.open('', '', 'height=650,width=900');
         printWindow.document.write('<html><head><title>College Programs</title></head><body>');
         printWindow.document.write('<h2>College Programs Data</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">');
-        printWindow.document.write('<thead><tr><th>ID</th><th>Program Name</th><th>Study Type</th>');
+        printWindow.document.write('<thead><tr><th>Program Name</th><th>Study Type</th>');
         if (!showArchived) {
             printWindow.document.write('<th>Created At</th><th>Updated At</th>');
         } else {
@@ -285,7 +284,7 @@ const CollegeProgramsPage = () => {
 
         filteredData.forEach(program => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${program.id ?? ''}</td>`);
+            // printWindow.document.write(`<td>${program.id ?? ''}</td>`);
             printWindow.document.write(`<td>${program.college_programs ?? ''}</td>`);
             printWindow.document.write(`<td>${program.study_type ?? ''}</td>`);
             if (!showArchived) {
@@ -305,7 +304,7 @@ const CollegeProgramsPage = () => {
         printWindow.close();
     };
 
-    // Row Selection Configuration
+    
     const rowSelectionConfig = {
         selectedRowKeys,
         onChange: (keys) => setSelectedRowKeys(keys),
@@ -313,7 +312,7 @@ const CollegeProgramsPage = () => {
 
     return (
         <div style={{ padding: '20px', background: '#fff' }}>
-            {/* Top Controls: Search and Buttons */}
+            {}
             <div style={{
                 marginBottom: '20px',
                 display: 'flex',
@@ -392,31 +391,31 @@ const CollegeProgramsPage = () => {
                     )}
                 </Space>
             </div>
-            {/* College Programs Table */}
+            {}
             <CollegeProgramsTable
                 rowSelection={rowSelectionConfig}
                 data={filteredData}
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 handleDeleteProgram={handleDeleteCollegeProgram}
-                handleRestoreCollegeProgram={handleRestoreCollegeProgram} // Pass restore function
+                handleRestoreCollegeProgram={handleRestoreCollegeProgram} 
                 currentPage={currentPage}
                 pageSize={pageSize}
                 setCurrentPage={setCurrentPage}
                 showArchived={showArchived}
                 loading={loading}
             />
-            {/* College Programs Modal */}
+            {}
             <CollegeProgramsModal
                 isEditModalVisible={isEditModalVisible}
                 setIsEditModalVisible={setIsEditModalVisible}
                 isCreateModalVisible={isCreateModalVisible}
                 setIsCreateModalVisible={setIsCreateModalVisible}
                 modalData={modalData}
-                handleCreateCollegeProgram={handleCreateCollegeProgram} // Pass create handler
-                handleEditCollegeProgram={handleEditCollegeProgram}     // Pass edit handler
+                handleCreateCollegeProgram={handleCreateCollegeProgram} 
+                handleEditCollegeProgram={handleEditCollegeProgram}    
             />
-            {/* Error Message Display */}
+            {}
             {error && <Text type="danger">{error}</Text>}
         </div>
     )};

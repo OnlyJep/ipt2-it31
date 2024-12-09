@@ -1,4 +1,4 @@
-// SectionCatalogPage.js
+
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Space, Typography, message,Popconfirm } from 'antd';
 import { FileTextOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
@@ -9,29 +9,29 @@ import SectionCatalogModal from './components/SectionCatalogModal';
 const { Text } = Typography;
 
 const SectionCatalogPage = () => {
-    // State Variables
-    const [data, setData] = useState([]); // Active sections
-    const [archivedData, setArchivedData] = useState([]); // Archived sections
-    const [filteredData, setFilteredData] = useState([]); // Data after filtering/search
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Selected rows for bulk actions
-    const [searchValue, setSearchValue] = useState(''); // Search input value
-    const [loading, setLoading] = useState(false); // Loading state
-    const [error, setError] = useState(null); // Error state
-    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false); // Visibility for Create Modal
-    const [isEditModalVisible, setIsEditModalVisible] = useState(false); // Visibility for Edit Modal
-    const [modalData, setModalData] = useState(null); // Data to prefill in Edit Modal
-    const [showArchived, setShowArchived] = useState(false); // Toggle between active and archived view
-    const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
-    const pageSize = 10; // Number of items per page
+   
+    const [data, setData] = useState([]); 
+    const [archivedData, setArchivedData] = useState([]); 
+    const [filteredData, setFilteredData] = useState([]); 
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]); 
+    const [searchValue, setSearchValue] = useState(''); 
+    const [loading, setLoading] = useState(false); 
+    const [error, setError] = useState(null); 
+    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false); 
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false); 
+    const [modalData, setModalData] = useState(null); 
+    const [showArchived, setShowArchived] = useState(false); 
+    const [currentPage, setCurrentPage] = useState(1); 
+    const pageSize = 10; 
 
-    const token = localStorage.getItem('auth_token'); // Authorization token
+    const token = localStorage.getItem('auth_token'); 
 
-    // Fetch Active Sections
+    
     const fetchSections = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null); 
         try {
-            const response = await axios.get('/api/sections', { // Adjust endpoint as per your API
+            const response = await axios.get('/api/sections', { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -43,9 +43,9 @@ const SectionCatalogPage = () => {
             setData(activeSections);
             setArchivedData(archivedSections);
 
-            // Set filtered data based on current view
+            
             setFilteredData(showArchived ? archivedSections : activeSections);
-            setCurrentPage(1); // Reset to first page on data fetch
+            setCurrentPage(1); 
         } catch (err) {
             console.error('Error fetching sections:', err);
             setError('Failed to fetch section data.');
@@ -55,12 +55,12 @@ const SectionCatalogPage = () => {
         }
     };
 
-    // Fetch Archived Sections Only
+    
     const fetchArchivedSections = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetching
+        setError(null); 
         try {
-            const response = await axios.get('/api/sections?deleted=only', { // Adjust endpoint as per your API
+            const response = await axios.get('/api/sections?deleted=only', { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -85,22 +85,22 @@ const SectionCatalogPage = () => {
         }
     };
 
-    // Initial Data Fetch
+    
     useEffect(() => {
         fetchSections();
     }, []);
 
-    // Re-filter Data on Dependencies Change
+    
     useEffect(() => {
         const baseData = showArchived ? archivedData : data;
         const filtered = baseData.filter(section =>
             String(section.section_name || '').toLowerCase().includes(searchValue.toLowerCase())
         );
         setFilteredData(filtered);
-        setCurrentPage(1); // Reset to first page on filter
+        setCurrentPage(1); 
     }, [searchValue, data, archivedData, showArchived]);
 
-    // Re-fetch Data When Toggling Archived View
+    
     useEffect(() => {
         if (showArchived) {
             fetchArchivedSections();
@@ -109,18 +109,18 @@ const SectionCatalogPage = () => {
         }
     }, [showArchived]);
 
-    // Handlers
+    
 
-    // Search Handler
+    
     const handleSearch = (value) => {
         setSearchValue(value);
     };
 
-    // Delete (Archive) a Single Section
+    
     const handleDeleteSection = async (id) => {
-        setError(null); // Reset error before attempting deletion
+        setError(null); 
         try {
-            await axios.delete(`/api/sections/${id}`, { // Adjust endpoint as per your API
+            await axios.delete(`/api/sections/${id}`, { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -139,16 +139,16 @@ const SectionCatalogPage = () => {
         }
     };
 
-    // Bulk Delete (Archive) Selected Sections
+    
     const handleDeleteSelected = async () => {
         const selectedSections = data.filter(section => selectedRowKeys.includes(section.id));
         if (selectedSections.length === 0) return;
 
-        setError(null); // Reset error before attempting bulk deletion
+        setError(null); 
         try {
             await Promise.all(
                 selectedSections.map(section =>
-                    axios.delete(`/api/sections/${section.id}`, { // Adjust endpoint as per your API
+                    axios.delete(`/api/sections/${section.id}`, { 
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 )
@@ -169,11 +169,11 @@ const SectionCatalogPage = () => {
         }
     };
 
-    // Restore a Single Archived Section
+    
     const handleRestoreSection = async (id) => {
-        setError(null); // Reset error before attempting restoration
+        setError(null); 
         try {
-            await axios.post(`/api/sections/${id}/restore`, {}, { // Adjust endpoint as per your API
+            await axios.post(`/api/sections/${id}/restore`, {}, { 
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -193,16 +193,16 @@ const SectionCatalogPage = () => {
         }
     };
 
-    // Bulk Restore Selected Archived Sections
+    
     const handleRestoreSelected = async () => {
         const selectedSections = archivedData.filter(section => selectedRowKeys.includes(section.id));
         if (selectedSections.length === 0) return;
 
-        setError(null); // Reset error before attempting restoration
+        setError(null); 
         try {
             await Promise.all(
                 selectedSections.map(section =>
-                    axios.post(`/api/sections/${section.id}/restore`, {}, { // Adjust endpoint as per your API
+                    axios.post(`/api/sections/${section.id}/restore`, {}, { 
                         headers: { Authorization: `Bearer ${token}` },
                     })
                 )
@@ -225,21 +225,21 @@ const SectionCatalogPage = () => {
         }
     };
 
-    // Handle Create Section
+    
     const handleCreateSection = async (sectionData) => {
-        setError(null); // Reset error before attempting creation
+        setError(null); 
         try {
-            const response = await axios.post('/api/sections', sectionData, { // Adjust endpoint as per your API
+            const response = await axios.post('/api/sections', sectionData, { 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const newSection = response.data; // Assuming the API returns the created section
+            const newSection = response.data; 
 
             message.success('New section created successfully');
             setIsCreateModalVisible(false);
 
-            // Refresh the data by fetching active sections
+            
             fetchSections();
         } catch (error) {
             console.error('Error creating section:', error);
@@ -248,15 +248,15 @@ const SectionCatalogPage = () => {
         }
     };
 
-    // Handle Edit Section
+    
     const handleEditSection = async (id, updatedData) => {
-        setError(null); // Reset error before attempting update
+        setError(null); 
         try {
-            await axios.put(`/api/sections/${id}`, updatedData, { // Adjust endpoint as per your API
+            await axios.put(`/api/sections/${id}`, updatedData, { 
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Update the section in the active data
+            
             const updatedSections = data.map(section => 
                 section.id === id ? { ...section, ...updatedData, updated_at: new Date().toISOString() } : section
             );
@@ -270,13 +270,13 @@ const SectionCatalogPage = () => {
         }
     };
 
-    // Handle Print Functionality
+    
     const handlePrint = () => {
         const printWindow = window.open('', '', 'height=650,width=900');
         printWindow.document.write('<html><head><title>Section Catalog</title></head><body>');
         printWindow.document.write('<h2>Section Catalog Data</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">');
-        printWindow.document.write('<thead><tr><th>ID</th><th>Section Name</th>');
+        printWindow.document.write('<thead><tr><th>Section Name</th>');
         if (!showArchived) {
             printWindow.document.write('<th>Created At</th><th>Updated At</th>');
         } else {
@@ -286,7 +286,7 @@ const SectionCatalogPage = () => {
 
         filteredData.forEach(section => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${section.id ?? ''}</td>`);
+            // printWindow.document.write(`<td>${section.id ?? ''}</td>`);
             printWindow.document.write(`<td>${section.section_name ?? ''}</td>`);
             if (!showArchived) {
                 printWindow.document.write(`<td>${section.created_at ? new Date(section.created_at).toLocaleString() : ''}</td>`);
@@ -305,7 +305,7 @@ const SectionCatalogPage = () => {
         printWindow.close();
     };
 
-    // Row Selection Configuration
+   
     const rowSelection = {
         selectedRowKeys,
         onChange: (keys) => setSelectedRowKeys(keys),
@@ -313,7 +313,7 @@ const SectionCatalogPage = () => {
 
     return (
         <div style={{ padding: '20px', background: '#fff' }}>
-            {/* Top Controls: Search and Buttons */}
+            {}
             <div style={{
                 marginBottom: '20px',
                 display: 'flex',
@@ -393,21 +393,21 @@ const SectionCatalogPage = () => {
                     )}
                 </Space>
             </div>
-            {/* Section Catalog Table */}
+            {}
             <SectionCatalogTable
                 rowSelection={rowSelection}
                 data={filteredData}
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 handleDeleteSection={handleDeleteSection}
-                handleRestoreSection={handleRestoreSection} // Pass restore function
+                handleRestoreSection={handleRestoreSection} 
                 currentPage={currentPage}
                 pageSize={pageSize}
                 setCurrentPage={setCurrentPage}
                 showArchived={showArchived}
                 loading={loading}
             />
-            {/* Section Catalog Modal */}
+            {}
             <SectionCatalogModal
                 isEditModalVisible={isEditModalVisible}
                 setIsEditModalVisible={setIsEditModalVisible}
@@ -417,7 +417,7 @@ const SectionCatalogPage = () => {
                 handleCreateSection={handleCreateSection}
                 handleEditSection={handleEditSection}
             />
-            {/* Error Message Display */}
+            {}
             {error && <Text type="danger">{error}</Text>}
         </div>
     )};

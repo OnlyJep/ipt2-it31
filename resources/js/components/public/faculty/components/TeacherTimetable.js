@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card, Table } from 'antd';
 
-// TeacherTimetable component to display timetable data
+
 const TeacherTimetable = ({ timetable, searchQuery }) => {
-    // Filter timetable based on search query
+    
     const filteredTimetable = timetable.filter(
         entry => entry.teacherName.toLowerCase().includes(searchQuery.toLowerCase())
     );

@@ -307,11 +307,11 @@ const handleDeleteBuilding = async (buildingId) => {
         printWindow.document.write('<html><head><title>Building Table</title></head><body>');
         printWindow.document.write('<h2>Building Table</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse;">');
-        printWindow.document.write('<thead><tr><th>ID</th><th>Building Name</th><th>Created</th><th>Updated</th></tr></thead>');
+        printWindow.document.write('<thead><tr><th>Building Name</th><th>Created</th><th>Updated</th></tr></thead>');
         printWindow.document.write('<tbody>');
         filteredData.forEach((item) => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${item.id ?? ''}</td>`);
+            // printWindow.document.write(`<td>${item.id ?? ''}</td>`);
             printWindow.document.write(`<td>${item.building_name ?? ''}</td>`);
 
             const createdAtValue = item.created_at ? new Date(item.created_at).toLocaleString() : '';
@@ -408,6 +408,7 @@ const handleDeleteBuilding = async (buildingId) => {
                 handleDeleteBuilding={handleDeleteBuilding}
                 handleRestoreBuilding={handleRestoreBuilding}
                 loading={loading}
+                reloadData={reloadData}
             />
             <BuildingModal
                 isEditModalVisible={isEditModalVisible}
@@ -419,6 +420,7 @@ const handleDeleteBuilding = async (buildingId) => {
                 modalData={modalData}
                 setModalData={setModalData}
                 handleCreateBuilding={handleCreateBuilding}
+                reloadData={reloadData}
             />
             {error && <Text type="danger">{error}</Text>}
         </div>

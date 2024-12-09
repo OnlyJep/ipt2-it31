@@ -10,25 +10,25 @@ class BuildingController extends Controller
 {
     // Display a listing of buildings
     public function index(Request $request)
-    {
-        try {
-            $deleted = $request->query('deleted', 'false');
+{
+    try {
+        $deleted = $request->query('deleted', 'false');
 
-            if ($deleted === 'only') {
-                $buildings = Building::onlyTrashed()->get();
-            } elseif ($deleted === 'true') {
-                $buildings = Building::withTrashed()->get();
-            } else {
-                $buildings = Building::all();
-            }
-
-            // Return a response with buildings (even if empty)
-            return response()->json($buildings);
-        } catch (\Exception $e) {
-            // Return an empty array or handle error gracefully
-            return response()->json([], 200); // Empty response when there's an error
+        if ($deleted === 'only') {
+            $buildings = Building::onlyTrashed()->with('floor')->get(); // Eager load 'floor' relationship
+        } elseif ($deleted === 'true') {
+            $buildings = Building::withTrashed()->with('floor')->get(); // Eager load 'floor' relationship
+        } else {
+            $buildings = Building::with('floor')->get(); // Eager load 'floor' relationship
         }
+
+        // Return the buildings, including floor level
+        return response()->json($buildings);
+    } catch (\Exception $e) {
+        return response()->json([], 200); // Empty response when there's an error
     }
+}
+
 
 
     // Store a newly created building in storage

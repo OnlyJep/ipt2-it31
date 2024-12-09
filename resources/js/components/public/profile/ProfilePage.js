@@ -8,19 +8,18 @@ import ProfileForm from './components/ProfileForm';
 const { Content } = Layout;
 
 const ProfilePageDashboard = () => {
-    const [isEditing, setIsEditing] = useState(false); // Default to view mode
-    const [form] = Form.useForm(); // Initialize form instance
-    const [userData, setUserData] = useState(null); // State to hold user data
-    const [profileData, setProfileData] = useState(null); // State to hold profile data
-    const [isLoading, setIsLoading] = useState(true); // State to manage loading
-    const [isUploading, setIsUploading] = useState(false); // State for photo upload progress
-    const [uploadMessage, setUploadMessage] = useState(''); // Message state for upload success/error
-    const [selectedPhoto, setSelectedPhoto] = useState(null); // State to track selected photo
-    const [photoPreview, setPhotoPreview] = useState(null); // State to hold the preview URL
+    const [isEditing, setIsEditing] = useState(false); 
+    const [form] = Form.useForm(); 
+    const [userData, setUserData] = useState(null); 
+    const [profileData, setProfileData] = useState(null); 
+    const [isLoading, setIsLoading] = useState(true); 
+    const [isUploading, setIsUploading] = useState(false); 
+    const [uploadMessage, setUploadMessage] = useState(''); 
+    const [selectedPhoto, setSelectedPhoto] = useState(null); 
+    const [photoPreview, setPhotoPreview] = useState(null); 
     const SelectPhotoMessage = 'Photo Selected. Save to upload.';
 
 
-    // Fetch user data and profile data when component mounts
     useEffect(() => {
         const fetchProfileData = async () => {
             setIsLoading(true);
@@ -43,10 +42,10 @@ const ProfilePageDashboard = () => {
                     },
                 });
 
-                setProfileData(response.data); // Set the profile data
-                setUserData(response.data); // Assuming user data includes profile info as well
+                setProfileData(response.data); 
+                setUserData(response.data); 
 
-                // Map the profile data to form fields
+                
                 form.setFieldsValue({
                     firstname: response.data.first_name,
                     middleinitial: response.data.middle_initial,
@@ -70,19 +69,19 @@ const ProfilePageDashboard = () => {
         fetchProfileData();
     }, [form]);
 
-    // Handle profile save
+   
     const handleSave = async () => {
         try {
-            const values = await form.validateFields(); // Get form values
-            const token = localStorage.getItem('auth_token'); // Get the token
-            const profileId = localStorage.getItem('profile_id'); // Retrieve profile_id from localStorage
+            const values = await form.validateFields(); 
+            const token = localStorage.getItem('auth_token'); 
+            const profileId = localStorage.getItem('profile_id'); 
             
             if (!profileId) {
                 message.error('Profile ID not found in localStorage');
                 return;
             }
     
-            // Map frontend fields to backend fields
+            
             const mappedValues = {
                 first_name: values.firstname,
                 middle_initial: values.middleinitial,
@@ -95,7 +94,7 @@ const ProfilePageDashboard = () => {
                 address: values.address,
             };
     
-            // If a new photo was selected, upload it
+            
             if (selectedPhoto) {
                 const formData = new FormData();
                 formData.append('photo', selectedPhoto);
@@ -114,16 +113,15 @@ const ProfilePageDashboard = () => {
                 }
             }
     
-            // Send the PUT request to update the profile (with or without the photo)
+            
             const response = await axios.put(`/api/profiles/${profileId}`, mappedValues, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
     
-            // On success, show success message
             message.success('Profile updated successfully');
-            setIsEditing(false); // Switch to view mode after saving
+            setIsEditing(false); 
         } catch (error) {
             console.error(error);
             message.error('Failed to update profile');
@@ -131,29 +129,27 @@ const ProfilePageDashboard = () => {
     };
     
 
-    // Toggle edit mode
+    
     const handleEdit = () => {
-        setIsEditing(true); // Switch to edit mode
+        setIsEditing(true); 
     };
 
-    // Handle photo upload
+    
     const handleUpload = (file) => {
-        // Temporarily store the selected photo in the state
+        
         setSelectedPhoto(file);
     
-        // Create a temporary URL to preview the selected photo
         const imageUrl = URL.createObjectURL(file);
     
-        // Update the preview state with the URL of the selected photo
         setPhotoPreview(imageUrl);
     
-        // Update the upload message to inform the user that the photo is selected
+        
         setUploadMessage('Photo selected. Save info to upload the photo.');
     };    
     
     
     const handleCancel = () => {
-        // Reset form fields back to the original profile data
+        
         form.setFieldsValue({
             firstname: profileData.first_name,
             middleinitial: profileData.middle_initial,
@@ -166,18 +162,18 @@ const ProfilePageDashboard = () => {
             address: profileData.address,
         });
     
-        // Also reset the photo preview and selected photo
+        
         setPhotoPreview(profileData.photo_path ? `/storage/${profileData.photo_path}` : null);
-        setSelectedPhoto(null); // Remove the selected photo
-        setUploadMessage(''); // Clear the upload message
+        setSelectedPhoto(null); 
+        setUploadMessage(''); 
 
-        setIsEditing(false); // Switch back to view mode
+        setIsEditing(false);
         
     };
     
     
 
-    // Show loading spinner while data is being fetched
+    
     if (isLoading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -197,18 +193,18 @@ const ProfilePageDashboard = () => {
                     <Col style={{ marginRight: '20px' }}>
                         {isEditing ? (
                             <>
-                                {/* Save Info Button */}
+                                {}
                                 <Button onClick={handleSave} type="primary">
                                     Save Info
                                 </Button>
 
-                                {/* Cancel Button */}
+                                {}
                                 <Button onClick={handleCancel} style={{ marginLeft: '10px' }}>
                                     Cancel
                                 </Button>
                             </>
                         ) : (
-                            // Edit Info Button
+                            
                             <Button onClick={handleEdit} type="primary">
                                 Edit Info
                             </Button>
@@ -219,7 +215,7 @@ const ProfilePageDashboard = () => {
 
                     <Divider />
 
-                    {/* Personal Information Section */}
+                    {}
                     <Row justify="center" gutter={[16, 16]}>
                         <Col xs={24} sm={24} md={24}>
                             <Divider orientation="left" style={{ marginBottom: '28px' }}>Personal Information</Divider>
@@ -240,8 +236,8 @@ const ProfilePageDashboard = () => {
                                     name="photo"
                                     showUploadList={false}
                                     beforeUpload={(file) => {
-                                        handleUpload(file); // Call handleUpload to store the photo and create the preview
-                                        return false; // Prevent auto-upload
+                                        handleUpload(file); 
+                                        return false; 
                                     }}
                                 >
                                     <Button

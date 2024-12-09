@@ -4,15 +4,15 @@ import { useNavigate } from 'react-router-dom';
 const SideBarLogo = () => {
   const navigate = useNavigate();
   
-  // Get the user role from localStorage
+  
   const userRole = localStorage.getItem('user_role');
   
-  // Set the styles
+  
   const logoStyle = {
     width: '180px',
     height: 'auto',
     marginTop: '16px',
-    transition: 'transform 0.3s ease',  // Transition for zoom effect
+    transition: 'transform 0.3s ease', 
   };
 
   const containerStyle = {
@@ -20,15 +20,15 @@ const SideBarLogo = () => {
     justifyContent: 'center',
     alignItems: 'center',
     height: '60px',
-    cursor: 'pointer',  // Make the logo look clickable
+    cursor: 'pointer', 
   };
 
   const logoHoverStyle = {
-    transform: 'scale(1.1)',  // Zoom effect when hovered
+    transform: 'scale(1.1)',  
   };
 
   const handleLogoClick = () => {
-    // Navigate to the correct dashboard based on the user role
+    
     if (userRole) {
       navigate(`/${userRole}/dashboard`);
     } else {

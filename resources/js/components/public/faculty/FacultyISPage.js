@@ -1,5 +1,5 @@
 import React from 'react';
-import MainDashboard from '../dashboard/components/MainDashboard'; // Assuming this is your layout container
+import MainDashboard from '../dashboard/components/MainDashboard'; 
 import FacultyPageDashboard from './components/FacultyPageDashboard';
 import { Layout, Tabs } from 'antd';
 

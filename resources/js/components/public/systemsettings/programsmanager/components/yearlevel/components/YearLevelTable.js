@@ -17,7 +17,7 @@ const YearLevelTable = ({
     const pageSize = 10;
 
     const handlePageChange = (page) => {
-        setCurrentPage(page); // Update the current page when the page is changed
+        setCurrentPage(page); 
     };
 
     const yearLevelMap = {
@@ -35,22 +35,22 @@ const YearLevelTable = ({
 
     const columns = [
         {
-            title: <span style={{ color: '#1890ff' }}>Actions</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Actions</span>, 
             key: 'actions',
             render: (_, record) => (
                  <Space size="middle">
-                    {/* Show the Edit button */}
+                    {}
                     <Button
                         icon={<EditOutlined />}
                         style={{ backgroundColor: '#1677FF', borderColor: '#1677FF', color: '#fff' }}
                         onClick={() => {
                             setIsEditModalVisible(true);
-                            setModalData(record); // Pass the record data to the modal for editing
+                            setModalData(record); 
                         }}
                         aria-label={`Edit year level ${record.year_level}`}
                     />
                     
-                    {/* Show Delete button only if not archived */}
+                    {}
                     {!record.deleted_at && (
                         <Popconfirm
                             title="Are you sure you want to delete this year level?"
@@ -66,11 +66,11 @@ const YearLevelTable = ({
                         </Popconfirm>
                     )}
 
-                    {/* Show Restore button only if archived */}
+                    {}
                     {record.deleted_at && (
                         <Popconfirm
                             title="Are you sure you want to restore this year level?"
-                            onConfirm={() => handleRestoreYearLevel(record.id)}  // Trigger restore with year level ID
+                            onConfirm={() => handleRestoreYearLevel(record.id)}  
                             okText="Yes"
                             cancelText="No"
                         >
@@ -85,31 +85,31 @@ const YearLevelTable = ({
                 </Space>
             ),
         },
+        // {
+        //     title: <span style={{ color: '#1890ff' }}>ID</span>, // Blue title
+        //     dataIndex: 'id',
+        //     key: 'id',
+        // },
         {
-            title: <span style={{ color: '#1890ff' }}>ID</span>, // Blue title
-            dataIndex: 'id',
-            key: 'id',
-        },
-        {
-            title: <span style={{ color: '#1890ff' }}>Year Level</span>, // Title for the column
-            dataIndex: 'year_level', // The field in your data to show
+            title: <span style={{ color: '#1890ff' }}>Year Level</span>, 
+            dataIndex: 'year_level', 
             key: 'year_level',
             render: (text) => yearLevelMap[text] || text,
         },
         {
-            title: <span style={{ color: '#1890ff' }}>Created At</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Created At</span>, 
             dataIndex: 'created_at',
             key: 'created_at',
             render: (text) => (
-                <Text>{new Date(text).toLocaleString()}</Text> // Format the date
+                <Text>{new Date(text).toLocaleString()}</Text> 
             ),
         },
         {
-            title: <span style={{ color: '#1890ff' }}>Updated At</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Updated At</span>, 
             dataIndex: 'updated_at',
             key: 'updated_at',
             render: (text) => (
-                <Text>{new Date(text).toLocaleString()}</Text> // Format the date
+                <Text>{new Date(text).toLocaleString()}</Text> 
             ),
         },
     ];
@@ -119,26 +119,26 @@ const YearLevelTable = ({
                 id="year-level-table"
                 rowSelection={rowSelection}
                 columns={columns}
-                dataSource={data.slice((currentPage - 1) * pageSize, currentPage * pageSize)} // Paginate the data
-                rowKey="id" // Ensure each row is keyed by the unique year level ID
+                dataSource={data.slice((currentPage - 1) * pageSize, currentPage * pageSize)} 
+                rowKey="id" 
                 pagination={{
                     current: currentPage,
                     pageSize: pageSize,
                     total: data.length,
-                    onChange: handlePageChange, // Update the page when changed
-                    position: ['topRight'], // Pagination only at the top-right
+                    onChange: handlePageChange, 
+                    position: ['topRight'], 
                 }}
                 footer={() => (
                     <div style={{ textAlign: 'left' }}>
-                        {/* Page Info at Bottom Left */}
+                        {}
                         <Text>{`Page ${currentPage} of ${Math.ceil(data.length / pageSize)}`}</Text>
                     </div>
                 )}
-                scroll={{ x: 800 }} // Allows horizontal scrolling on smaller screens if needed
+                scroll={{ x: 800 }} 
                 loading={{
-                    spinning: loading, // Controls if the table should show loading spinner
-                    indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
-                    tip: "Loading data..." // Loading message
+                    spinning: loading, 
+                    indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, 
+                    tip: "Loading data..." 
                 }}
             />
     );

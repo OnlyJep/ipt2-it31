@@ -17,6 +17,6 @@ export const floorData = [
       created_at: '2024-01-03 12:00:00',
       updated_at: '2024-12-03 14:00:00',
     },
-    // Add more floors as needed
+    
   ];
   

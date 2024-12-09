@@ -6,7 +6,7 @@ const LoginPageBackground = ({ children }) => {
     <div
       style={{
         minHeight: '100vh',
-        backgroundImage: `url(${loginPageBackground})`, // Corrected here
+        backgroundImage: `url(${loginPageBackground})`, 
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',

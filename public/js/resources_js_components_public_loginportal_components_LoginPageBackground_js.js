@@ -24,7 +24,6 @@ var LoginPageBackground = function LoginPageBackground(_ref) {
     style: {
       minHeight: '100vh',
       backgroundImage: "url(".concat(_public_images_loginpagebackground_svg__WEBPACK_IMPORTED_MODULE_1__["default"], ")"),
-      // Corrected here
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',

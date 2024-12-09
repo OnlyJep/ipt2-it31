@@ -1,4 +1,4 @@
-// DepartmentTable.js
+
 import React from 'react';
 import { Table, Button, Space, Typography, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
@@ -11,7 +11,7 @@ const DepartmentTable = ({
     setIsEditModalVisible,
     setModalData,
     handleDeleteDepartment,
-    handleRestoreDepartment, // Ensure this prop is received
+    handleRestoreDepartment, 
     currentPage,
     pageSize,
     setCurrentPage,
@@ -20,7 +20,7 @@ const DepartmentTable = ({
 }) => {
 
     const handlePageChange = (page) => {
-        setCurrentPage(page); // Update the current page when the page is changed
+        setCurrentPage(page); 
     };
 
     const handleEdit = (record) => {
@@ -30,7 +30,7 @@ const DepartmentTable = ({
 
     const baseColumns = [
         {
-            title: <span style={{ color: '#1890ff' }}>Actions</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Actions</span>, 
             key: 'actions',
             render: (_, record) => (
                 <Space size="middle">
@@ -59,7 +59,7 @@ const DepartmentTable = ({
                     {record.isArchived && (
                         <Popconfirm
                         title="Are you sure you want to restore this department?"
-                        onConfirm={() => handleRestoreDepartment(record.id)}  // Trigger restore with year level ID
+                        onConfirm={() => handleRestoreDepartment(record.id)}  
                         okText="Yes"
                         cancelText="No"
                     >
@@ -74,13 +74,13 @@ const DepartmentTable = ({
                 </Space>
             ),
         },
+        // {
+        //     title: <span style={{ color: '#1890ff' }}>ID</span>, // Blue title
+        //     dataIndex: 'id',
+        //     key: 'id',
+        // },
         {
-            title: <span style={{ color: '#1890ff' }}>ID</span>, // Blue title
-            dataIndex: 'id',
-            key: 'id',
-        },
-        {
-            title: <span style={{ color: '#1890ff' }}>Department Name</span>, // Blue title
+            title: <span style={{ color: '#1890ff' }}>Department Name</span>, 
             dataIndex: 'department_name',
             key: 'department_name',
         },
@@ -89,7 +89,7 @@ const DepartmentTable = ({
     const extraColumns = showArchived
         ? [
             {
-                title: <span style={{ color: '#1890ff' }}>Deleted At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Deleted At</span>, 
                 dataIndex: 'deleted_at',
                 key: 'deleted_at',
                 render: (value) => value ? new Date(value).toLocaleString() : 'None'
@@ -97,19 +97,19 @@ const DepartmentTable = ({
         ]
         : [
             {
-                title: <span style={{ color: '#1890ff' }}>Created At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Created At</span>, 
                 dataIndex: 'created_at',
                 key: 'created_at',
                 render: (text) => (
-                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> // Format the date
+                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> 
                 ),
             },
             {
-                title: <span style={{ color: '#1890ff' }}>Updated At</span>, // Blue title
+                title: <span style={{ color: '#1890ff' }}>Updated At</span>,
                 dataIndex: 'updated_at',
                 key: 'updated_at',
                 render: (text) => (
-                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> // Format the date
+                    <Text>{text ? new Date(text).toLocaleString() : 'N/A'}</Text> 
                 ),
             },
         ];
@@ -120,27 +120,27 @@ const DepartmentTable = ({
         <Table
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={data} // Data is already filtered and managed by parent
-            rowKey="id" // Ensure each row is keyed by the unique department ID
+            dataSource={data} 
+            rowKey="id" 
             pagination={{
                 current: currentPage,
                 pageSize: pageSize,
                 total: data.length,
-                onChange: handlePageChange, // Update the page when changed
+                onChange: handlePageChange, 
                 position: ['topRight'],
-                showSizeChanger: false, // Hide page size changer if handled server-side
+                showSizeChanger: false, 
             }}
             footer={() => (
                 <div style={{ textAlign: 'left' }}>
-                    {/* Page Info at Bottom Left */}
+                    {}
                     <Text>{`Page ${currentPage} of ${Math.ceil(data.length / pageSize)}`}</Text>
                 </div>
             )}
-            scroll={{ x: 800 }} // Allows horizontal scrolling on smaller screens if needed
+            scroll={{ x: 800 }} 
             loading={{
-                spinning: loading, // Controls if the table should show loading spinner
-                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
-                tip: "Loading data..." // Loading message
+                spinning: loading, 
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, 
+                tip: "Loading data..." 
             }}
             bordered
         />

@@ -1,4 +1,4 @@
-// CollegeProgramsModal.js
+
 import React, { useEffect } from 'react';
 import { Modal, Input, Form, Select, Typography } from 'antd';
 
@@ -10,25 +10,25 @@ const CollegeProgramsModal = ({
     setIsCreateModalVisible,
     isEditModalVisible,
     setIsEditModalVisible,
-    handleCreateCollegeProgram, // Handler for creating a college program
-    handleEditCollegeProgram,   // Handler for editing a college program
-    modalData,                  // Data to prefill the form when editing
+    handleCreateCollegeProgram, 
+    handleEditCollegeProgram,   
+    modalData,                  
 }) => {
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (isEditModalVisible && modalData) {
-            // Pre-fill the form with existing college program data when editing
+            
             form.setFieldsValue({
                 college_programs: modalData.college_programs,
                 study_type: modalData.study_type,
             });
         } else if (isCreateModalVisible) {
-            form.resetFields(); // Reset form fields when creating
+            form.resetFields(); 
         }
     }, [isEditModalVisible, isCreateModalVisible, modalData, form]);
 
-    // Handle form submission
+    
     const handleOk = () => {
         form.validateFields()
             .then((values) => {
@@ -36,31 +36,31 @@ const CollegeProgramsModal = ({
                 const studyType = values.study_type;
 
                 if (isEditModalVisible) {
-                    // Invoke the edit handler with program ID and updated data
+                    
                     handleEditCollegeProgram(modalData.id, { 
                         college_programs: programName,
                         study_type: studyType,
                     });
                 } else {
-                    // Invoke the create handler with new program data
+                    
                     handleCreateCollegeProgram({ 
                         college_programs: programName,
                         study_type: studyType,
                     });
                 }
 
-                form.resetFields(); // Reset the form after submission
+                form.resetFields(); 
             })
             .catch((info) => {
                 console.log('Validate Failed:', info);
             });
     };
 
-    // Handle modal cancellation
+    
     const handleCancel = () => {
         setIsCreateModalVisible(false);
         setIsEditModalVisible(false);
-        form.resetFields(); // Reset the form when modal is closed
+        form.resetFields(); 
     };
 
     return (
@@ -71,7 +71,7 @@ const CollegeProgramsModal = ({
             onCancel={handleCancel}
             okText={isEditModalVisible ? 'Save Changes' : 'Create Program'}
             cancelText="Cancel"
-            destroyOnClose // Ensure form is reset when modal is closed
+            destroyOnClose 
         >
             <Form form={form} layout="vertical" name="collegeProgramForm">
                 <Form.Item
@@ -99,8 +99,8 @@ const CollegeProgramsModal = ({
                     </Select>
                 </Form.Item>
             </Form>
-            {/* Display error messages if needed */}
-            {/* You can pass error messages as props if you want to display them here */}
+            {}
+            {}
         </Modal>
     );
 };

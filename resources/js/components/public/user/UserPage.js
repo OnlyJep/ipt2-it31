@@ -29,32 +29,32 @@ import { useMediaQuery } from 'react-responsive';
 const { Text } = Typography;
 
 const UserPage = () => {
-    const [data, setData] = useState([]); // User data
-    const [filteredData, setFilteredData] = useState([]); // Filtered user data
-    const [roles, setRoles] = useState([]); // State for roles (Not used in roleMenu)
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Selected rows
-    const [searchValue, setSearchValue] = useState(''); // Search query
+    const [data, setData] = useState([]); 
+    const [filteredData, setFilteredData] = useState([]); 
+    const [roles, setRoles] = useState([]); 
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]); 
+    const [searchValue, setSearchValue] = useState(''); 
     const [loading, setLoading] = useState(false);
 
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
-    const [showArchived, setShowArchived] = useState(false); // Toggle between active and archived users
+    const [showArchived, setShowArchived] = useState(false);
     const [modalData, setModalData] = useState(null);
-    const [selectedStatus, setSelectedStatus] = useState('All'); // Default to 'All' status filter
+    const [selectedStatus, setSelectedStatus] = useState('All'); 
 
 
-    // State for the confirmation delete modal
+    
     const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
 
-    // State for selected role filter
+    
     const [selectedRole, setSelectedRole] = useState('All');
 
-    // Media query to detect mobile devices
+    
     const isMobile = useMediaQuery({ maxWidth: 767 });
 
     useEffect(() => {
-        filterData(); // Call the filterData function whenever searchValue, showArchived, selectedRole, or data changes
+        filterData(); 
     }, [searchValue, showArchived, selectedRole, data, filterData]);
 
     useEffect(() => {
@@ -80,7 +80,7 @@ const UserPage = () => {
         fetchRoles();
     }, []);
 
-    // Fetch user data from the API
+    
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -92,11 +92,11 @@ const UserPage = () => {
                     },
                 });
 
-                console.log('API Response:', response.data); // Log the API response
+                console.log('API Response:', response.data); 
 
                 if (Array.isArray(response.data)) {
                     const users = response.data.map(user => {
-                        // Find the role name based on role_id
+                        
                         const role = roles.find(role => role.id === user.role_id);
                         return {
                             ...user,
@@ -106,8 +106,8 @@ const UserPage = () => {
                             ? 'regular' 
                             : user.status === 'irregular' 
                             ? 'irregular' 
-                            : 'active',  // default to 'active' if status is not specified
-                            role_name: role ? role.role_name : 'No Role',  // Use role_name instead of role_id
+                            : 'active',  
+                            role_name: role ? role.role_name : 'No Role',  
                         };
                     });
 
@@ -127,35 +127,35 @@ const UserPage = () => {
     }, [roles]);
 
     const reloadData = () => {
-        // Reset filters and search values
-        setSearchValue(''); // Reset search
-        setSelectedRole('All'); // Reset role filter to 'All'
-        setShowArchived(false); // Reset archived filter to show active buildings only
+        
+        setSearchValue(''); 
+        setSelectedRole('All'); 
+        setShowArchived(false); 
     
         const fetchData = async () => {
-            setLoading(true); // Set loading state to true
+            setLoading(true); 
     
             try {
                 const token = localStorage.getItem('auth_token');
-                const response = await axios.get('/api/building', { // Assuming this is the correct endpoint for buildings
+                const response = await axios.get('/api/building', { 
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
     
-                console.log('API Response:', response.data); // Log the API response
+                console.log('API Response:', response.data); 
     
-                // Validate that the response data is an array
+                
                 if (Array.isArray(response.data)) {
                     const buildings = response.data.map(building => ({
                         ...building,
                         status: building.deleted_at
                             ? 'archived'
-                            : 'active', // Use 'archived' for soft-deleted items
-                        floor_name: building.floor ? building.floor.floor_level : 'No Floor', // Example of handling related data (floor)
+                            : 'active', 
+                        floor_name: building.floor ? building.floor.floor_level : 'No Floor', 
                     }));
     
-                    // Set data after validating and formatting
+                    
                     setData(buildings);
                     setFilteredData(buildings);
                 } else {
@@ -164,15 +164,15 @@ const UserPage = () => {
             } catch (error) {
                 message.error('Error fetching building data: ' + (error.response?.data?.message || error.message));
             } finally {
-                setLoading(false); // Set loading state back to false
+                setLoading(false); 
             }
         };
     
-        fetchData(); // Call fetchData to reload the data
+        fetchData(); 
     };
     
 
-    // Consolidated filter function
+    
     const filterData = useCallback(() => {
         let filtered = data.filter((user) => {
             const matchesSearch =
@@ -187,10 +187,10 @@ const UserPage = () => {
             return matchesSearch && matchesStatus && matchesRole;
         });
 
-        setFilteredData(filtered); // Update the filtered data based on the search, status, and role
+        setFilteredData(filtered); 
     }, [searchValue, showArchived, selectedRole, data]);
 
-    // Debounced filter function to improve performance on rapid input
+    
     const debouncedFilter = useCallback(
         debounce(() => {
             filterData();
@@ -199,15 +199,15 @@ const UserPage = () => {
     );
 
     const handleSearchChange = (e) => {
-        setSearchValue(e.target.value); // Set the search value on every input change
+        setSearchValue(e.target.value); 
         debouncedFilter();
     };
 
     const handleSearch = () => {
-        filterData(); // Trigger filtering when search button is clicked or Enter is pressed
+        filterData(); 
     };
 
-    // Original Role filtering menu with static roles
+    
     const roleMenu = (
         <Menu>
             {roles.map(role => (
@@ -216,26 +216,26 @@ const UserPage = () => {
                 </Menu.Item>
             ))}
             <Menu.Divider />
-            <Menu.Item onClick={() => handleRoleFilter('All')}>All Roles</Menu.Item> {/* Reset filter */}
+            <Menu.Item onClick={() => handleRoleFilter('All')}>All Roles</Menu.Item> {}
         </Menu>
     );
     
     const handleRoleFilter = (role) => {
-        setSelectedRole(role); // Update the selected role filter
+        setSelectedRole(role); 
     };
 
-    // Reset filters
+    
     const handleReset = () => {
         setFilteredData(data);
-        setSearchValue(''); // Reset search filter
-        setSelectedRole('All'); // Reset role filter
+        setSearchValue(''); 
+        setSelectedRole('All'); 
     };
 
-    // Toggle between active and archived users
-    const handleArchiveToggle = () => {
-        setShowArchived(!showArchived);  // Toggle the showArchived state
     
-        // Fetch users with the appropriate 'deleted' parameter based on the showArchived state
+    const handleArchiveToggle = () => {
+        setShowArchived(!showArchived);  
+    
+        
         const fetchData = async () => {
             setLoading(true);
             try {
@@ -245,11 +245,11 @@ const UserPage = () => {
                         Authorization: `Bearer ${token}`,
                     },
                     params: {
-                        deleted: showArchived ? 'false' : 'only',  // Use 'only' for archived users, 'false' for active users
+                        deleted: showArchived ? 'false' : 'only',  
                     },
                 });
     
-                console.log('API Response:', response.data);  // Log the API response
+                console.log('API Response:', response.data);  
     
                 if (Array.isArray(response.data)) {
                     const users = response.data.map(user => {
@@ -262,7 +262,7 @@ const UserPage = () => {
                                 ? 'regular' 
                                 : user.status === 'irregular' 
                                 ? 'irregular' 
-                                : 'active',  // default to 'active' if status is not specified
+                                : 'active',  
                             role_name: role ? role.role_name : 'No Role', 
                         };
                     });
@@ -282,13 +282,13 @@ const UserPage = () => {
         fetchData();
     }; 
 
-    // Handle delete (opens confirmation modal)
+    
     const handleDelete = async () => {
         try {
             const token = localStorage.getItem('auth_token');
-            console.log("Selected IDs for Delete:", selectedRowKeys);  // Log the selected IDs
+            console.log("Selected IDs for Delete:", selectedRowKeys); 
     
-            // Send a DELETE request for each selected user
+            
             const deletePromises = selectedRowKeys.map(async (id) => {
                 return axios.delete(`/api/users/${id}`, {
                     headers: {
@@ -297,17 +297,17 @@ const UserPage = () => {
                 });
             });
     
-            // Wait for all delete requests to finish
+            
             await Promise.all(deletePromises);
     
-            // If delete is successful, reload the data to reflect the changes
-            reloadData(); // Fetch updated user list and refresh UI
+            
+            reloadData(); 
     
             message.success(`${selectedRowKeys.length} user(s) deleted`);
         } catch (error) {
             message.error('Failed to delete users: ' + (error.response?.data?.message || error.message));
         } finally {
-            setSelectedRowKeys([]);  // Reset selected rows after deletion
+            setSelectedRowKeys([]); 
         }
     };
 
@@ -320,7 +320,7 @@ const UserPage = () => {
                 },
             });
 
-            // Remove the deleted user from the state
+            
             setData(prevData => prevData.filter(user => user.id !== id));
             message.success('User deleted successfully');
         } catch (error) {
@@ -329,11 +329,11 @@ const UserPage = () => {
     };
     
 
-    // Handle restore user (with API integration)
+    
     const handleRestore = async (userId) => {
         try {
             const token = localStorage.getItem('auth_token');
-            // Send API request to restore the user
+            
             await axios.post(`/api/users/${userId}/restore`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -341,56 +341,56 @@ const UserPage = () => {
             });
             
             reloadData(); 
-            // Update the UI with the restored user status
+            
             setData((prevData) =>
                 prevData.map((user) =>
                     user.id === userId ? { ...user, status: 'active' } : user
                 )
             );
     
-            message.success('User restored'); // Success message
+            message.success('User restored'); 
         } catch (error) {
             message.error('Failed to restore user: ' + (error.response?.data?.message || error.message)); // Error handling
         }
     };
     
 
-    // Confirm deletion (archive users with API integration)
+    
     const confirmDeleteUser = async () => {
         try {
             const token = localStorage.getItem('auth_token');
-            // Send API request to archive the selected users
+            
             await axios.patch('/api/users/archive', { ids: selectedRowKeys }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
     
-            // Update the status of the users in the state
+            
             const newData = data.map((user) =>
                 selectedRowKeys.includes(user.id) ? { ...user, status: 'archived' } : user
             );
-            setData(newData); // Update the state with the new status of the users
-            setFilteredData(newData); // Also update filteredData to reflect the changes
+            setData(newData); 
+            setFilteredData(newData); 
     
-            message.success(`${selectedRowKeys.length} user(s) moved to archives`); // Success message
+            message.success(`${selectedRowKeys.length} user(s) moved to archives`);
         } catch (error) {
-            message.error('Failed to archive users: ' + (error.response?.data?.message || error.message)); // Error handling
+            message.error('Failed to archive users: ' + (error.response?.data?.message || error.message)); 
         } finally {
-            setConfirmDeleteModalVisible(false); // Close the confirmation modal
-            setSelectedRowKeys([]); // Reset selected rows
+            setConfirmDeleteModalVisible(false);
+            setSelectedRowKeys([]); 
         }
     };
     
     
 
-    // Handle restore selected users with API integration
+    
     const handleRestoreSelected = async () => {
         try {
             const token = localStorage.getItem('auth_token');
-            console.log("Selected IDs for Restore:", selectedRowKeys);  // Log the selected IDs
+            console.log("Selected IDs for Restore:", selectedRowKeys);  
     
-            // Send a POST request for each selected user
+            
             const restorePromises = selectedRowKeys.map(async (id) => {
                 return axios.post(`/api/users/${id}/restore`, {}, {
                     headers: {
@@ -399,35 +399,35 @@ const UserPage = () => {
                 });
             });
     
-            // Wait for all requests to finish
+            
             await Promise.all(restorePromises);
 
             reloadData(); 
     
-            // Update the data on the frontend once all users are restored
+            
             const newData = data.map((user) =>
                 selectedRowKeys.includes(user.id) ? { ...user, status: 'active' } : user
             );
-            setData(newData);  // Update the state with restored users
+            setData(newData);  
             message.success(`${selectedRowKeys.length} user(s) restored`);
         } catch (error) {
             message.error('Failed to restore users: ' + (error.response?.data?.message || error.message));
         } finally {
-            setSelectedRowKeys([]);  // Reset selected rows
+            setSelectedRowKeys([]); 
         }
     };
     
 
-    // Row selection logic for the table
+    
     const rowSelectionConfig = {
         selectedRowKeys,
         onChange: (keys) => setSelectedRowKeys(keys),
         getCheckboxProps: (record) => ({
-            disabled: false, // Allow selection of archived users as well
+            disabled: false, 
         }),
     };
 
-    // Trigger data filtering on search, showArchived, selectedRole, or data change
+    
     useEffect(() => {
         filterData();
     }, [filterData]);
@@ -436,7 +436,7 @@ const UserPage = () => {
         <MainDashboard>
             <div className="user-page" style={{ padding: '16px' }}>
                 <Space direction="vertical" style={{ width: '100%' }}>
-                    {/* Top Controls */}
+                    {}
                     <Row
                         gutter={[16, 16]}
                         justify="space-between"
@@ -484,12 +484,12 @@ const UserPage = () => {
                                 {!showArchived && (
                                 <Popconfirm
                                     title="Are you sure to delete this user/s?"
-                                    onConfirm={() => handleDelete()} // Corrected this line to call the handleDelete function
+                                    onConfirm={() => handleDelete()} 
                                     okText="Yes"
                                     cancelText="No"
                                 >
                                     <Button
-                                        disabled={selectedRowKeys.length === 0} // Button will be disabled if no rows are selected
+                                        disabled={selectedRowKeys.length === 0} 
                                     >
                                         Remove
                                     </Button>
@@ -498,7 +498,7 @@ const UserPage = () => {
                                 {showArchived && (
                                 <Popconfirm
                                     title="Are you sure to restore this user/s?"
-                                    onConfirm={() => handleRestoreSelected()} // Corrected this line to call the handleDelete function
+                                    onConfirm={() => handleRestoreSelected()} 
                                     okText="Yes"
                                     cancelText="No"
                                 >
@@ -514,14 +514,14 @@ const UserPage = () => {
                         </Col>
                     </Row>
 
-                    {/* Selected Row Count */}
+                    {}
                     {selectedRowKeys.length > 0 && (
                         <Text strong style={{ marginBottom: '1px', display: 'block' }}>
                             {selectedRowKeys.length} item(s) selected
                         </Text>
                     )}
 
-                    {/* User Table */}
+                    {}
                     <UserTable
                         rowSelection={rowSelectionConfig}
                         data={filteredData}
@@ -532,11 +532,11 @@ const UserPage = () => {
                         handleDelete={handleDelete}
                         handleRestore={handleRestore}
                         handleSpecificDelete={handleSpecificDelete}
-                        reloadData={reloadData} // Pass reloadData to UserTable
+                        reloadData={reloadData} 
                     />
                 </Space>
 
-                {/* User Modals (Create, Edit, Delete) */}
+                {}
                 <UserCreateModal
                     isVisible={isCreateModalVisible}
                     setIsVisible={setIsCreateModalVisible}
@@ -553,7 +553,7 @@ const UserPage = () => {
                     roles={roles}
                 />
 
-                {/* Confirmation Modal for Deleting */}
+                {}
                 <Modal
                     title="Confirm Archive"
                     visible={confirmDeleteModalVisible}

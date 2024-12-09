@@ -23,5 +23,5 @@ export const academicYearData = [
         created_at: "2024-01-04T13:00:00Z",
         updated_at: "2024-12-04T15:00:00Z",
     },
-    // Add more academic years as needed
+    
 ];

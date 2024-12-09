@@ -10,7 +10,7 @@ const RoomTagsTable = ({
     setIsEditModalVisible,
     setModalData,
     handleDeleteRoomTag,
-    handleRestoreRoomTag, // Accept the restore prop
+    handleRestoreRoomTag, 
     currentPage,
     pageSize,
     setCurrentPage,
@@ -32,7 +32,7 @@ const RoomTagsTable = ({
             key: 'actions',
             render: (_, record) => (
                 <Space>
-                    {/* Edit Button */}
+                    {}
                     {!record.isArchived && (
                         <Button
                             type="primary"
@@ -41,7 +41,7 @@ const RoomTagsTable = ({
                         />
                     )}
 
-                    {/* Delete Button */}
+                    {}
                     {!record.isArchived && (
                         <Popconfirm
                         title="Are you sure you want to delete this room tag?"
@@ -57,11 +57,11 @@ const RoomTagsTable = ({
                         </Popconfirm>
                     )}
 
-                    {/* Restore Button */}
+                    {}
                     {record.isArchived && (
                          <Popconfirm
                          title="Are you sure you want to restore this room tag?"
-                         onConfirm={() => handleRestoreRoomTag(record.id)}  // Trigger restore with year level ID
+                         onConfirm={() => handleRestoreRoomTag(record.id)}  
                          okText="Yes"
                          cancelText="No"
                      >
@@ -76,11 +76,7 @@ const RoomTagsTable = ({
                 </Space>
             ),
         },
-        {
-            title: <span style={{ color: '#1890ff' }}>ID</span>,
-            dataIndex: 'id',
-            key: 'id',
-        },
+        
         {
             title: <span style={{ color: '#1890ff' }}>Room Tag</span>,
             dataIndex: 'room_tag',
@@ -133,10 +129,10 @@ const RoomTagsTable = ({
                 position: ['topRight'],
             }}
             loading={{
-                spinning: loading, // Controls if the table should show loading spinner
-                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, // Custom loading indicator (optional)
-                tip: "Loading data..." // Loading message
-            }} // Add this line
+                spinning: loading, 
+                indicator: <ReloadOutlined spin style={{ fontSize: 24 }} />, 
+                tip: "Loading data..." 
+            }} 
             style={{ color: '#000' }}
             rowKey="id"
             scroll={{ x: 'max-content' }}

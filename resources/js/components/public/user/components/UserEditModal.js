@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Button, Select, message, Spin } from 'antd';
-import { useForm } from 'antd/es/form/Form';  // Import useForm
+import { useForm } from 'antd/es/form/Form'; 
 import axios from 'axios';
 
 const { Option } = Select;
@@ -13,22 +13,22 @@ const UserEditModal = ({
   setModalData,
   roles,
 }) => {
-  const [form] = useForm();  // Create a form instance
+  const [form] = useForm();  
   const [loading, setLoading] = useState(false);
 
-  // Handle form submission (updating user data)
+  
   const handleSubmit = async (values) => {
     setLoading(true);
 
-    // Prepare the data to send to the backend
+    
     const updatedData = { 
       username: values.username,
       email: values.email,
-      status: values.status,  // Include status
-      role_id: values.role,   // Ensure role is sent as 'role_id'
+      status: values.status,  
+      role_id: values.role,   
     };
 
-    // Include password only if provided
+    
     if (values.password) {
       updatedData.password = values.password;
     }
@@ -43,8 +43,8 @@ const UserEditModal = ({
 
       if (response.status === 200) {
         message.success('User updated successfully');
-        reloadData();  // Reload user data after update
-        setIsVisible(false);  // Close modal
+        reloadData();  
+        setIsVisible(false);  
       }
     } catch (error) {
       message.error(`Failed to update user: ${error.response?.data?.message || error.message}`);
@@ -53,14 +53,14 @@ const UserEditModal = ({
     }
   };
 
-  // Populate form fields when modalData is set
+  
   useEffect(() => {
     if (modalData) {
       form.setFieldsValue({
         username: modalData.username,
         email: modalData.email,
-        status: modalData.status,  // Set status (active, archived, regular, irregular)
-        role: modalData.role_id,   // Set role_id (make sure the backend uses this field)
+        status: modalData.status,  
+        role: modalData.role_id,   
       });
     }
   }, [modalData, form]);
@@ -89,7 +89,7 @@ const UserEditModal = ({
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
-          status: 'active',  // Default to 'active' if not set
+          status: 'active',  
         }}
       >
         <Form.Item

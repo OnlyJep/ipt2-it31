@@ -1,4 +1,4 @@
-// SubjectTable.js
+
 import React from 'react';
 import { Table, Space } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -20,20 +20,20 @@ const SubjectTable = ({
       title: 'Subject Code',
       dataIndex: 'subjectCode',
       sorter: true,
-      // Mobile responsiveness: Display on xs, sm, and md screens
+      
       responsive: ['xs', 'sm', 'md'],
     },
     {
       title: 'Subject Name',
       dataIndex: 'subjectName',
       sorter: true,
-      // Mobile responsiveness: Display on xs, sm, and md screens
+      
       responsive: ['xs', 'sm', 'md'],
     },
     {
       title: 'Classification',
       dataIndex: 'classification',
-      // Mobile responsiveness: Hide this column on xs screens (mobile)
+      
       responsive: ['xs', 'sm'],
     },
     {
@@ -55,7 +55,7 @@ const SubjectTable = ({
           <DeleteOutlined />
         </Space>
       ),
-      responsive: ['xs', 'sm'], // Hide actions on mobile devices
+      responsive: ['xs', 'sm'], 
     },
   ];
 
@@ -68,8 +68,8 @@ const SubjectTable = ({
         onChange: onRowSelectionChange,
       }}
       onChange={onSortChange}
-      pagination={false} // We'll manage pagination manually
-      scroll={{ x: 'max-content' }} // Enable horizontal scroll if needed
+      pagination={false} 
+      scroll={{ x: 'max-content' }} 
       responsive
     />
   );

@@ -17,13 +17,13 @@ const RoomTagsModal = ({
 
     useEffect(() => {
         if (isEditModalVisible && modalData) {
-            // Pre-fill the form when editing
+            
             form.setFieldsValue({
                 room_tag: modalData.room_tag,
                 room_tag_type: modalData.room_tag_type,
             });
         } else if (isCreateModalVisible) {
-            // Clear the form for a new room tag
+            
             form.resetFields();
         }
     }, [isEditModalVisible, isCreateModalVisible, modalData, form]);
@@ -33,7 +33,7 @@ const RoomTagsModal = ({
             const token = localStorage.getItem('auth_token');
 
             if (isEditModalVisible && modalData) {
-                // Handle update logic
+                
                 try {
                     const response = await axios.put(`/api/roomtag/${modalData.id}`, values, {
                         headers: {
@@ -53,7 +53,7 @@ const RoomTagsModal = ({
                     message.error('Failed to update room tag');
                 }
             } else {
-                // Handle create logic
+                
                 try {
                     const response = await axios.post('/api/roomtag', values, {
                         headers: {

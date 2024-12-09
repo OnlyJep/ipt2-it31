@@ -3,7 +3,7 @@ export const userData = [
     id: 1,
     status: null,
     username: 'john_doe',
-    password: 'hashed_password_1', // Mock hashed password
+    password: 'hashed_password_1', 
     role: 'Admin',
     email: null,
     created: '2024-01-01',
@@ -14,7 +14,7 @@ export const userData = [
     id: 2,
     status: null,
     username: 'jane_smith',
-    password: 'hashed_password_2', // Mock hashed password
+    password: 'hashed_password_2', 
     role: 'Teacher',
     email: null,
     created: '2024-02-05',
@@ -25,7 +25,7 @@ export const userData = [
     id: 3,
     status: null,
     username: 'alice_wilson',
-    password: 'hashed_password_3', // Mock hashed password
+    password: 'hashed_password_3', 
     role: 'Superadmin',
     email: null,
     created: '2024-03-01',
@@ -36,7 +36,7 @@ export const userData = [
     id: 4,
     status: null,
     username: 'bob_jones',
-    password: 'hashed_password_4', // Mock hashed password
+    password: 'hashed_password_4', 
     role: 'Student',
     email: null,
     created: '2024-04-10',
@@ -47,7 +47,7 @@ export const userData = [
     id: 5,
     status: null,
     username: 'mike_lee',
-    password: 'hashed_password_5', // Mock hashed password
+    password: 'hashed_password_5', 
     role: 'Admin',
     email: null,
     created: '2024-05-20',

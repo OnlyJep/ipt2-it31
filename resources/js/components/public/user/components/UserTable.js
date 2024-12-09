@@ -81,12 +81,7 @@ const UserTable = ({
             ),
             responsive: ['xs', 'sm', 'md', 'lg', 'xl'], // Visible on all screen sizes
         },
-        {
-            title: <span style={{ color: '#1890ff' }}>ID</span>,
-            dataIndex: 'id',
-            key: 'id',
-            responsive: ['sm', 'md', 'lg', 'xl'], // Hidden on extra small screens
-        },
+        
         {
             title: <span style={{ color: '#1890ff' }}>Status</span>,
             dataIndex: 'status',
@@ -155,11 +150,11 @@ const UserTable = ({
         printWindow.document.write('<html><head><title>User Table</title></head><body>');
         printWindow.document.write('<h2>User Table</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse;">');
-        printWindow.document.write('<thead><tr><th>ID</th><th>Status</th><th>Username</th><th>Role</th><th>Email</th><th>Created</th><th>Updated</th></tr></thead>');
+        printWindow.document.write('<thead><tr><<th>Status</th><th>Username</th><th>Role</th><th>Email</th><th>Created</th><th>Updated</th></tr></thead>');
         printWindow.document.write('<tbody>');
         data.forEach((item) => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${item.id}</td>`);
+            // printWindow.document.write(`<td>${item.id}</td>`);
             printWindow.document.write(`<td>${item.status === 'active' ? 'Active' :
                 item.status === 'archived' ? 'Archived' :
                 item.status === 'regular' ? 'Regular' : 'Irregular'}</td>`);
@@ -198,7 +193,7 @@ const UserTable = ({
                         <List.Item>
                             <Card style={{ width: '100%' }}>
                                 <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                                    <Text strong>ID:</Text> {item.id}
+                                
                                     <Text strong>Username:</Text> {item.username}
                                     <Text strong>Email:</Text> {item.email}
                                     <Text strong>Status:</Text> {

@@ -1,4 +1,4 @@
-// DepartmentsPage.js
+
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Space, Typography, message, Popconfirm } from 'antd';   
 import { FileTextOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
@@ -10,8 +10,8 @@ import DepartmentModal from './components/DepartmentModal';
 const { Text } = Typography;
 
 const DepartmentsPage = () => {
-    const [data, setData] = useState([]); // Active departments
-    const [archivedData, setArchivedData] = useState([]); // Archived departments
+    const [data, setData] = useState([]); 
+    const [archivedData, setArchivedData] = useState([]); 
     const [filteredData, setFilteredData] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [searchValue, setSearchValue] = useState('');
@@ -24,9 +24,9 @@ const DepartmentsPage = () => {
     const [error, setError] = useState(null);
     const pageSize = 10;
 
-    const token = localStorage.getItem('auth_token'); // Assuming you use auth tokens
+    const token = localStorage.getItem('auth_token'); 
 
-    // Fetch active departments
+    
     const fetchDepartments = async () => {
         setLoading(true);
         try {
@@ -56,7 +56,7 @@ const DepartmentsPage = () => {
         }
     };
 
-    // Fetch archived departments only
+    
     const fetchArchivedDepartments = async () => {
         setLoading(true);
         try {
@@ -84,12 +84,12 @@ const DepartmentsPage = () => {
     };
 
     useEffect(() => {
-        // Initially fetch active departments
+        
         fetchDepartments();
     }, []);
 
     useEffect(() => {
-        // When search, data, archivedData, or showArchived changes, re-filter
+        
         const baseData = showArchived ? archivedData : data;
         const filtered = baseData.filter(dep =>
             String(dep.department_name || '').toLowerCase().includes(searchValue.toLowerCase())
@@ -99,7 +99,7 @@ const DepartmentsPage = () => {
     }, [searchValue, data, archivedData, showArchived]);
 
     useEffect(() => {
-        // When toggling showArchived, fetch the appropriate data
+        
         if (showArchived) {
             fetchArchivedDepartments();
         } else {
@@ -193,7 +193,7 @@ const DepartmentsPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Remove from archivedData and add back to data
+            
             const departmentToRestore = archivedData.find(dep => dep.id === id);
             if (departmentToRestore) {
                 const updatedArchived = archivedData.filter(dep => dep.id !== id);
@@ -209,14 +209,14 @@ const DepartmentsPage = () => {
         }
     };
 
-    // New handler for editing a department
+    
     const handleEditDepartment = async (id, updatedData) => {
         try {
             await axios.put(`/api/department/${id}`, updatedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Update the department in the active data
+            
             const updatedDepartments = data.map(dep => 
                 dep.id === id ? { ...dep, ...updatedData, updated_at: new Date().toISOString() } : dep
             );
@@ -236,12 +236,12 @@ const DepartmentsPage = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const newDepartment = response.data; // Assuming the API returns the created department
+            const newDepartment = response.data; 
 
             message.success('New department created successfully');
             setIsCreateModalVisible(false);
 
-            // Refresh the data by fetching active departments
+            
             fetchDepartments();
         } catch (error) {
             console.error('Error creating department:', error);
@@ -254,7 +254,7 @@ const DepartmentsPage = () => {
         printWindow.document.write('<html><head><title>Department Table</title></head><body>');
         printWindow.document.write('<h2>Department Data</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">');
-        printWindow.document.write('<thead><tr><th>ID</th><th>Department Name</th>');
+        printWindow.document.write('<thead><tr><th>Department Name</th>');
         if (!showArchived) {
             printWindow.document.write('<th>Created At</th><th>Updated At</th>');
         } else {
@@ -264,7 +264,7 @@ const DepartmentsPage = () => {
 
         filteredData.forEach(dep => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${dep.id ?? ''}</td>`);
+            // printWindow.document.write(`<td>${dep.id ?? ''}</td>`);
             printWindow.document.write(`<td>${dep.department_name ?? ''}</td>`);
             if (!showArchived) {
                 printWindow.document.write(`<td>${dep.created_at ? new Date(dep.created_at).toLocaleString() : ''}</td>`);
@@ -376,11 +376,11 @@ const DepartmentsPage = () => {
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 handleDeleteDepartment={handleDeleteDepartment}
-                handleRestoreDepartment={handleRestoreDepartment} // Pass restore function here
+                handleRestoreDepartment={handleRestoreDepartment} 
                 currentPage={currentPage}
-                pageSize={pageSize} // Pass pageSize
+                pageSize={pageSize} 
                 setCurrentPage={setCurrentPage}
-                showArchived={showArchived} // Pass showArchived
+                showArchived={showArchived} 
                 loading={loading}
             />
             <DepartmentModal
@@ -389,8 +389,8 @@ const DepartmentsPage = () => {
                 isCreateModalVisible={isCreateModalVisible}
                 setIsCreateModalVisible={setIsCreateModalVisible}
                 modalData={modalData}
-                handleCreateDepartment={handleCreateDepartment} // Pass create handler
-                handleEditDepartment={handleEditDepartment}     // Pass edit handler
+                handleCreateDepartment={handleCreateDepartment} 
+                handleEditDepartment={handleEditDepartment}     
             />
             {error && <Text type="danger">{error}</Text>}
         </div>

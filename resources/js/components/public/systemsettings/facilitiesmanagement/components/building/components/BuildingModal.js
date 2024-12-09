@@ -13,15 +13,15 @@ const BuildingModal = ({
     setData,
     modalData,
     setModalData,
-    handleCreateBuilding, // Pass the handler for creating a building
+    handleCreateBuilding, 
     reloadData,
 }) => {
-    const [form] = useForm(); // Ant Design Form hook for form handling
-    const [floors, setFloors] = useState([]); // Floors data for dropdown
-    const [loadingFloors, setLoadingFloors] = useState(false); // Loading state for floors
+    const [form] = useForm(); 
+    const [floors, setFloors] = useState([]); 
+    const [loadingFloors, setLoadingFloors] = useState(false); 
 
     useEffect(() => {
-        // Fetch floors when the modal is opened
+        
         const fetchFloors = async () => {
             try {
                 const response = await axios.get('/api/floor', {
@@ -29,7 +29,7 @@ const BuildingModal = ({
                         Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
                     },
                 });
-                setFloors(response.data); // Set the floors data
+                setFloors(response.data); 
             } catch (error) {
                 message.error('Failed to load floors');
             }
@@ -41,21 +41,21 @@ const BuildingModal = ({
 
         if (isEditModalVisible && modalData) {
             form.setFieldsValue({
-                building_name: modalData.building_name, // Pre-fill the form if editing
-                floor_id: modalData.floor_id, // Set the selected floor ID
+                building_name: modalData.building_name, 
+                floor_id: modalData.floor_id, 
             });
         }
     }, [isCreateModalVisible, isEditModalVisible, modalData, form]);
 
     useEffect(() => {
         if (isEditModalVisible && modalData) {
-            // Pre-fill the form with data when editing
+            
             form.setFieldsValue({
-                building_name: modalData.building_name, // Editable building name
-                floor_id: modalData.floor_id, // Editable floor ID
+                building_name: modalData.building_name, 
+                floor_id: modalData.floor_id, 
             });
         } else {
-            // Reset form for new building
+            
             form.resetFields();
         }
     }, [isEditModalVisible, modalData, form]);
@@ -63,7 +63,7 @@ const BuildingModal = ({
     const handleOk = async () => {
         form.validateFields().then(async (values) => {
             if (isEditModalVisible) {
-                // Handle update logic for an existing building
+                
                 try {
                     const token = localStorage.getItem('auth_token');
                     const response = await axios.put(`/api/building/${modalData.id}`, values, {
@@ -78,11 +78,12 @@ const BuildingModal = ({
                     setData(updatedData);
                     setIsEditModalVisible(false);
                     message.success('Building updated successfully');
+                    reloadData();
                 } catch (error) {
                     message.error('Failed to update building');
                 }
             } else {
-                // Handle create logic for a new building
+                
                 try {
                     const token = localStorage.getItem('auth_token');
                     const response = await axios.post('/api/building', values, {
@@ -94,6 +95,7 @@ const BuildingModal = ({
                     setData((prevData) => [...prevData, response.data.building]);
                     setIsCreateModalVisible(false);
                     message.success('Building created successfully');
+                    reloadData();
                 } catch (error) {
                     message.error('Failed to create building');
                 }
@@ -103,8 +105,8 @@ const BuildingModal = ({
     
 
     const handleCancel = () => {
-        setIsCreateModalVisible(false); // Close modal when canceled
-        setIsEditModalVisible(false); // Ensure edit modal is also closed
+        setIsCreateModalVisible(false); 
+        setIsEditModalVisible(false); 
     };
 
     return (

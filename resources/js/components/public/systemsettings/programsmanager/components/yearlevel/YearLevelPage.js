@@ -8,16 +8,16 @@ import YearLevelModal from './components/YearLevelModal';
 const { Text } = Typography;
 
 const YearLevelPage = () => {
-    const [data, setData] = useState([]); // Store active data
-    const [archivedData, setArchivedData] = useState([]); // Store archived data
-    const [filteredData, setFilteredData] = useState([]); // Filtered data based on search
+    const [data, setData] = useState([]); 
+    const [archivedData, setArchivedData] = useState([]); 
+    const [filteredData, setFilteredData] = useState([]); 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(false);
     const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [modalData, setModalData] = useState(null);
-    const [showArchived, setShowArchived] = useState(false); // Toggle archived data view
+    const [showArchived, setShowArchived] = useState(false); 
     const [isPrintPreviewVisible, setIsPrintPreviewVisible] = useState(false);
     
     
@@ -30,7 +30,7 @@ const YearLevelPage = () => {
 
     const handleSearch = (value) => {
         const filtered = (showArchived ? archivedData : data).filter((year) => {
-            const yearLevel = year.year_level; // Get the year_level
+            const yearLevel = year.year_level; 
     
             // Ensure year_level is treated as a string, and handle undefined or null values
             return (yearLevel && yearLevel.toString().toLowerCase().includes(value.toLowerCase()));
@@ -43,7 +43,7 @@ const YearLevelPage = () => {
         setIsPrintPreviewVisible(true);
     };
     
-    // Function to close the print preview modal
+    
     const closePrintPreview = () => {
         setIsPrintPreviewVisible(false);
     };
@@ -62,19 +62,19 @@ const YearLevelPage = () => {
                     Authorization: `Bearer ${token}`,
                 },
                 params: {
-                    deleted: showArchived ? 'true' : 'false', // Fetch archived data if showArchived is true
+                    deleted: showArchived ? 'true' : 'false', 
                 },
             });
 
-            // Split the data into active and archived based on deleted_at
+            
             const activeData = response.data.filter(year => !year.deleted_at);
             const archivedData = response.data.filter(year => year.deleted_at);
 
-            // Set data based on the toggle of showArchived
+            
             setData(activeData);
             setArchivedData(archivedData);
 
-            // Apply filter based on search query if any
+            
             const filtered = (showArchived ? archivedData : activeData).filter(year =>
                 year.year_level.toLowerCase().includes(searchValue.toLowerCase())
             );
@@ -100,19 +100,19 @@ const YearLevelPage = () => {
                     Authorization: `Bearer ${token}`,
                 },
                 params: {
-                    deleted: showArchived ? 'true' : 'false', // Fetch archived data if showArchived is true
+                    deleted: showArchived ? 'true' : 'false', 
                 },
             });
 
-            // Split the data into active and archived based on deleted_at
+            
             const activeData = response.data.filter(year => !year.deleted_at);
             const archivedData = response.data.filter(year => year.deleted_at);
 
-            // Set data based on the toggle of showArchived
+            
             setData(activeData);
             setArchivedData(archivedData);
 
-            // Apply filter based on search query if any
+            
             const filtered = (showArchived ? archivedData : activeData).filter(year =>
                 year.year_level.toLowerCase().includes(searchValue.toLowerCase())
             );
@@ -128,19 +128,19 @@ const YearLevelPage = () => {
 
     const handleDeleteYearLevel = async (id) => {
         try {
-            const token = localStorage.getItem('auth_token');  // Assuming auth token is saved in localStorage
+            const token = localStorage.getItem('auth_token');  
             
-            // Send DELETE request to backend
+            
             const response = await axios.delete(`/api/yearlevel/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             
-            // Handle success (update the state, remove from table)
+            
             if (response.status === 200) {
                 message.success('Year Level deleted successfully');
-                reloadData();  // Call reloadData to refetch the updated data
+                reloadData();  
             }
         } catch (error) {
             message.error('Failed to delete year level: ' + error.message);
@@ -152,7 +152,7 @@ const YearLevelPage = () => {
         try {
             const token = localStorage.getItem('auth_token');
             
-            // Create an array of promises for deleting the selected rows
+            
             const deletePromises = selectedRowKeys.map(async (id) => {
                 return axios.delete(`/api/yearlevel/${id}`, {
                     headers: {
@@ -161,17 +161,17 @@ const YearLevelPage = () => {
                 });
             });
     
-            // Wait for all promises to finish
+            
             await Promise.all(deletePromises);
     
-            // Reload data after deletion
+            
             reloadData();
     
             message.success(`${selectedRowKeys.length} Year Level(s) deleted.`);
         } catch (error) {
             message.error('Failed to delete year levels: ' + (error.response?.data?.message || error.message));
         } finally {
-            setSelectedRowKeys([]); // Reset selected rows
+            setSelectedRowKeys([]); 
         }
     };
     
@@ -181,14 +181,14 @@ const YearLevelPage = () => {
         try {
             const token = localStorage.getItem('auth_token');
             
-            // Send a POST request to restore the year level
+            
             const response = await axios.post(`/api/yearlevel/${id}/restore`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
     
-            // Reload the data after restoring the item
+            
             reloadData();
             message.success('Year level restored successfully.');
         } catch (error) {
@@ -203,7 +203,7 @@ const YearLevelPage = () => {
         try {
             const token = localStorage.getItem('auth_token');
     
-            // Create an array of promises for restoring the selected rows
+            
             const restorePromises = selectedRowKeys.map(async (id) => {
                 return axios.post(`/api/yearlevel/${id}/restore`, {}, {
                     headers: {
@@ -212,37 +212,37 @@ const YearLevelPage = () => {
                 });
             });
     
-            // Wait for all promises to finish
+            
             await Promise.all(restorePromises);
     
-            // Reload data after restore
+            
             reloadData();
     
             message.success(`${selectedRowKeys.length} Year Level(s) restored.`);
         } catch (error) {
             message.error('Failed to restore year levels: ' + (error.response?.data?.message || error.message));
         } finally {
-            setSelectedRowKeys([]); // Reset selected rows
+            setSelectedRowKeys([]); 
         }
     };
     
 
-    // Define the function for opening the Create Modal
+    
     const handleCreateYearLevel = async (values) => {
         try {
             const token = localStorage.getItem('auth_token');
     
-            // Send POST request to create the year level
+            
             const response = await axios.post('/api/yearlevel', values, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
     
-            // Update the state with the new year level
+            
             setData((prevData) => [...prevData, response.data.yearLevel]);
     
-            // Close the modal and show success message
+            
             setIsCreateModalVisible(false);
             message.success('Year Level created successfully');
         } catch (error) {
@@ -265,9 +265,9 @@ const YearLevelPage = () => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                flexWrap: 'wrap', // Allow wrapping when screen size reduces
+                flexWrap: 'wrap', 
             }}>
-                {/* Search and Buttons container */}
+                {}
                 <Space wrap style={{ display: 'flex', gap: '10px' }}>
                     <Input.Search
                         value={searchValue}
@@ -279,7 +279,7 @@ const YearLevelPage = () => {
                     />
                     <Button 
                         icon={<FileTextOutlined />}
-                        onClick={openPrintPreview} // Show print preview modal
+                        onClick={openPrintPreview} 
                         type="primary"
                     >
                         Print Preview
@@ -293,7 +293,7 @@ const YearLevelPage = () => {
                     </Button>
                 </Space>
 
-                {/* Action buttons container */}
+                {}
                 <Space wrap style={{ display: 'flex', gap: '10px' }}>
                 <Button
                     icon={<PlusOutlined />}

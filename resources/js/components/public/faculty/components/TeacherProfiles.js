@@ -7,46 +7,46 @@ const TeacherProfiles = ({ teachers, searchQuery, fetchData }) => {
     const [currentTeacher, setCurrentTeacher] = useState(null);
     const [form] = Form.useForm();
 
-    // Filter teachers based on search query (case insensitive)
+    
     const filteredTeachers = teachers.filter(
         teacher =>
             teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             teacher.subject.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Show modal for adding or editing teacher profile
+    
     const showModal = (teacher = null) => {
         setIsModalVisible(true);
         setCurrentTeacher(teacher);
         if (teacher) {
-            form.setFieldsValue(teacher); // Populate the form with existing data
+            form.setFieldsValue(teacher); 
         } else {
-            form.resetFields(); // Clear form for new teacher
+            form.resetFields(); 
         }
     };
 
-    // Close the modal
+    
     const handleCancel = () => {
         setIsModalVisible(false);
         setCurrentTeacher(null);
     };
 
-    // Handle form submit (create or update)
+    
     const handleOk = async () => {
         try {
             const values = await form.validateFields();
 
             if (currentTeacher) {
-                // Update existing teacher profile
+                
                 await axios.put(`https://api.example.com/teachers/${currentTeacher.id}`, values);
                 message.success('Teacher profile updated successfully');
             } else {
-                // Create a new teacher profile
+                
                 await axios.post('https://api.example.com/teachers', values);
                 message.success('Teacher profile created successfully');
             }
 
-            // Fetch updated data after operation
+            
             fetchData();
             setIsModalVisible(false);
         } catch (error) {
@@ -54,7 +54,7 @@ const TeacherProfiles = ({ teachers, searchQuery, fetchData }) => {
         }
     };
 
-    // Handle delete teacher profile
+    
     const handleDelete = async (teacherId) => {
         try {
             await axios.delete(`https://api.example.com/teachers/${teacherId}`);
@@ -88,7 +88,7 @@ const TeacherProfiles = ({ teachers, searchQuery, fetchData }) => {
                 )}
             />
 
-            {/* Modal for creating/editing teacher profile */}
+            {}
             <Modal
                 title={currentTeacher ? 'Edit Teacher' : 'Add Teacher'}
                 visible={isModalVisible}

@@ -1,4 +1,4 @@
-// PostAnnouncementPage.js
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Input, Space, Typography, message, Popconfirm } from 'antd';   
 import { FileTextOutlined, PlusOutlined, UnorderedListOutlined } from '@ant-design/icons';
@@ -9,8 +9,8 @@ import AnnouncementModal from './components/PostAnnouncementModal';
 const { Text } = Typography;
 
 const PostAnnouncementPage = () => {
-    const [data, setData] = useState([]); // Active announcements
-    const [archivedData, setArchivedData] = useState([]); // Archived announcements
+    const [data, setData] = useState([]); 
+    const [archivedData, setArchivedData] = useState([]); 
     const [filteredData, setFilteredData] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [searchValue, setSearchValue] = useState('');
@@ -23,9 +23,9 @@ const PostAnnouncementPage = () => {
     const [error, setError] = useState(null);
     const pageSize = 10;
 
-    const token = localStorage.getItem('auth_token'); // Assuming you use auth tokens
+    const token = localStorage.getItem('auth_token'); 
 
-    // Fetch active announcements
+    
     const fetchAnnouncements = useCallback(async () => {
         setLoading(true);
         try {
@@ -55,7 +55,7 @@ const PostAnnouncementPage = () => {
         }
     }, [token, showArchived]);
 
-    // Fetch archived announcements only
+    
     const fetchArchivedAnnouncements = useCallback(async () => {
         setLoading(true);
         try {
@@ -83,12 +83,12 @@ const PostAnnouncementPage = () => {
     }, [token, showArchived]);
 
     useEffect(() => {
-        // Initially fetch active announcements
+        
         fetchAnnouncements();
     }, [fetchAnnouncements]);
 
     useEffect(() => {
-        // When toggling showArchived, fetch the appropriate data
+        
         if (showArchived) {
             fetchArchivedAnnouncements();
         } else {
@@ -97,7 +97,7 @@ const PostAnnouncementPage = () => {
     }, [showArchived, fetchArchivedAnnouncements, fetchAnnouncements]);
 
     useEffect(() => {
-        // When search, data, archivedData, or showArchived changes, re-filter
+        
         const baseData = showArchived ? archivedData : data;
         const filtered = baseData.filter(ann =>
             String(ann.announcement || '').toLowerCase().includes(searchValue.toLowerCase())
@@ -106,12 +106,12 @@ const PostAnnouncementPage = () => {
         setCurrentPage(1);
     }, [searchValue, data, archivedData, showArchived]);
 
-    // Handle search value change
+   
     const handleSearch = (value) => {
         setSearchValue(value);
     };
 
-    // Handle creating a new announcement
+    
     const handleCreateAnnouncement = async (announcementData) => {
         setLoading(true);
         try {
@@ -120,12 +120,12 @@ const PostAnnouncementPage = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            const newAnnouncement = response.data; // Assuming the API returns the created announcement
+            const newAnnouncement = response.data; 
 
             message.success('New announcement created successfully');
             setIsCreateModalVisible(false);
 
-            // Refresh the data by fetching active announcements
+            
             fetchAnnouncements();
         } catch (error) {
             console.error('Error creating announcement:', error);
@@ -135,7 +135,7 @@ const PostAnnouncementPage = () => {
         }
     };
 
-    // Handle editing an announcement
+    
     const handleEditAnnouncement = async (id, updatedData) => {
         setLoading(true);
         try {
@@ -143,7 +143,7 @@ const PostAnnouncementPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Update the announcement in the active data
+            
             const updatedAnnouncements = data.map(ann => 
                 ann.id === id ? { ...ann, ...updatedData, updated_at: new Date().toISOString() } : ann
             );
@@ -158,7 +158,7 @@ const PostAnnouncementPage = () => {
         }
     };
 
-    // Handle archiving (deleting) a single announcement
+    
     const handleDeleteAnnouncement = async (id) => {
         const announcementToDelete = data.find(ann => ann.id === id);
         if (!announcementToDelete) return;
@@ -180,7 +180,7 @@ const PostAnnouncementPage = () => {
         }
     };
 
-    // Handle bulk archiving (deleting) announcements
+    
     const handleDeleteSelected = async () => {
         const selectedAnnouncements = data.filter(ann => selectedRowKeys.includes(ann.id));
         if (selectedAnnouncements.length === 0) return;
@@ -211,7 +211,7 @@ const PostAnnouncementPage = () => {
         }
     };
 
-    // Handle restoring a single announcement
+    
     const handleRestoreAnnouncement = async (id) => {
         setLoading(true);
         try {
@@ -219,7 +219,7 @@ const PostAnnouncementPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Remove from archivedData and add back to data
+            
             const announcementToRestore = archivedData.find(ann => ann.id === id);
             if (announcementToRestore) {
                 const updatedArchived = archivedData.filter(ann => ann.id !== id);
@@ -237,7 +237,7 @@ const PostAnnouncementPage = () => {
         }
     };
 
-    // Handle bulk restoring announcements
+    
     const handleRestoreSelected = async () => {
         const selectedAnnouncements = archivedData.filter(ann => selectedRowKeys.includes(ann.id));
         if (selectedAnnouncements.length === 0) return;
@@ -270,13 +270,13 @@ const PostAnnouncementPage = () => {
         }
     };
 
-    // Handle printing the announcement table
+    
     const handlePrint = () => {
         const printWindow = window.open('', '', 'height=650,width=900');
         printWindow.document.write('<html><head><title>Announcement Table</title></head><body>');
         printWindow.document.write('<h2>Announcement Data</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">');
-        printWindow.document.write('<thead><tr><th>ID</th><th>Announcement</th>');
+        printWindow.document.write('<thead><tr><th>Announcement</th>');
         if (!showArchived) {
             printWindow.document.write('<th>Created At</th><th>Updated At</th>');
         } else {
@@ -286,7 +286,6 @@ const PostAnnouncementPage = () => {
 
         filteredData.forEach(ann => {
             printWindow.document.write('<tr>');
-            printWindow.document.write(`<td>${ann.id ?? ''}</td>`);
             printWindow.document.write(`<td>${ann.announcement ?? ''}</td>`);
             if (!showArchived) {
                 printWindow.document.write(`<td>${ann.created_at ? new Date(ann.created_at).toLocaleString() : ''}</td>`);
@@ -305,7 +304,7 @@ const PostAnnouncementPage = () => {
         printWindow.close();
     };
 
-    // Row selection configuration for the table
+    
     const rowSelection = {
         selectedRowKeys,
         onChange: (keys) => setSelectedRowKeys(keys),
@@ -397,11 +396,11 @@ const PostAnnouncementPage = () => {
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 handleDeleteAnnouncement={handleDeleteAnnouncement}
-                handleRestoreAnnouncement={handleRestoreAnnouncement} // Pass restore function here
+                handleRestoreAnnouncement={handleRestoreAnnouncement} 
                 currentPage={currentPage}
-                pageSize={pageSize} // Pass pageSize
+                pageSize={pageSize} 
                 setCurrentPage={setCurrentPage}
-                showArchived={showArchived} // Pass showArchived
+                showArchived={showArchived} 
                 loading={loading}
             />
             <AnnouncementModal
@@ -410,8 +409,8 @@ const PostAnnouncementPage = () => {
                 isCreateModalVisible={isCreateModalVisible}
                 setIsCreateModalVisible={setIsCreateModalVisible}
                 modalData={modalData}
-                handleCreateAnnouncement={handleCreateAnnouncement} // Pass create handler
-                handleEditAnnouncement={handleEditAnnouncement}     // Pass edit handler
+                handleCreateAnnouncement={handleCreateAnnouncement} 
+                handleEditAnnouncement={handleEditAnnouncement}   
             />
             {error && <Text type="danger">{error}</Text>}
         </div>

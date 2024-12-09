@@ -17,13 +17,13 @@ const SideBarNavList = React.memo(({ userRole }) => {
 
   const [openKeys, setOpenKeys] = useState([]);
 
-  // Update openKeys when the route changes
+  
   useEffect(() => {
-    // If the URL includes "/system-settings", keep the "System Settings" submenu open
+    
     if (location.pathname.includes('/system-settings')) {
       setOpenKeys(['system-settings']);
     } else {
-      setOpenKeys([]); // Collapse the submenu if we're not in the system settings section
+      setOpenKeys([]); 
     }
   }, [location.pathname]);
 
@@ -40,7 +40,7 @@ const SideBarNavList = React.memo(({ userRole }) => {
       onOpenChange={onOpenChange}
       style={{ height: '100%', borderRight: 0, background: 'transparent' }}
     >
-      {/* Dashboard Menu Item */}
+      {}
       <Menu.Item key={`/${userRole}/dashboard`} icon={<DashboardOutlined />} className="nav-item">
         <NavLink to={`/${userRole}/dashboard`} className="nav-link">
           <span className="nav-link-text">Dashboard</span>

@@ -6,7 +6,7 @@ import DropdownReligion from './DropdownReligion';
 import DropdownMaritalStatus from './DropdownMaritalStatus';
 
 const ProfileForm = ({ form, isEditing }) => {
-    // Items for Descriptions when not editing
+    
     const items = [
         { key: '1', label: 'Firstname', children: form.getFieldValue('firstname') || 'N/A' },
         { key: '2', label: 'Middle Initial', children: form.getFieldValue('middleinitial') || 'N/A' },
@@ -19,13 +19,13 @@ const ProfileForm = ({ form, isEditing }) => {
         { key: '9', label: 'Address', children: form.getFieldValue('address') || 'N/A' },
     ];
 
-    // To avoid repeating `disabled={!isEditing}`
+    
     const formDisabled = !isEditing;
 
     return (
         <Form form={form} layout="vertical">
             {isEditing ? (
-                // Show form fields when editing
+                
                 <>
                     <Row gutter={[16, 24]}>
                         <Col xs={24} sm={12} md={8}>
@@ -94,7 +94,7 @@ const ProfileForm = ({ form, isEditing }) => {
                     </Row>
                 </>
             ) : (
-                // Show Descriptions when not editing
+                
                 <Descriptions title="Profile Information" bordered>
                     {items.map(item => (
                         <Descriptions.Item label={item.label} key={item.key}>

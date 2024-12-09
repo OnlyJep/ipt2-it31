@@ -97,7 +97,7 @@ const RoomTagsPage = () => {
         } else {
             fetchData();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        
     }, [showArchived]);
 
     const handleSearch = (value) => {
@@ -115,7 +115,7 @@ const RoomTagsPage = () => {
                 },
             });
 
-            // Simulate deleted_at
+            
             const deletedTag = { ...tagToDelete, isArchived: true, deleted_at: new Date().toISOString() };
             setData(data.filter(tag => tag.id !== id));
             setArchivedData([...archivedData, deletedTag]);
@@ -161,12 +161,12 @@ const RoomTagsPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Move the restored tag from archivedData to data
+            
             const tagToRestore = archivedData.find(tag => tag.id === id);
             if (tagToRestore) {
                 const updatedArchived = archivedData.filter(tag => tag.id !== id);
                 const restoredTag = { ...tagToRestore, isArchived: false };
-                delete restoredTag.deleted_at; // Remove deleted_at field
+                delete restoredTag.deleted_at; 
                 setArchivedData(updatedArchived);
                 setData([...data, restoredTag]);
                 message.success('Room tag restored successfully');
@@ -182,7 +182,7 @@ const RoomTagsPage = () => {
         if (selectedTags.length === 0) return;
 
         try {
-            // Call restore endpoint for each selected tag
+            
             await Promise.all(
                 selectedTags.map(tag =>
                     axios.post(`/api/roomtag/${tag.id}/restore`, {}, {
@@ -253,7 +253,7 @@ const RoomTagsPage = () => {
                                 Create New Room Tag
                             </Button>
                             <Popconfirm
-                        title="Are you sure you want to delete the selected year levels?"
+                        title="Are you sure you want to delete the selected roomtags?"
                         onConfirm={handleDeleteSelected}
                         okText="Yes"
                         cancelText="No"
@@ -271,7 +271,7 @@ const RoomTagsPage = () => {
 
                     {showArchived && (
                          <Popconfirm
-                         title="Are you sure you want to restore the selected year levels?"
+                         title="Are you sure you want to restore the selected roon tags?"
                          onConfirm={handleRestoreSelected}
                          okText="Yes"
                          cancelText="No"
@@ -291,14 +291,14 @@ const RoomTagsPage = () => {
                 rowSelection={{ selectedRowKeys, onChange: (keys) => setSelectedRowKeys(keys) }}
                 data={filteredData}
                 handleDeleteRoomTag={handleDeleteRoomTag}
-                handleRestoreRoomTag={handleRestoreRoomTag} // pass the restore function
+                handleRestoreRoomTag={handleRestoreRoomTag} 
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 currentPage={currentPage}
                 pageSize={pageSize}
                 setCurrentPage={setCurrentPage}
                 showArchived={showArchived}
-                loading={loading} // Make sure this is passed down
+                loading={loading} 
             />
 
             <RoomTagsModal

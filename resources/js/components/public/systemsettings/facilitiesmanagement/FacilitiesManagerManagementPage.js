@@ -13,7 +13,7 @@ const FacilitiesManagerManagementPage = () => {
       <div style={{ padding: '20px', background: '#f5f5f5', minHeight: '100vh' }}>
         <h1>Facilities Manager Management</h1>
         
-        {/* Blue Divider with 10% length */}
+        {}
         <div style={{
           borderBottom: '2px solid #1890ff', 
           width: '10%', 
@@ -25,7 +25,7 @@ const FacilitiesManagerManagementPage = () => {
             <BuildingPage />
           </TabPane>
           <TabPane tab="Floor" key="2">
-            <FloorPage /> {/* Add FloorPage here */}
+            <FloorPage /> {}
           </TabPane>
           <TabPane tab="Room Tags" key="3">
             <RoomTagsPage />
