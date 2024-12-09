@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Result, Button, Typography, Tag } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import loginLogo from '../../../../public/images/loginpagebackground.svg';
 
 const { Title, Text } = Typography;
 
@@ -10,7 +8,6 @@ const NotFoundPage = () => {
   const navigate = useNavigate(); 
   const [timeLeft, setTimeLeft] = useState(10); 
 
-  
   useEffect(() => {
     if (timeLeft === 0) {
       navigate('/'); 
@@ -20,14 +17,11 @@ const NotFoundPage = () => {
       setTimeLeft((prevTime) => prevTime - 1); 
     }, 1000);
 
-    
     return () => clearInterval(timer);
   }, [timeLeft, navigate]);
 
   const backgroundStyle = {
-    backgroundImage: `url(${loginLogo})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundColor: 'white', // Set background color to white
     height: '100vh', 
     padding: '20px',
     position: 'relative',
@@ -41,25 +35,25 @@ const NotFoundPage = () => {
     position: 'absolute',
     top: '20px',
     right: '20px',
-    padding: '5px 15px',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    color: 'black',
+    fontSize: '18px',
+    border: '1px solid black',
+    padding: '5px 10px',
     borderRadius: '5px',
-    color: 'white',
-    fontWeight: 'bold',
   };
 
   return (
     <div style={backgroundStyle}>
       {}
       <div style={timerStyle}>
-        <Text style={{ color: 'white' }}>Redirecting in {timeLeft} seconds</Text>
+        <Text style={{ color: 'black' }}>Redirecting in {timeLeft}s...</Text>
       </div>
 
       {}
       <Result
         status="404"
-        title={<Title level={1} style={{ color: 'white' }}>404</Title>}
-        subTitle={<Text style={{ color: 'white' }}>Sorry, the page you are looking for does not exist.</Text>}
+        title={<Title level={1} style={{ color: 'black' }}>404</Title>}
+        subTitle={<Text style={{ color: 'black' }}>Page Not Found</Text>}
         extra={
           <Button type="primary">
             <a href="/">Back to Home</a>
@@ -71,3 +65,4 @@ const NotFoundPage = () => {
 };
 
 export default NotFoundPage;
+

@@ -1,15 +1,29 @@
 export function generatePrintHTML(filteredData) {
+    // Helper function to format date as MM/DD/YYYY, hh:mm:ss AM/PM
+    const formatDate = (date) => {
+        if (!date) return 'None';  // Return 'None' if no date is provided
+        const d = new Date(date);
+        const options = {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+        };
+        return d.toLocaleString('en-US', options);
+    };
+
     // Generate table rows
     const tableRows = filteredData.map((tag) => {
-        // const id = tag.id || 'None';
         const roomTag = tag.room_tag || 'None';
         const roomTagType = tag.room_tag_type || 'None';
-        const createdAt = tag.created_at || 'None';
-        const updatedAt = tag.updated_at || 'None';
+        const createdAt = formatDate(tag.created_at); // Format created_at
+        const updatedAt = formatDate(tag.updated_at); // Format updated_at
 
         return `
             <tr>
-                
                 <td>${roomTag}</td>
                 <td>${roomTagType}</td>
                 <td>${createdAt}</td>
@@ -53,7 +67,6 @@ export function generatePrintHTML(filteredData) {
                 <table>
                     <thead>
                         <tr>
-                            
                             <th>Room Tag</th>
                             <th>Room Tag Type</th>
                             <th>Created At</th>

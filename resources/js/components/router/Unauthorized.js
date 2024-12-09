@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Result, Button, Typography, Tag } from 'antd';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import loginLogo from '../../../../public/images/loginpagebackground.svg'; // Background image
 
 const { Title, Text } = Typography;
 
@@ -24,10 +23,8 @@ const NotFoundPage = () => {
   }, [timeLeft, navigate]);
 
   const backgroundStyle = {
-    backgroundImage: `url(${loginLogo})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    height: '100vh', // Full viewport height
+    backgroundColor: 'white', // Set background color to white
+    height: '100vh', 
     padding: '20px',
     position: 'relative',
     display: 'flex',
@@ -42,7 +39,7 @@ const NotFoundPage = () => {
     right: '20px',
     color: 'white',
     fontSize: '18px',
-    border: '2px solid white',
+    border: '1px solid black',
     padding: '5px 10px',
     borderRadius: '5px',
   };
@@ -51,13 +48,13 @@ const NotFoundPage = () => {
     <div style={backgroundStyle}>
       {/* Timer */}
       <div style={timerStyle}>
-        <Text style={{ color: 'white' }}>Redirecting in {timeLeft}s...</Text>
+        <Text style={{ color: 'black' }}>Redirecting in {timeLeft}s...</Text>
       </div>
 
       <Result
-        status="404"
-        title={<Title style={{ color: 'white' }}>401</Title>}
-        subTitle={<Text style={{ color: 'white' }}>Sorry, the page you are looking for does not exist.</Text>}
+        status="403"
+        title={<Title style={{ color: 'black' }}>403</Title>}
+        subTitle={<Text style={{ color: 'black' }}>Access to the requested resource is forbidden</Text>}
         extra={
           <Button type="primary">
             <a href="/">Back to Home</a>

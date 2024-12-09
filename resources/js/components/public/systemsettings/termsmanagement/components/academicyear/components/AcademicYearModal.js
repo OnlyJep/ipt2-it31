@@ -1,4 +1,3 @@
-// AcademicYearModal.js
 import React, { useEffect } from 'react';
 import { Modal, Input, Form, message } from 'antd';
 
@@ -7,68 +6,77 @@ const AcademicYearModal = ({
     setIsCreateModalVisible,
     isEditModalVisible,
     setIsEditModalVisible,
-    handleCreateAcademicYear, // Handler for creating an academic year
-    handleEditAcademicYear,   // Handler for editing an academic year
-    modalData,                // Data to prefill the form when editing
-    existingAcademicYears,    // Array of existing academic years
+    handleCreateAcademicYear, 
+    handleEditAcademicYear,   
+    modalData,                
+    existingAcademicYears,    
 }) => {
     const [form] = Form.useForm();
 
+    // Define the current academic year start
+    // You can make this dynamic based on the current date if needed
+    const currentStartYear = 2024;
+
     useEffect(() => {
         if (isEditModalVisible && modalData) {
-            // Pre-fill the form with existing academic year data when editing
             form.setFieldsValue({
                 academic_year: modalData.academic_year,
             });
         } else if (isCreateModalVisible) {
-            form.resetFields(); // Reset form fields when creating
+            form.resetFields(); 
         }
     }, [isEditModalVisible, isCreateModalVisible, modalData, form]);
 
-    // Handle form submission
     const handleOk = () => {
         form.validateFields()
             .then((values) => {
                 const academicYear = values.academic_year.trim();
 
-                // Basic validation for format YYYY-YYYY
+                // Validate the academic year format and logic
                 const academicYearRegex = /^\d{4}-\d{4}$/;
                 if (!academicYearRegex.test(academicYear)) {
                     message.error('Please enter a valid academic year in the format YYYY-YYYY.');
                     return;
                 }
 
-                // Check if the start year is less than the end year
                 const [startYear, endYear] = academicYear.split('-').map((year) => parseInt(year, 10));
-                if (startYear >= endYear) {
-                    message.error('The start year must be earlier than the end year.');
+                if (isNaN(startYear) || isNaN(endYear)) {
+                    message.error('Academic year must contain valid years.');
                     return;
                 }
 
+                if (startYear < currentStartYear) {
+                    message.error(`The start year must be ${currentStartYear} or later.`);
+                    return;
+                }
+
+                if (endYear !== startYear + 1) {
+                    message.error('The end year must be exactly one year after the start year.');
+                    return;
+                }
+
+                // Proceed with create or edit based on modal visibility
                 if (isEditModalVisible) {
-                    // Invoke the edit handler with academic year ID and updated data
                     handleEditAcademicYear(modalData.id, { 
                         academic_year: academicYear,
                     });
                 } else {
-                    // Invoke the create handler with new academic year data
                     handleCreateAcademicYear({ 
                         academic_year: academicYear,
                     });
                 }
 
-                form.resetFields(); // Reset the form after submission
+                form.resetFields(); 
             })
             .catch((info) => {
                 console.log('Validate Failed:', info);
             });
     };
 
-    // Handle modal cancellation
     const handleCancel = () => {
         setIsCreateModalVisible(false);
         setIsEditModalVisible(false);
-        form.resetFields(); // Reset the form when modal is closed
+        form.resetFields(); 
     };
 
     return (
@@ -79,7 +87,7 @@ const AcademicYearModal = ({
             onCancel={handleCancel}
             okText={isEditModalVisible ? 'Save Changes' : 'Create Academic Year'}
             cancelText="Cancel"
-            destroyOnClose // Ensure form is reset when modal is closed
+            destroyOnClose 
         >
             <Form form={form} layout="vertical" name="academicYearForm">
                 <Form.Item
@@ -93,13 +101,34 @@ const AcademicYearModal = ({
                                 if (!value) {
                                     return Promise.resolve();
                                 }
-                                const formattedValue = value.trim().toLowerCase();
+                                const [startYearStr, endYearStr] = value.split('-');
+                                const startYear = parseInt(startYearStr, 10);
+                                const endYear = parseInt(endYearStr, 10);
+
+                                // Check if the years are valid numbers
+                                if (isNaN(startYear) || isNaN(endYear)) {
+                                    return Promise.reject(new Error('Academic year must contain valid years.'));
+                                }
+
+                                // Ensure the start year is not in the past
+                                if (startYear < currentStartYear) {
+                                    return Promise.reject(new Error(`The start year must be ${currentStartYear} or later.`));
+                                }
+
+                                // Ensure the end year is exactly one year after the start year
+                                if (endYear !== startYear + 1) {
+                                    return Promise.reject(new Error('The end year must be exactly one year after the start year.'));
+                                }
+
+                                // Check for duplicates (excluding the current item if editing)
                                 const duplicate = existingAcademicYears.some(year => 
-                                    year.academic_year.toLowerCase() === formattedValue && year.id !== (modalData ? modalData.id : null)
+                                    year.academic_year.toLowerCase() === value.toLowerCase() && year.id !== (modalData ? modalData.id : null)
                                 );
+
                                 if (duplicate) {
                                     return Promise.reject(new Error('This Academic Year already exists.'));
                                 }
+
                                 return Promise.resolve();
                             },
                         }),
@@ -107,12 +136,12 @@ const AcademicYearModal = ({
                 >
                     <Input 
                         placeholder="Enter academic year (e.g., 2024-2025)" 
-                        maxLength={9} // 4 digits + hyphen + 4 digits
+                        maxLength={9} 
                         onChange={(e) => {
-                            let inputValue = e.target.value.replace(/\D/g, ''); // Remove any non-digit characters
+                            let inputValue = e.target.value.replace(/\D/g, ''); 
 
                             if (inputValue.length > 8) {
-                                inputValue = inputValue.substring(0, 8); // Restrict input to 8 digits (YYYYYYYY)
+                                inputValue = inputValue.substring(0, 8); 
                             }
 
                             if (inputValue.length > 4) {
@@ -121,11 +150,10 @@ const AcademicYearModal = ({
 
                             form.setFieldsValue({ academic_year: inputValue });
                         }}
-                        inputMode="numeric" // Hint for mobile devices to show numeric keypad
+                        inputMode="numeric" 
                     />
                 </Form.Item>
             </Form>
-            {/* You can display additional information or error messages here if needed */}
         </Modal>
     );
 };

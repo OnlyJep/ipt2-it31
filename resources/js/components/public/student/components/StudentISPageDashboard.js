@@ -122,6 +122,9 @@ const StudentISPageDashboard = () => {
 
   return (
     <Content style={{ padding: '20px' }}>
+      {/* Updated to use h3 instead of Title component */}
+      <h3 style={{ marginBottom: '14px' }}>Student Information System</h3>
+      
       <Row gutter={16} style={{ marginBottom: '20px' }}>
         <Col span={20}>
           <Input
@@ -139,7 +142,7 @@ const StudentISPageDashboard = () => {
             onClick={() => navigate('/add-student')}  // Redirect to /add-student page
             style={{ width: '100%' }}
           >
-            Add Student
+            Profiling
           </Button>
         </Col>
       </Row>

@@ -7,7 +7,7 @@ const SideBarTexture = ({ children }) => {
     width: '250px',
     height: '100vh',
     backgroundColor: '#131f73',
-    backgroundImage: `url(${require('../../../../../../public/images/sidebartexture.svg').default})`,
+    //backgroundImage: `url(${require('../../../../../../public/images/sidebartexture.svg').default})`,
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     display: 'flex',

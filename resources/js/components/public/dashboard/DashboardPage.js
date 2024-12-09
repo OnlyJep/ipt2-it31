@@ -110,7 +110,7 @@ const DashboardPageDashboard = () => {
 
     return (
         <Content style={{ padding: '20px' }}>
-            <Title level={1} style={{ marginBottom: '14px' }}>Analytics</Title>
+            <h3 style={{ marginBottom: '14px' }}>Analytics</h3>
             <Divider style={{ margin: '20px 0' }} />
 
             {}

@@ -434,9 +434,11 @@ const UserPage = () => {
 
     return (
         <MainDashboard>
+            
             <div className="user-page" style={{ padding: '16px' }}>
                 <Space direction="vertical" style={{ width: '100%' }}>
                     {}
+                    <h3 style={{ marginBottom: '14px' }}>Users Management</h3>
                     <Row
                         gutter={[16, 16]}
                         justify="space-between"

@@ -14,7 +14,7 @@ const SideBar = ({ userRole }) => {
       {}
       <div className="separator"></div>
 
-      {}
+     
       <div className="sidebar-nav">
         <SideBarNavList userRole={userRole} /> {}
       </div>

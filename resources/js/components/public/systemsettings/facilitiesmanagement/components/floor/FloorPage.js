@@ -8,8 +8,8 @@ import FloorModal from './components/FloorModal';
 const { Text } = Typography;
 
 const FloorPage = () => {
-    const [data, setData] = useState([]); // Active floors
-    const [archivedData, setArchivedData] = useState([]); // Archived floors
+    const [data, setData] = useState([]); 
+    const [archivedData, setArchivedData] = useState([]); 
     const [filteredData, setFilteredData] = useState([]); 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [searchValue, setSearchValue] = useState('');
@@ -84,12 +84,12 @@ const FloorPage = () => {
     };
 
     useEffect(() => {
-        // Initially fetch active floors
+        
         fetchFloors();
     }, []);
 
     useEffect(() => {
-        // When search, data, archivedData, or showArchived changes, re-filter
+        
         const baseData = showArchived ? archivedData : data;
         const filtered = baseData.filter(floor =>
             String(floor.floor_level || '').toLowerCase().includes(searchValue.toLowerCase())
@@ -99,7 +99,7 @@ const FloorPage = () => {
     }, [searchValue, data, archivedData, showArchived]);
 
     useEffect(() => {
-        // When toggling showArchived, fetch the appropriate data
+        
         if (showArchived) {
             fetchArchivedData();
         } else {
@@ -193,7 +193,7 @@ const FloorPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            // Remove from archivedData and add back to data
+            
             const floorToRestore = archivedData.find(floor => floor.id === id);
             if (floorToRestore) {
                 const updatedArchived = archivedData.filter(floor => floor.id !== id);
@@ -233,30 +233,48 @@ const FloorPage = () => {
 
     const handlePrint = () => {
         const printWindow = window.open('', '', 'height=650,width=900');
+        
+        // Format Date function
+        const formatDate = (date) => {
+            if (!date) return '';
+            const d = new Date(date);
+            const options = {
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+            };
+            return d.toLocaleString('en-US', options);
+        };
+    
         printWindow.document.write('<html><head><title>Floor Table</title></head><body>');
         printWindow.document.write('<h2>Floor Data</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width:100%;">');
         printWindow.document.write('<thead><tr><th>Floor Level</th>');
+        
         if (!showArchived) {
             printWindow.document.write('<th>Created At</th><th>Updated At</th>');
         } else {
             printWindow.document.write('<th>Deleted At</th>');
         }
         printWindow.document.write('</tr></thead><tbody>');
-
+    
         filteredData.forEach(floor => {
             printWindow.document.write('<tr>');
-            // printWindow.document.write(`<td>${floor.id ?? ''}</td>`);
             printWindow.document.write(`<td>${floor.floor_level ?? ''}</td>`);
+            
             if (!showArchived) {
-                printWindow.document.write(`<td>${floor.created_at ?? ''}</td>`);
-                printWindow.document.write(`<td>${floor.updated_at ?? ''}</td>`);
+                printWindow.document.write(`<td>${formatDate(floor.created_at)}</td>`);
+                printWindow.document.write(`<td>${formatDate(floor.updated_at)}</td>`);
             } else {
-                printWindow.document.write(`<td>${floor.deleted_at ?? ''}</td>`);
+                printWindow.document.write(`<td>${formatDate(floor.deleted_at)}</td>`);
             }
             printWindow.document.write('</tr>');
         });
-
+    
         printWindow.document.write('</tbody></table>');
         printWindow.document.write('</body></html>');
         printWindow.document.close();
@@ -264,6 +282,7 @@ const FloorPage = () => {
         printWindow.print();
         printWindow.close();
     };
+    
 
     const rowSelection = {
         selectedRowKeys,
@@ -358,11 +377,11 @@ const FloorPage = () => {
                 setIsEditModalVisible={setIsEditModalVisible}
                 setModalData={setModalData}
                 handleDeleteFloor={handleDeleteFloor}
-                handleRestoreFloor={handleRestoreFloor} // Pass restore function here
+                handleRestoreFloor={handleRestoreFloor} 
                 currentPage={currentPage}
                 pageSize={pageSize}
                 setCurrentPage={setCurrentPage}
-                loading={loading} // Make sure this is passed down
+                loading={loading} 
                 showArchived={showArchived}
             />
             <FloorModal

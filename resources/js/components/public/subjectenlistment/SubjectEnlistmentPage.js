@@ -60,6 +60,7 @@ const SubjectEnlistmentPage = () => {
   return (
     <MainDashboard>
       <Content style={{ padding: '20px' }}>
+      <h3 style={{ marginBottom: '14px' }}>Subject Enlistment Management</h3>
         <Row gutter={16}>
           <Col span={12}>
             <Input

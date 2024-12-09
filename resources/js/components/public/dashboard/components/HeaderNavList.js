@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { Menu } from 'antd';
 import { NavLink } from 'react-router-dom';
+import Logoff from './../../../private/dashboard/logoff'; // Import the Logoff component
 
-const HeadNavList = ({ userRole, navigate, logout }) => {
-  const [role, setRole] = useState(null); 
-  const [loading, setLoading] = useState(true); 
+const HeadNavList = ({ userRole }) => {
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Initialize the Logoff functionality
+  const logoff = Logoff();
 
   useEffect(() => {
     if (userRole) {
-      setRole(userRole); 
-      setLoading(false); 
+      setRole(userRole);
+      setLoading(false);
     } else {
-      
-      const savedRole = localStorage.getItem('user_role') || 'guest'; 
+      const savedRole = localStorage.getItem('user_role') || 'guest';
       setRole(savedRole);
       setLoading(false);
     }
-  }, [userRole]); 
+  }, [userRole]);
 
-  
   if (loading) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
-  
   const manageAccountLink = `/${role}/manage-account`;
 
   const menu = (
@@ -33,7 +34,9 @@ const HeadNavList = ({ userRole, navigate, logout }) => {
           Manage Account
         </NavLink>
       </Menu.Item>
-      <Menu.Item key="2" onClick={() => logout(navigate)}>Logout</Menu.Item> {}
+      <Menu.Item key="2" onClick={logoff.showLogoutConfirm}>
+        Logout
+      </Menu.Item>
     </Menu>
   );
 

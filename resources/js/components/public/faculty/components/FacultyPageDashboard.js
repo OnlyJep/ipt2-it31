@@ -52,6 +52,7 @@ const FacultyPageDashboard = () => {
 
     return (
         <Content style={{ padding: '20px', minHeight: '280px' }}>
+            <h3 style={{ marginBottom: '14px' }}>Faculty Information System</h3>
             <Row gutter={16} style={{ marginBottom: '20px' }}>
                 <Col span={20}>
                     <Search

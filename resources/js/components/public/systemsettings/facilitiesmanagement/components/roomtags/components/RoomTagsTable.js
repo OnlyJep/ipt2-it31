@@ -26,13 +26,26 @@ const RoomTagsTable = ({
         setCurrentPage(page);
     };
 
+    // Format date to 'DD-MM-YYYY HH:mm:ss'
+    const formatDate = (date) => {
+        if (!date) return 'None';
+        const d = new Date(date);
+        return d.toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
+    };
+
     const baseColumns = [
         {
             title: <span style={{ color: '#1890ff' }}>Actions</span>,
             key: 'actions',
             render: (_, record) => (
                 <Space>
-                    {}
                     {!record.isArchived && (
                         <Button
                             type="primary"
@@ -40,43 +53,37 @@ const RoomTagsTable = ({
                             onClick={() => handleEdit(record)}
                         />
                     )}
-
-                    {}
                     {!record.isArchived && (
                         <Popconfirm
-                        title="Are you sure you want to delete this room tag?"
-                        onConfirm={() => handleDeleteRoomTag(record.id)}
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <Button
-                            type="danger"
-                            icon={<DeleteOutlined />}
-
-                        />
+                            title="Are you sure you want to delete this room tag?"
+                            onConfirm={() => handleDeleteRoomTag(record.id)}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button
+                                type="danger"
+                                icon={<DeleteOutlined />}
+                            />
                         </Popconfirm>
                     )}
-
-                    {}
                     {record.isArchived && (
-                         <Popconfirm
-                         title="Are you sure you want to restore this room tag?"
-                         onConfirm={() => handleRestoreRoomTag(record.id)}  
-                         okText="Yes"
-                         cancelText="No"
-                     >
-                        <Button
-                            type="default"
-                            icon={<ReloadOutlined />}
+                        <Popconfirm
+                            title="Are you sure you want to restore this room tag?"
+                            onConfirm={() => handleRestoreRoomTag(record.id)}  
+                            okText="Yes"
+                            cancelText="No"
                         >
-                            Restore
-                        </Button>
+                            <Button
+                                type="default"
+                                icon={<ReloadOutlined />}
+                            >
+                                Restore
+                            </Button>
                         </Popconfirm>
                     )}
                 </Space>
             ),
         },
-        
         {
             title: <span style={{ color: '#1890ff' }}>Room Tag</span>,
             dataIndex: 'room_tag',
@@ -95,7 +102,7 @@ const RoomTagsTable = ({
                 title: <span style={{ color: '#1890ff' }}>Deleted At</span>,
                 dataIndex: 'deleted_at',
                 key: 'deleted_at',
-                render: (value) => value || 'None'
+                render: (value) => formatDate(value),
             }
         ]
         : [
@@ -103,13 +110,13 @@ const RoomTagsTable = ({
                 title: <span style={{ color: '#1890ff' }}>Created At</span>,
                 dataIndex: 'created_at',
                 key: 'created_at',
-                render: (value) => value || 'None'
+                render: (value) => formatDate(value),
             },
             {
                 title: <span style={{ color: '#1890ff' }}>Updated At</span>,
                 dataIndex: 'updated_at',
                 key: 'updated_at',
-                render: (value) => value || 'None'
+                render: (value) => formatDate(value),
             }
         ];
 
