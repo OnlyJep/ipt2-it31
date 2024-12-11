@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user-with-profile', [UserWithProfileController::class, 'store']);
     Route::get('/user-with-profile/{id}', [UserWithProfileController::class, 'show']);
     Route::put('/user-with-profile/{id}', [UserWithProfileController::class, 'update']);
+    Route::post('user-with-profile/students/create', [UserWithProfileController::class, 'createStudentProfile']);
     
 
     // Profiles
@@ -67,7 +68,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('profiles/instructors/totalcount', [ProfileController::class, 'getTotalInstructors']);
     Route::get('profiles/students/totalcount', [ProfileController::class, 'getTotalStudents']);
     Route::get('profiles/students/only', [ProfileController::class, 'getStudents']);
-    Route::post('profiles/students/add', [ProfileController::class, 'addStudent']);
 
 
 

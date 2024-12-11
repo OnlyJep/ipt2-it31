@@ -149,6 +149,71 @@ class UserWithProfileController extends Controller
         }
     }
 
+    public function createStudentProfile(Request $request)
+{
+    $request->validate([
+        'first_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'admission_date' => 'required|date',
+        'religion' => 'required|string|max:255',
+        'date_of_birth' => 'required|date',
+        'address' => 'required|string|max:255',
+        'sex' => 'required|string|in:male,female,other',
+        'phone_number' => 'required|string|max:15',
+        'marital_status' => 'required|string|in:single,married,divorced',
+    ]);
+
+    DB::beginTransaction();
+        try {
+            // Step 1: Auto-generate username and email
+            $username = strtolower($request->first_name) . '.' . strtolower($request->last_name);
+            $email = $username . '@urios.edu.ph';
+            $schoolEmail = $email; // School email for profiles table
+
+            // Step 2: Generate password based on first name and hash it
+            $password = bcrypt(strtolower($request->first_name) . '@123'); // Password as firstname@123, then hashed
+
+            // Step 3: Create user in `users` table with the generated password
+            $user = User::create([
+                'username' => $username,
+                'email' => $email,
+                'role_id' => 4, // Assign role_id for a student
+                'password' => $password, // Use hashed password
+            ]);
+
+            // Step 4: Create profile in `profiles` table
+            $profile = Profile::create([
+                'user_id' => $user->id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'middle_initial' => $request->middle_initial,
+                'suffix' => $request->suffix,
+                'admission_date' => $request->admission_date,
+                'religion' => $request->religion,
+                'date_of_birth' => $request->date_of_birth,
+                'address' => $request->address,
+                'sex' => $request->sex,
+                'phone_number' => $request->phone_number,
+                'marital_status' => $request->marital_status,
+                'school_email' => $schoolEmail,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Student profile created successfully.',
+                'user' => $user,
+                'profile' => $profile,
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error('Error creating student profile: ' . $e->getMessage()); // Log the error
+            return response()->json([
+                'message' => 'An error occurred.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 
 }

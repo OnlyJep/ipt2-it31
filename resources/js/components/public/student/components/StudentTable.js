@@ -98,13 +98,6 @@ const StudentTable = ({
             width: 120,
         },
         {
-            title: <span style={{ color: '#1890ff' }}>Middle Initial</span>,
-            dataIndex: 'middle_initial',
-            key: 'middle_initial',
-            responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
-            width: 80,
-        },
-        {
             title: <span style={{ color: '#1890ff' }}>School Email</span>,
             dataIndex: 'school_email',
             key: 'school_email',
@@ -148,7 +141,6 @@ const StudentTable = ({
             printWindow.document.write('<tr>');
             printWindow.document.write(`<td>${item.first_name}</td>`);
             printWindow.document.write(`<td>${item.last_name}</td>`);
-            printWindow.document.write(`<td>${item.middle_name ? item.middle_name.charAt(0) + '.' : ''}</td>`);
             printWindow.document.write(`<td>${item.school_email}</td>`);
             printWindow.document.write(`<td>${moment(item.admission_date).format('MM/DD/YYYY')}</td>`);
             printWindow.document.write(`<td>${moment(item.created_at).format('MM/DD/YYYY, h:mm:ss A')}</td>`);
