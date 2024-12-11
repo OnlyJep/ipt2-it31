@@ -41,21 +41,22 @@ use App\Http\Controllers\UserWithProfileController;
 Route::post('login', [AuthController::class, 'login']);
 
 // Routes inside an authentication middleware group
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     // Roles
     Route::apiResource('roles', RoleController::class);
     Route::post('roles/{id}/restore', [RoleController::class, 'restore']);
 
     // Users
+    Route::get('user_list', [UserController::class, 'user_list']);
     Route::apiResource('users', UserController::class);
     Route::post('/users/{id}/restore', [UserController::class, 'restore']);
     Route::get('users/active/count', [UserController::class, 'getActiveUserCount']);
-    
+
     //USERS X PROFILES TRANSACTIONS
     Route::post('/user-with-profile', [UserWithProfileController::class, 'store']);
     Route::get('/user-with-profile/{id}', [UserWithProfileController::class, 'show']);
     Route::put('/user-with-profile/{id}', [UserWithProfileController::class, 'update']);
-    
+
 
     // Profiles
     Route::apiResource('profiles', ProfileController::class)->except(['index', 'show']);
@@ -70,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/upload-photo', [ProfileController::class, 'uploadPhoto']);
     Route::delete('/delete-photo/{profileId}', [ProfileController::class, 'deletePhoto']);
-    
+
     // Parent Info
     Route::apiResource('parentinfo', ParentInfoController::class);
     Route::post('parentinfo/{id}/restore', [ParentInfoController::class, 'restore']);

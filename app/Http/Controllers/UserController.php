@@ -149,7 +149,7 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-        
+
         $user->delete();
         return response()->json(['message' => 'User deleted successfully']);
     }
@@ -173,6 +173,24 @@ class UserController extends Controller
 
         return response()->json(['totalUsersNotDeleted' => $activeUserCount]);
     }
-    
 
+
+    public function user_list(Request $request)
+    {
+        $data = User::select(['*']);
+
+        if ($request->role_id) {
+            $role_id = explode(',', $request->role_id);
+
+            $data = $data->whereIn('role_id', $role_id);
+        }
+
+        $data = $data->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'request' => $request
+        ], 200);
+    }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Validator;
 
@@ -19,48 +20,49 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validate input
-        $credentials = $request->only('username', 'password');
-        $validator = Validator::make($credentials, [
-            'username' => 'required|string',
-            'password' => 'required|string',
+        $ret = [
+            'success' => false,
+            'message' => 'Username or password is in correct'
+        ];
+
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
         ]);
-        
-        if ($validator->fails()) {
-            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+
+        try {
+            $credentialsEmail = [
+                'username' => $request->username,
+                'password' => $request->password
+            ];
+
+            if (auth()->attempt($credentialsEmail)) {
+                $user = auth()->user();
+                $token = $user->createToken(date('Y') . 'ipt2')->accessToken;
+
+
+                $profile = Profile::where('user_id', $user->id)->first();
+                $role = Role::find($user->role_id);
+
+                $user['profile'] = $profile;
+
+                $ret = [
+                    'success' => true,
+                    'message' => 'Success',
+                    'token' => $token,
+                    'role' => $role?->role_name,
+                    'user_id' => $user->id,  // user_id from Profile model
+                    'profile_id' => $profile->id,  // profile_id from Profile model,
+                    'data' => $user
+                ];
+            }
+        } catch (\Throwable $th) {
+            $ret['message'] = 'Username or password is in correct';
         }
-    
-        // Check if username exists
-        $user = User::where('username', $request->username)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-    
-        // Authenticate user and generate token
-        $token = $user->createToken('YourAppName')->plainTextToken;
-    
-        // Retrieve the profile associated with the user
-        $profile = Profile::where('user_id', $user->id)->first();
-        
-        // Check if profile exists and get profile_id and user_id from profile
-        if ($profile) {
-            $profileId = $profile->id;  // This is the profile's ID (primary key)
-            $profileUserId = $profile->user_id;  // This is the user_id in the Profile model (foreign key)
-        } else {
-            $profileId = null;  // If profile doesn't exist
-            $profileUserId = null;  // If profile doesn't exist
-        }
-    
-        // Return response with token, profile_id, and user_id (from Profile)
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-            'role' => optional($user->role)->role_name,
-            'user_id' => $profileUserId,  // user_id from Profile model
-            'profile_id' => $profileId,  // profile_id from Profile model
-        ]);
+
+        return response()->json($ret, 200);
     }
-    
+
 
     /**
      * Handle logout request.
