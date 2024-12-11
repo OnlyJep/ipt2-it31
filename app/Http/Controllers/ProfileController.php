@@ -262,4 +262,38 @@ class ProfileController extends Controller
         return response()->json(['message' => 'Old photo deleted successfully']);
     }
 
+    public function getStudents()
+    {
+        try {
+            // Join Profiles, Users, and Roles tables
+            $students = Profile::join('users', 'profiles.user_id', '=', 'users.id')  // Join with users table
+                ->join('roles', 'users.role_id', '=', 'roles.id')  // Join with roles table
+                ->where('roles.id', 4)  // Filter by student role (role_id = 4)
+                ->select(
+                    'profiles.first_name', 
+                    'profiles.last_name', 
+                    'profiles.middle_initial', 
+                    'profiles.suffix', 
+                    'profiles.date_of_birth',
+                    'profiles.address',
+                    'profiles.school_email', 
+                    'profiles.sex', 
+                    'profiles.phone_number',
+                    'profiles.admission_date', 
+                    'profiles.marital_status',
+                    'profiles.religion', 
+                    'profiles.created_at', 
+                    'profiles.updated_at'
+                )
+                ->get();
+
+            return response()->json($students);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching students: ' . $e->getMessage());  // Log the error message
+            return response()->json(['message' => 'Error fetching students'], 500);
+        }
+    }
+
+
+
 }
