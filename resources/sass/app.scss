@@ -1,0 +1,15 @@
+
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+
+@import 'variables';
+
+
+@import '~bootstrap/scss/bootstrap';
+
+@import 'dashboard/SideBar';
+@import 'dashboard/Header';
+@import 'dashboard/MainDashboard';
+@import 'dashboard/SideBarNavList';
+
+@import 'loginportal/UserLogin';

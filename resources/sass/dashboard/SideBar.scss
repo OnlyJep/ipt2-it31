@@ -1,0 +1,30 @@
+
+.sidebar-container {
+  height: 100%;
+  width: 250px; 
+  background-color: #3f7afc; 
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+
+
+.ant-menu {
+  flex-grow: 1; 
+  width: 100%;
+}
+
+
+.separator {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-top: 2px solid #fff;
+  margin-left: 40px; 
+  margin-right: 40px; 
+}
+
+
+
+
+/* Add this CSS in your styles (e.g., App.css or a separate CSS file) */

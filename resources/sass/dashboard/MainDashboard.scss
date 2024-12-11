@@ -1,0 +1,75 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+
+  .sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #3f7afc;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .dashboard-main {
+    flex: 1;
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    height: 60px;
+    background-color: white;
+    border-bottom: 1px solid #3f7afc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 5;
+  }
+
+  .dashboard-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f1f1f1;
+    overflow-y: auto;
+  }
+
+  
+  .menu-icon {
+    display: none;  
+  
+    @media (max-width: 991px) {
+      display: block;  
+      position: absolute;
+      top: 20px;  
+      left: 20px;  
+      z-index: 1000;  
+      cursor: pointer;
+    }
+  }
+  
+  .ant-layout-content {
+    padding: 24px 16px; 
+  }
+
+  
+  @media only screen and (max-width: 991px) {
+    .sidebar {
+      transform: translateX(-250px); 
+    }
+
+    .dashboard-main {
+      margin-left: 0;
+    }
+
+    .dashboard-content {
+      margin-left: 0;
+    }
+
+    
+    .sidebar-active {
+      transform: translateX(0);
+    }
+  }
+}
