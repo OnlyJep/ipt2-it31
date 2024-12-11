@@ -39,7 +39,6 @@ export const generatePrintHTML = (data, showArchived) => {
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Year Level</th>
     `;
 
@@ -57,7 +56,6 @@ export const generatePrintHTML = (data, showArchived) => {
 
     data.forEach(year => {
         html += `<tr>
-                    <td>${year.id ?? ''}</td>
                     <td>${year.year_level ?? ''}</td>
         `;
 
