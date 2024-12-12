@@ -74,6 +74,9 @@ const UserLogin = ({ setUserRole }) => {
                     JSON.stringify(response.data.data)
                 );
                 window.location.reload();
+            } else {
+                setErrorMessage(response.data.message);
+                message.error(response.data.message);
             }
         } catch (error) {
             setErrorMessage(error.message);
