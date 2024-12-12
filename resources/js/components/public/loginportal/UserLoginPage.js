@@ -18,7 +18,7 @@ import {
     EyeTwoTone,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { handleLogin } from "./../../private/loginportal/UserLoginService";
+import axios from "axios";
 
 const { Content } = Layout;
 
@@ -60,8 +60,14 @@ const UserLogin = ({ setUserRole }) => {
         setErrorMessage("");
 
         try {
-            const response = await handleLogin(values);
-            console.log("response: ", response);
+            const response = await axios.post(
+                window.location.origin + "/api/login",
+                values,
+                {
+                    timeout: 10000,
+                }
+            ); // 10 seconds timeout
+            // console.log("response1: ", response);
 
             if (response.status === 200 && response.data.success) {
                 message.success("Login successful!");
