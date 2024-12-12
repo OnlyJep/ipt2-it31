@@ -88,7 +88,7 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
             title="Student Profiling"
             onCancel={onCancel}
             onOk={handleCreate}
-            okText="Create"
+            okText="Add Student"
             cancelText="Cancel"
             width={800}
             style={{ top: 20 }}
