@@ -63,9 +63,8 @@ const UserLogin = ({ setUserRole }) => {
             const response = await handleLogin(values);
             console.log("response: ", response);
 
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.success) {
                 message.success("Login successful!");
-
                 localStorage.setItem("auth_token", response.data.token);
                 localStorage.setItem("user_role", response.data.role);
                 localStorage.setItem("user_id", response.data.user_id);
@@ -74,7 +73,6 @@ const UserLogin = ({ setUserRole }) => {
                     "data",
                     JSON.stringify(response.data.data)
                 );
-
                 window.location.reload();
             }
         } catch (error) {
