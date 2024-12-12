@@ -85,7 +85,7 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
     return (
         <Modal
             visible={isVisible}
-            title="Add New Student"
+            title="Student Profiling"
             onCancel={onCancel}
             onOk={handleCreate}
             okText="Create"

@@ -255,7 +255,7 @@ const StudentISPage = () => {
                                     icon={<PlusOutlined />}
                                     onClick={handleCreateModalOpen}
                                 >
-                                    Create New
+                                    Add Student Profile
                                 </Button>
                                 <Popconfirm
                                     title="Are you sure to remove this student?"
