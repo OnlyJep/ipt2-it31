@@ -98,13 +98,6 @@ const StudentTable = ({
             width: 120,
         },
         {
-            title: <span style={{ color: '#1890ff' }}>Middle Initial</span>,
-            dataIndex: 'middle_initial',
-            key: 'middle_initial',
-            responsive: ['xs', 'sm', 'md', 'lg', 'xl'],
-            width: 80,
-        },
-        {
             title: <span style={{ color: '#1890ff' }}>School Email</span>,
             dataIndex: 'school_email',
             key: 'school_email',
@@ -142,13 +135,12 @@ const StudentTable = ({
         printWindow.document.write('<html><head><title>Student Table</title></head><body>');
         printWindow.document.write('<h2>Student Table</h2>');
         printWindow.document.write('<table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse: collapse;">');
-        printWindow.document.write('<thead><tr><th>First Name</th><th>Last Name</th><th>Middle Initial</th><th>Suffix</th><th>Date of Birth</th><th>Age</th><th>Address</th><th>School Email</th><th>Sex/Gender</th><th>Phone Number</th><th>Admission Date</th><th>Marital Status</th><th>Religion</th><th>Created At</th><th>Updated At</th></tr></thead>');
+        printWindow.document.write('<thead><tr><th>First Name</th><th>Last Name</th><th>Middle Initial</th><th>Suffix</th><th>Date of Birth</th><th>Age</th><th>Address</th><th>School Email</th><th>Sex/Gender</th><th>Phone Number</th><th>Admission Date</th><th>Created At</th><th>Updated At</th></tr></thead>');
         printWindow.document.write('<tbody>');
         data.forEach((item) => {
             printWindow.document.write('<tr>');
             printWindow.document.write(`<td>${item.first_name}</td>`);
             printWindow.document.write(`<td>${item.last_name}</td>`);
-            printWindow.document.write(`<td>${item.middle_name ? item.middle_name.charAt(0) + '.' : ''}</td>`);
             printWindow.document.write(`<td>${item.school_email}</td>`);
             printWindow.document.write(`<td>${moment(item.admission_date).format('MM/DD/YYYY')}</td>`);
             printWindow.document.write(`<td>${moment(item.created_at).format('MM/DD/YYYY, h:mm:ss A')}</td>`);

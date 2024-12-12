@@ -10,31 +10,33 @@ class Enlistment extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'profile_id',
-        'classschedules_id',
-        'academicyear_id',
-        'semester_id',
-    ];
-
-    // Relationships
+    protected $guarded = [];
+    protected $table = 'enlistments';
     public function profile()
     {
-        return $this->belongsTo(Profile::class);
+        return $this->belongsTo(Profile::class, 'profile_id');
     }
 
     public function classSchedule()
     {
-        return $this->belongsTo(ClassSchedule::class);
+        return $this->belongsTo(ClassSchedule::class, 'classschedules_id');
     }
+
 
     public function academicYear()
     {
-        return $this->belongsTo(AcademicYear::class);
+        return $this->belongsTo(AcademicYear::class, 'academicyear_id');
     }
 
-    public function semester()
+
+
+    public function enrollmentTrackings()
     {
-        return $this->belongsTo(Semester::class);
+        return $this->hasMany(EnrollmentTracking::class, 'enrollmenttracking_id');
+    }
+
+    public function assignmentTrackings()
+    {
+        return $this->hasMany(AssignmentTracking::class,'assignmenttracking_id');
     }
 }

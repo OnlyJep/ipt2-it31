@@ -1,48 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { Layout, Row, Col, Card } from 'antd';
-import axios from 'axios';
-import MainDashboard from '../dashboard/components/MainDashboard';
+import React from 'react';
+import { Tabs } from 'antd';
+import { AppstoreAddOutlined, CalendarOutlined, SearchOutlined } from '@ant-design/icons';
 
-const { Content } = Layout;
-
-const EnlistmentManagerPageDashboard = () => {
-    const [enlistments, setEnlistments] = useState([]);
-
-    useEffect(() => {
-        // Fetch the data from the Laravel API
-        axios.get('/api/enlistments')  // Adjust the URL to match your backend route
-            .then(response => {
-                setEnlistments(response.data);
-            })
-            .catch(error => {
-                console.error('There was an error fetching the enlistments data!', error);
-            });
-    }, []);
-
-    return (
-        <Content style={{ padding: '20px' }}>
-            <h1>This is an Enlistment Manager</h1>
-            <Row gutter={16}>
-                {enlistments.map((enlistment, index) => (
-                    <Col span={8} key={index}>
-                        <Card title={`Enlistment ${enlistment.id}`} bordered={false}>
-                            <p>Name: {enlistment.name}</p>
-                            <p>Status: {enlistment.status}</p>
-                            {/* Display other enlistment data here */}
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
-        </Content>
-    );
-};
+const { TabPane } = Tabs;
 
 const EnlistmentManagerPage = () => {
-    return (
-        <MainDashboard>
-            <EnlistmentManagerPageDashboard />
-        </MainDashboard>
-    );
+  return (
+    <MainDashboard>
+      <div style={{ padding: '20px', background: '#f5f5f5', minHeight: '100vh' }}>
+        <h1>Enlistment Manager</h1>
+
+        <div style={{
+          borderBottom: '2px solid #1890ff',
+          width: '10%',
+          marginBottom: '20px'
+        }} />
+
+        <Tabs defaultActiveKey="1" type="card">
+          <TabPane 
+            tab={<><AppstoreAddOutlined style={{ marginRight: '8px' }} />Student Enlistment</>} 
+            key="1"
+          >
+            <StudentEnlistmentPage />
+          </TabPane>
+
+          <TabPane 
+            tab={<><CalendarOutlined style={{ marginRight: '8px' }} />Semester Academic Year</>} 
+            key="2"
+          >
+            <SemesterAcademicYearPage />
+          </TabPane>
+
+          <TabPane 
+            tab={<><SearchOutlined style={{ marginRight: '8px' }} />Class Schedule</>} 
+            key="3"
+          >
+            <ClassSchedulePage />
+          </TabPane>
+        </Tabs>
+      </div>
+    </MainDashboard>
+  );
 };
 
 export default EnlistmentManagerPage;

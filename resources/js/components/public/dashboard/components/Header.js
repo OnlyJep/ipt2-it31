@@ -5,13 +5,14 @@ import { BellFilled, DownOutlined, MenuOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom"; 
 import Logoff from '../../../private/dashboard/logoff'; 
 import HeadNavList from './HeaderNavList'; 
+import DefaultPic from '../../../../../../storage/app/public/default/default.png';
 
 const { Header: AntHeader } = Layout;
 const { Search } = Input; 
 
 const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
   const [user, setUser] = useState(null);
-  const [notifications, setNotifications] = useState(0);
+  const [notifications, setNotifications] = useState([]); // Changed to array
   const [scrolled, setScrolled] = useState(false); 
   const [isSearching, setIsSearching] = useState(false); 
   const [filteredRecommendations, setFilteredRecommendations] = useState([]); 
@@ -24,12 +25,14 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
         const profileId = localStorage.getItem('profile_id');
         if (!profileId) {
           message.error('Profile ID not found. Please log in again.');
+          navigate('/login'); // Redirect to login if profile ID is missing
           return;
         }
 
         const token = localStorage.getItem('auth_token');
         if (!token) {
           message.error('No token found. Please log in.');
+          navigate('/login'); // Redirect to login if token is missing
           return;
         }
 
@@ -40,16 +43,20 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
         });
 
         setUser(response.data); 
-        setNotifications(response.data.notifications || 0); 
+        setNotifications(response.data.notifications || []); // Assuming notifications is an array
 
       } catch (error) {
         console.error(error);
         message.error('Failed to load profile data');
+        // Optionally, log the user out if the token is invalid
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('profile_id');
+        navigate('/login');
       }
     };
 
     fetchProfileData();
-  }, []); 
+  }, [navigate]); 
 
   const recommendations = [
     { label: "Dashboard", route: `/superadmin/dashboard` },
@@ -125,6 +132,40 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
     }
   };
 
+  // Define the notification dropdown menu with enhanced styles
+  const notificationMenu = (
+    <div
+      style={{
+        padding: '16px',
+        width: '300px',
+        backgroundColor: '#ffffff', // White background
+        borderRadius: '8px',        // Rounded corners
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Subtle shadow
+      }}
+    >
+      <h4 style={{ marginBottom: '16px', textAlign: 'center', color: '#333' }}>Notifications</h4>
+      {notifications.length > 0 ? (
+        <List
+          itemLayout="horizontal"
+          dataSource={notifications}
+          renderItem={item => (
+            <List.Item>
+              <List.Item.Meta
+                title={item.title}
+                description={item.description}
+              />
+            </List.Item>
+          )}
+          style={{ maxHeight: '300px', overflowY: 'auto' }} // Scroll if too many notifications
+        />
+      ) : (
+        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+          <p style={{ color: '#888' }}>No notifications found.</p>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <AntHeader className={`header ${scrolled ? 'scrolled' : ''}`} style={style}>
       <div className="header-content" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
@@ -175,20 +216,28 @@ const Header = ({ style, toggleSidebar, toggleMobileSidebar }) => {
         </div>
 
         <div className="header-right" style={{ display: "flex", alignItems: "center", paddingRight: '20px' }}>
-          <Badge count={notifications} offset={[10, 0]}>
-            <BellFilled style={{ fontSize: '22px', marginRight: '20px', cursor: 'pointer', color: '#3f7afc' }} />
-          </Badge>
+          {/* Notification Dropdown */}
+          <Dropdown overlay={notificationMenu} trigger={['click']} placement="bottomRight">
+            <Badge count={notifications.length} offset={[10, 0]}>
+              <BellFilled style={{ fontSize: '22px', marginRight: '20px', cursor: 'pointer', color: '#3f7afc' }} />
+            </Badge>
+          </Dropdown>
 
+          {/* Profile Dropdown */}
           <Dropdown overlay={<HeadNavList userRole={user?.role} navigate={navigate} logout={Logoff} />} placement="bottomRight">
             <div style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}>
               <img
-                src={user?.photo_path ? `/storage/${user.photo_path}` : '/path/to/default-avatar.jpg'} 
+                src={user?.photo_path ? `/storage/${user.photo_path}` : DefaultPic} 
                 alt="Profile"
                 style={{
                   width: '40px', 
                   height: '40px',
                   borderRadius: '50%', 
                   marginRight: '8px',
+                }}
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop if default image fails
+                  e.target.src = DefaultPic; // Fallback to default image
                 }}
               />
               <DownOutlined style={{ fontSize: '16px', color: '#3f7afc' }} />

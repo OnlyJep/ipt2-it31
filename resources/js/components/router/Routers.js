@@ -34,13 +34,14 @@ const isAuthenticated = () => {
 };
 
 export default function Routers() {
-    const [userRole, setUserRole] = React.useState(
-        localStorage.getItem("user_role") || ""
-    ); // Get user role from localStorage if it exists
-    const role = localStorage.getItem("user_role");
+    // const [userRole, setUserRole] = React.useState(
+    //     localStorage.getItem("user_role") || ""
+    // ); // Get user role from localStorage if it exists
+    const userRole = localStorage.getItem("user_role") || "";
 
     // React.useEffect(() => {
     //     // Ensure that the role is correctly updated in localStorage and state after login
+    //     const role = localStorage.getItem("user_role");
     //     if (role && role !== userRole) {
     //         setUserRole(role);
     //     }
@@ -56,7 +57,7 @@ export default function Routers() {
                     path="/"
                     element={
                         isLoggedIn ? (
-                            <Navigate to={`/${role}/dashboard`} />
+                            <Navigate to={`/${userRole}/dashboard`} />
                         ) : (
                             <Navigate to="/login" />
                         )
@@ -66,9 +67,9 @@ export default function Routers() {
                     path="/login"
                     element={
                         isLoggedIn ? (
-                            <Navigate to={`/${role}/dashboard`} />
+                            <Navigate to={`/${userRole}/dashboard`} />
                         ) : (
-                            <UserLogin setUserRole={setUserRole} />
+                            <UserLogin />
                         )
                     }
                 />
@@ -202,7 +203,10 @@ export default function Routers() {
 
                 {/* Header and Sidebar Routes */}
                 <Route path="/header" element={<Header />} />
-                <Route path="/sidebar" element={<SideBar userRole={role} />} />
+                <Route
+                    path="/sidebar"
+                    element={<SideBar userRole={userRole} />}
+                />
                 <Route path="*" element={<EmptyPage />} />
             </Routes>
         </Router>

@@ -13,7 +13,7 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
         try {
             setLoading(true); // Start loading
             const values = await form.validateFields();
-
+    
             // Ensure date_of_birth and admission_date are formatted correctly, only if they exist
             const formattedValues = {
                 ...values,
@@ -24,30 +24,37 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
                     ? values.date_of_birth.format('YYYY-MM-DD')
                     : null, // If no date of birth, set to null
             };
-
+    
             // Automatically generate school email based on first and last name
             if (values.first_name && values.last_name) {
-                const schoolEmail = `${values.first_name.toLowerCase()}.${values.last_name.toLowerCase()}@urios.edu.ph`;
-                formattedValues.school_email = schoolEmail;
+                const username = `${values.first_name.toLowerCase()}.${values.last_name.toLowerCase()}`;
+                const email = `${username}@urios.edu.ph`;
+    
+                // Add the username and email to the formatted values
+                formattedValues.username = username;
+                formattedValues.email = email;
             }
-
+    
+            // Add the default role_id (assuming role 4 is for students)
+            formattedValues.role_id = 4;
+    
             const authToken = localStorage.getItem('auth_token');
-
+    
             if (!authToken) {
                 message.error('Authorization token not found.');
                 return;
             }
-
+    
             // Log the values being sent to ensure they're correct
             console.log('Form Values:', formattedValues);
-
+    
             // Make API request to create the student profile
-            const response = await axios.post('/api/profiles/students/add', formattedValues, {
+            const response = await axios.post('/api/user-with-profile/students/create', formattedValues, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
             });
-
+    
             if (response.status === 201 || response.status === 200) {
                 message.success('Student profile created successfully.');
                 form.resetFields();
@@ -60,7 +67,7 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
             if (axios.isAxiosError(error) && error.response) {
                 // Log the validation errors from the API response
                 console.log('Validation Errors:', error.response.data.errors); // Logs field-specific errors
-
+    
                 message.error(
                     `Error: ${error.response.status} - ${
                         error.response.data.message || 'Unable to create profile.'
@@ -73,14 +80,15 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
             setLoading(false);  // Stop loading
         }
     };
+    
 
     return (
         <Modal
             visible={isVisible}
-            title="Add New Student"
+            title="Student Profiling"
             onCancel={onCancel}
             onOk={handleCreate}
-            okText="Create"
+            okText="Add Student"
             cancelText="Cancel"
             width={800}
             style={{ top: 20 }}
@@ -149,6 +157,14 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
                 <Row gutter={24}>
                     <Col span={8}>
                         <Form.Item
+                            name="date_of_birth"
+                            label="Date of Birth"
+                            rules={[{ required: true, message: 'Please select the date of birth!' }]} >
+                            <DatePicker style={{ width: '100%' }} placeholder="Select date of birth" />
+                        </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                        <Form.Item
                             name="address"
                             label="Address"
                             rules={[{ required: true, message: 'Please enter the address!' }]} >
@@ -167,6 +183,9 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
                             </Select>
                         </Form.Item>
                     </Col>
+                </Row>
+
+                <Row gutter={24}>
                     <Col span={8}>
                         <Form.Item
                             name="phone_number"
@@ -175,9 +194,6 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
                             <Input placeholder="Enter phone number" />
                         </Form.Item>
                     </Col>
-                </Row>
-
-                <Row gutter={24}>
                     <Col span={8}>
                         <Form.Item
                             name="marital_status"
@@ -193,6 +209,7 @@ const StudentCreateModal = ({ isVisible, onCancel, onCreate }) => {
                 </Row>
             </Form>
         </Modal>
+
     );
 };
 

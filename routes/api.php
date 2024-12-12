@@ -42,12 +42,14 @@ Route::post('login', [AuthController::class, 'login']);
 
 // Routes inside an authentication middleware group
 Route::middleware('auth:api')->group(function () {
+    //Logout
+    Route::post('/logout', [AuthController::class, 'logout']);
+
     // Roles
     Route::apiResource('roles', RoleController::class);
     Route::post('roles/{id}/restore', [RoleController::class, 'restore']);
 
     // Users
-    Route::get('user_list', [UserController::class, 'user_list']);
     Route::apiResource('users', UserController::class);
     Route::post('/users/{id}/restore', [UserController::class, 'restore']);
     Route::get('users/active/count', [UserController::class, 'getActiveUserCount']);
@@ -56,6 +58,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/user-with-profile', [UserWithProfileController::class, 'store']);
     Route::get('/user-with-profile/{id}', [UserWithProfileController::class, 'show']);
     Route::put('/user-with-profile/{id}', [UserWithProfileController::class, 'update']);
+    Route::post('user-with-profile/students/create', [UserWithProfileController::class, 'createStudentProfile']);
 
 
     // Profiles
@@ -65,7 +68,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('profiles/instructors/totalcount', [ProfileController::class, 'getTotalInstructors']);
     Route::get('profiles/students/totalcount', [ProfileController::class, 'getTotalStudents']);
     Route::get('profiles/students/only', [ProfileController::class, 'getStudents']);
-    Route::post('profiles/students/add', [ProfileController::class, 'addStudent']);
 
 
 
@@ -180,4 +182,9 @@ Route::middleware('auth:api')->group(function () {
     // Notifications
     Route::apiResource('notification', NotificationController::class);
     Route::post('notification/{id}/restore', [NotificationController::class, 'restore']);
+});
+
+Route::middleware(['auth:sanctum', 'token.expiry'])->group(function () {
+    Route::get('/user', [AuthController::class, 'user']);
+    // Add other protected routes here
 });

@@ -50,8 +50,8 @@ class User extends Authenticatable
         return $this->status === 'irregular';
     }
 
-    // public function sendPasswordResetNotification($token)
-    // {
-    //     $this->notify(new \App\Notifications\ResetPasswordNotification($token));
-    // }
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
 }

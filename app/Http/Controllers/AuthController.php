@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Profile;
-use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Validator;
 
@@ -72,11 +71,17 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        // Revoke the user's token
-        $request->user()->tokens->delete();
+        // Check if the user is authenticated
+        if ($request->user()) {
+            // Revoke (delete) the current access token
+            $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+            return response()->json(['message' => 'Logged out successfully']);
+        }
+
+        return response()->json(['message' => 'Unauthenticated'], 401);
     }
+
 
     /**
      * Get the authenticated user details.
