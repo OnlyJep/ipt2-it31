@@ -9,69 +9,139 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
     // Display a listing of profiles
     public function index(Request $request)
     {
-        $deleted = $request->query('deleted', 'false');
+        $department = "(SELECT department_name FROM departments WHERE id = profiles.department_id)";
+        $created_at_format = "DATE_FORMAT(profiles.created_at, '%M %d, %Y')";
 
-        if ($deleted === 'only') {
-            $profiles = Profile::onlyTrashed()->get();
-        } elseif ($deleted === 'true') {
-            $profiles = Profile::withTrashed()->get();
+        $data = Profile::select([
+            '*',
+            DB::raw($created_at_format . ' as created_at_format'),
+            DB::raw($department . ' as department'),
+        ])
+            ->with(['user']);
+
+        if ($request->has('search')) {
+            $data->where(function ($query) use ($request, $created_at_format, $department) {
+                $query->orWhere('first_name', 'like', '%' . $request->search . '%');
+                $query->orWhere('last_name', 'like', '%' . $request->search . '%');
+                $query->orWhere('middle_initial', 'like', '%' . $request->search . '%');
+                $query->orWhere('suffix', 'like', '%' . $request->search . '%');
+                $query->orWhere('address', 'like', '%' . $request->search . '%');
+                $query->orWhere('school_email', 'like', '%' . $request->search . '%');
+                $query->orWhere('sex', 'like', '%' . $request->search . '%');
+                $query->orWhere('phone_number', 'like', '%' . $request->search . '%');
+                $query->orWhere('marital_status', 'like', '%' . $request->search . '%');
+                $query->orWhere('religion', 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw($department), 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->status == 'Archived') {
+            $data->onlyTrashed();
+        }
+
+        if ($request->profile_status == 'All Faculty') {
+            $data->whereIn('profile_status', ['Full-time', 'Part-time']);
         } else {
-            $profiles = Profile::all();
+            $data->where('profile_status', $request->profile_status);
         }
 
-        if ($profiles->isEmpty()) {
-            return response()->json(['message' => 'No profiles found'], 404);
+        $data->whereHas('user', function ($query) use ($request) {
+            if ($request->role_ids) {
+                $role_ids = explode(',', $request->role_ids);
+                $query->whereIn('role_id', $role_ids);
+            }
+        });
+
+        if ($request->sort_field && $request->sort_order) {
+            $data = $data->orderBy($request->sort_field, $request->sort_order);
+        } else {
+            $data = $data->orderBy('id', 'desc');
         }
 
-        return response()->json($profiles);
+        if ($request->page_size) {
+            $data = $data->paginate($request->page_size, ['*'], 'page', $request->page)->toArray();
+        } else {
+            $data = $data->get();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ], 200);
     }
 
     // Create a new profile in storage
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'nullable|string|max:50',
-            'last_name' => 'nullable|string|max:50',
-            'middle_initial' => 'nullable|string|max:20',
-            'suffix' => 'nullable|string|max:20',
-            'age' => 'nullable|integer|min:0',
-            'address' => 'nullable|string',
-            'school_email' => 'nullable|email|unique:profiles,school_email|max:50',
-            'sex' => 'nullable|string|max:20',
-            'phone_number' => 'nullable|string|max:20',
-            'admission_date' => 'nullable|date',
-            'marital_status' => 'nullable|in:single,married,divorced,widowed',
-            'religion' => 'nullable|in:catholic,muslim,protestant,hindu',
-            'photo_path' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // Add validation for the image
+        $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'school_email' => [
+                'required',
+                Rule::unique('profiles')->ignore($request->id)
+            ],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
+        $data = $request->except(['photo_path', 'password']);
 
         // Handle file upload if exists
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
             $path = $photo->store('profile_photos', 'public'); // Store photo in the "profile_photos" directory
 
-            // Save the file path in the profile
-            $profile = Profile::create([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                // Other fields here
-                'photo_path' => $path, // Save the photo path in the database
-            ]);
-        } else {
-            $profile = Profile::create($request->all());
+            $data['photo_path'] = $path;
         }
 
-        return response()->json(['message' => 'Profile created successfully', 'profile' => $profile], 201);
+        $updateCreate = Profile::updateOrCreate(
+            ['id' => $request->id ? $request->id : null],
+            $data
+        );
+
+        if ($updateCreate) {
+
+            $username = explode('@', $request->school_email);
+            $dataUser = [
+                'username' => $username[0],
+                'email' => $request->school_email,
+                'role_id' => 3,
+                'status' => 'Active',
+            ];
+
+            if ($request->password) {
+                $dataUser['password'] = bcrypt($request->password);
+            }
+
+            $user_id = $updateCreate->user_id ? $updateCreate->user_id : null;
+
+            $user =  User::updateOrCreate(
+                ['id' => $user_id],
+                $dataUser
+            );
+
+            if ($user) {
+                if (!$user_id) {
+                    $updateCreate->update(['user_id' => $user->id]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile ' . ($request->id ? 'updated' : 'created') . ' successfully',
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Profile not ' . ($request->id ? 'updated' : 'created')
+        ], 200);
     }
 
     // Update an existing profile in storage
@@ -178,7 +248,6 @@ class ProfileController extends Controller
             return response()->json($profile);
         } catch (\Exception $e) {
             // Log any errors for debugging purposes
-            Log::error('Error retrieving profile: ' . $e->getMessage());
             return response()->json(['message' => 'Something went wrong'], 500);
         }
     }
@@ -199,30 +268,36 @@ class ProfileController extends Controller
     // Restore the specified soft-deleted profile
     public function profile_archived(Request $request)
     {
-        $profile = Profile::withTrashed()->find($request->id);
-        if (!$profile) {
-            return response()->json(['message' => 'Profile not found'], 404);
-        }
+        $request->validate([
+            'ids' => 'required',
+            'status' => 'required|in:Archived,Active',
+        ]);
 
-        if ($request->status == 'archived') {
-            $findUser = User::find($profile->user_id);
-            if ($findUser) {
-                $findUser->update(['status' => 'Deactive']);
+        $ids = $request->ids;
+
+        $profiles = Profile::withTrashed()->whereIn('id', $ids)->get();
+
+        if ($request->status == "Archived") {
+            foreach ($profiles as $profile) {
+                $profile->restore();
+                $findUser = User::find($profile->user_id);
+                if ($findUser) {
+                    $findUser->update(['status' => 'Active']);
+                }
             }
-            $profile->delete();
-            return response()->json(['message' => 'Profile archived successfully']);
+            return response()->json(['message' => 'Profile restored successfully', 'success' => true]);
         } else {
-            $profile->restore();
-
-            $findUser = User::find($profile->user_id);
-            if ($findUser) {
-                $findUser->update(['status' => 'Active']);
+            foreach ($profiles as $profile) {
+                $findUser = User::find($profile->user_id);
+                if ($findUser) {
+                    $findUser->update(['status' => 'Deactive']);
+                }
+                $profile->delete();
             }
-
-            return response()->json(['message' => 'Profile restored successfully']);
+            return response()->json(['message' => 'Profile archived successfully', 'success' => true]);
         }
 
-        return response()->json(['message' => 'Profile restored successfully']);
+        return response()->json(['message' => 'Data not ' . ($request->status == 'Active' ? 'archive' : 'restore'), 'success' => false]);
     }
 
     public function showByProfileId($profileId)

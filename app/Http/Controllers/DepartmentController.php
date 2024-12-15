@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class DepartmentController extends Controller
@@ -11,21 +12,40 @@ class DepartmentController extends Controller
     // Display a listing of departments
     public function index(Request $request)
     {
-        $deleted = $request->query('deleted', 'false');
+        $created_at_format = "DATE_FORMAT(departments.created_at, '%M %d, %Y')";
 
-        if ($deleted === 'only') {
-            $departments = Department::onlyTrashed()->get();
-        } elseif ($deleted === 'true') {
-            $departments = Department::withTrashed()->get();
+        $data = Department::select([
+            '*',
+            DB::raw($created_at_format . ' as created_at_format'),
+        ]);
+
+        if ($request->has('search')) {
+            $data->where(function ($query) use ($request, $created_at_format) {
+                $query->where('department_name', 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->status == 'Archived') {
+            $data->onlyTrashed();
+        }
+
+        if ($request->sort_field && $request->sort_order) {
+            $data = $data->orderBy($request->sort_field, $request->sort_order);
         } else {
-            $departments = Department::all();
+            $data = $data->orderBy('id', 'desc');
         }
 
-        if ($departments->isEmpty()) {
-            return response()->json(['message' => 'No departments found'], 404);
+        if ($request->page_size) {
+            $data = $data->paginate($request->page_size, ['*'], 'page', $request->page)->toArray();
+        } else {
+            $data = $data->get();
         }
 
-        return response()->json($departments);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ], 200);
     }
 
     // Store a newly created department in storage
@@ -80,7 +100,7 @@ class DepartmentController extends Controller
         if (!$department) {
             return response()->json(['message' => 'Department not found'], 404);
         }
-        
+
         $department->delete();
         return response()->json(['message' => 'Department deleted successfully']);
     }
