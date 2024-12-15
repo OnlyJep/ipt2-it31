@@ -62,12 +62,13 @@ Route::middleware('auth:api')->group(function () {
 
 
     // Profiles
-    Route::apiResource('profiles', ProfileController::class)->except(['index', 'show']);
+    Route::apiResource('profiles', ProfileController::class);
     Route::post('profiles/{id}/restore', [ProfileController::class, 'restore']);
     Route::get('profiles/{id}', [ProfileController::class, 'showByProfileId']);
     Route::get('profiles/instructors/totalcount', [ProfileController::class, 'getTotalInstructors']);
     Route::get('profiles/students/totalcount', [ProfileController::class, 'getTotalStudents']);
     Route::get('profiles/students/only', [ProfileController::class, 'getStudents']);
+    Route::get('faculty_list', [ProfileController::class, 'faculty_list']);
 
 
 
@@ -184,7 +185,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('notification/{id}/restore', [NotificationController::class, 'restore']);
 });
 
-Route::middleware(['auth:sanctum', 'token.expiry'])->group(function () {
+Route::middleware(['auth:api', 'token.expiry'])->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     // Add other protected routes here
 });

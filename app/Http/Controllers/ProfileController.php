@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -47,16 +49,16 @@ class ProfileController extends Controller
             'religion' => 'nullable|in:catholic,muslim,protestant,hindu',
             'photo_path' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // Add validation for the image
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-    
+
         // Handle file upload if exists
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
             $path = $photo->store('profile_photos', 'public'); // Store photo in the "profile_photos" directory
-    
+
             // Save the file path in the profile
             $profile = Profile::create([
                 'first_name' => $request->first_name,
@@ -67,10 +69,10 @@ class ProfileController extends Controller
         } else {
             $profile = Profile::create($request->all());
         }
-    
+
         return response()->json(['message' => 'Profile created successfully', 'profile' => $profile], 201);
     }
-    
+
     // Update an existing profile in storage
     public function update(Request $request, $id)
     {
@@ -157,7 +159,7 @@ class ProfileController extends Controller
         return response()->json(['message' => 'Failed to upload photo.'], 400);
     }
 
-    
+
 
     // Display the specified profile
     public function show($id)
@@ -175,7 +177,7 @@ class ProfileController extends Controller
             return response()->json($profile);
         } catch (\Exception $e) {
             // Log any errors for debugging purposes
-            \Log::error('Error retrieving profile: ' . $e->getMessage());
+            Log::error('Error retrieving profile: ' . $e->getMessage());
             return response()->json(['message' => 'Something went wrong'], 500);
         }
     }
@@ -188,7 +190,7 @@ class ProfileController extends Controller
         if (!$profile) {
             return response()->json(['message' => 'Profile not found'], 404);
         }
-        
+
         $profile->delete();
         return response()->json(['message' => 'Profile deleted successfully']);
     }
@@ -270,30 +272,67 @@ class ProfileController extends Controller
                 ->join('roles', 'users.role_id', '=', 'roles.id')  // Join with roles table
                 ->where('roles.id', 4)  // Filter by student role (role_id = 4)
                 ->select(
-                    'profiles.first_name', 
-                    'profiles.last_name', 
-                    'profiles.middle_initial', 
-                    'profiles.suffix', 
+                    'profiles.first_name',
+                    'profiles.last_name',
+                    'profiles.middle_initial',
+                    'profiles.suffix',
                     'profiles.date_of_birth',
                     'profiles.address',
-                    'profiles.school_email', 
-                    'profiles.sex', 
+                    'profiles.school_email',
+                    'profiles.sex',
                     'profiles.phone_number',
-                    'profiles.admission_date', 
+                    'profiles.admission_date',
                     'profiles.marital_status',
-                    'profiles.religion', 
-                    'profiles.created_at', 
+                    'profiles.religion',
+                    'profiles.created_at',
                     'profiles.updated_at'
                 )
                 ->get();
 
             return response()->json($students);
         } catch (\Exception $e) {
-            \Log::error('Error fetching students: ' . $e->getMessage());  // Log the error message
+            Log::error('Error fetching students: ' . $e->getMessage());  // Log the error message
             return response()->json(['message' => 'Error fetching students'], 500);
         }
     }
 
 
+    public function faculty_list(Request $request)
+    {
+        $created_at_format = "DATE_FORMAT(profiles.created_at, '%F %d, %Y')";
 
+        $data = Profile::select([
+            '*',
+            DB::raw($created_at_format . ' as created_at_format'),
+        ]);
+
+        if ($request->has('search')) {
+            $data->where(function ($query) use ($request, $created_at_format) {
+                $query->where('first_name', 'like', '%' . $request->search . '%');
+                $query->orWhere('last_name', 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $data->whereHas('user', function ($query) {
+            $query->where('role_id', 3);
+        });
+
+        if ($request->sort_field && $request->sort_order) {
+            $data =   $data->orderBy($request->sort_field, $request->sort_order);
+        } else {
+            $data =   $data->orderBy('id', 'desc');
+        }
+
+        if ($request->page_size) {
+            $data = $data->paginate($request->page_size, ['*'], 'page', $request->page)->toArray();
+        } else {
+            $data = $data->get();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ], 200);
+    }
 }
