@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -196,14 +197,31 @@ class ProfileController extends Controller
     }
 
     // Restore the specified soft-deleted profile
-    public function restore($id)
+    public function profile_archived(Request $request)
     {
-        $profile = Profile::withTrashed()->find($id);
+        $profile = Profile::withTrashed()->find($request->id);
         if (!$profile) {
             return response()->json(['message' => 'Profile not found'], 404);
         }
 
-        $profile->restore();
+        if ($request->status == 'archived') {
+            $findUser = User::find($profile->user_id);
+            if ($findUser) {
+                $findUser->update(['status' => 'Deactive']);
+            }
+            $profile->delete();
+            return response()->json(['message' => 'Profile archived successfully']);
+        } else {
+            $profile->restore();
+
+            $findUser = User::find($profile->user_id);
+            if ($findUser) {
+                $findUser->update(['status' => 'Active']);
+            }
+
+            return response()->json(['message' => 'Profile restored successfully']);
+        }
+
         return response()->json(['message' => 'Profile restored successfully']);
     }
 
@@ -314,8 +332,15 @@ class ProfileController extends Controller
             });
         }
 
-        $data->whereHas('user', function ($query) {
+        $data->whereHas('user', function ($query) use ($request) {
             $query->where('role_id', 3);
+
+            // if ($request->has('status')) {
+            //     $query->where(function ($query) use ($request) {
+            //         $query->where('username', 'like', '%' . $request->search . '%');
+            //         $query->orWhere('email', 'like', '%' . $request->search . '%');
+            //     });
+            // }
         });
 
         if ($request->sort_field && $request->sort_order) {

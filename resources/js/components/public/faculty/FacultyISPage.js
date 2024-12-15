@@ -15,6 +15,7 @@ import {
 import { FilterOutlined, PlusOutlined } from "@ant-design/icons";
 import debounce from "lodash.debounce";
 import MainDashboard from "../dashboard/components/MainDashboard";
+import ModalFormFaculty from "./components/ModalFormFaculty";
 
 const { Text } = Typography;
 
@@ -54,11 +55,13 @@ const FacultyISPage = () => {
         sort_order: "desc",
         status: "All",
     });
-    const [searchValue, setSearchValue] = useState("");
-    const [selectedStatus, setSelectedStatus] = useState("All");
     const [loading, setLoading] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
+    const [toggleModalForm, setToggleModalForm] = useState({
+        open: false,
+        data: null,
+    });
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth <= 767);
@@ -147,6 +150,11 @@ const FacultyISPage = () => {
     });
 
     const columns = [
+        {
+            title: "Created At",
+            dataIndex: "created_at_format",
+            key: "created_at_format",
+        },
         { title: "First Name", dataIndex: "first_name", key: "first_name" },
         { title: "Last Name", dataIndex: "last_name", key: "last_name" },
         {
@@ -196,9 +204,9 @@ const FacultyISPage = () => {
                                     trigger={["click"]}
                                 >
                                     <Button icon={<FilterOutlined />}>
-                                        {selectedStatus === "All"
+                                        {tableFilter.status === "All"
                                             ? "Filter by Status"
-                                            : `Status: ${selectedStatus}`}
+                                            : `Status: ${tableFilter.status}`}
                                     </Button>
                                 </Dropdown>
                             </Space>
@@ -210,7 +218,16 @@ const FacultyISPage = () => {
                             style={{ textAlign: isMobile ? "left" : "right" }}
                         >
                             <Space>
-                                <Button type="primary" icon={<PlusOutlined />}>
+                                <Button
+                                    type="primary"
+                                    icon={<PlusOutlined />}
+                                    onClick={() =>
+                                        setToggleModalForm({
+                                            open: true,
+                                            data: null,
+                                        })
+                                    }
+                                >
                                     Add Faculty
                                 </Button>
                                 <Popconfirm
@@ -236,7 +253,7 @@ const FacultyISPage = () => {
                                 onClick={resetFilters}
                                 disabled={
                                     tableFilter.search === "" &&
-                                    selectedStatus === "All"
+                                    tableFilter.status === "All"
                                 }
                                 style={{ marginTop: 10 }}
                             >
@@ -271,6 +288,11 @@ const FacultyISPage = () => {
                     />
                 </Space>
             </div>
+
+            <ModalFormFaculty
+                toggleModalForm={toggleModalForm}
+                setToggleModalForm={setToggleModalForm}
+            />
         </MainDashboard>
     );
 };

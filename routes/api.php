@@ -63,7 +63,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Profiles
     Route::apiResource('profiles', ProfileController::class);
-    Route::post('profiles/{id}/restore', [ProfileController::class, 'restore']);
+    Route::post('profile_archived', [ProfileController::class, 'profile_archived']);
     Route::get('profiles/{id}', [ProfileController::class, 'showByProfileId']);
     Route::get('profiles/instructors/totalcount', [ProfileController::class, 'getTotalInstructors']);
     Route::get('profiles/students/totalcount', [ProfileController::class, 'getTotalStudents']);
