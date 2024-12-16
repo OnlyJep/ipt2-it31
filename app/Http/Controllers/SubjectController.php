@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class SubjectController extends Controller
@@ -11,21 +12,43 @@ class SubjectController extends Controller
     // Display a listing of subjects
     public function index(Request $request)
     {
-        $deleted = $request->query('deleted', 'false');
+        $created_at_format = "DATE_FORMAT(subjects.created_at, '%M %d, %Y')";
 
-        if ($deleted === 'only') {
-            $subjects = Subject::onlyTrashed()->get();
-        } elseif ($deleted === 'true') {
-            $subjects = Subject::withTrashed()->get();
+        $data = Subject::select([
+            '*',
+            DB::raw($created_at_format . ' as created_at_format'),
+        ]);
+
+        if ($request->has('search')) {
+            $data->where(function ($query) use ($request, $created_at_format,) {
+                $query->orWhere('subject_code', 'like', '%' . $request->search . '%');
+                $query->orWhere('subject_name', 'like', '%' . $request->search . '%');
+                $query->orWhere('subject_description', 'like', '%' . $request->search . '%');
+                $query->orWhere('units', 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->status == 'Archived') {
+            $data->onlyTrashed();
+        }
+
+        if ($request->sort_field && $request->sort_order) {
+            $data = $data->orderBy($request->sort_field, $request->sort_order);
         } else {
-            $subjects = Subject::all();
+            $data = $data->orderBy('id', 'desc');
         }
 
-        if ($subjects->isEmpty()) {
-            return response()->json(['message' => 'No subjects found'], 404);
+        if ($request->page_size) {
+            $data = $data->paginate($request->page_size, ['*'], 'page', $request->page)->toArray();
+        } else {
+            $data = $data->get();
         }
 
-        return response()->json($subjects);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ], 200);
     }
 
     // Store a newly created subject in storage
@@ -92,7 +115,7 @@ class SubjectController extends Controller
         if (!$subject) {
             return response()->json(['message' => 'Subject not found'], 404);
         }
-        
+
         $subject->delete();
         return response()->json(['message' => 'Subject deleted successfully']);
     }

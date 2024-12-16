@@ -26,6 +26,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ParentInfoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomTagController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SemesterAcademicYearController;
@@ -91,6 +92,10 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('subject', SubjectController::class);
     Route::post('subject/{id}/restore', [SubjectController::class, 'restore']);
 
+    // Subjects
+    Route::post('room_archived', [RoomController::class, 'room_archived']);
+    Route::apiResource('room', RoomController::class);
+
     // Curriculums
     Route::apiResource('curriculum', CurriculumController::class);
     Route::post('curriculum/{id}/restore', [CurriculumController::class, 'restore']);
@@ -133,6 +138,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('classifiedsection/{id}/restore', [ClassifiedSectionController::class, 'restore']);
 
     // Buildings
+    Route::post('building_archived', [BuildingController::class, 'building_archived']);
     Route::apiResource('building', BuildingController::class);
     Route::post('building/{id}/restore', [BuildingController::class, 'restore']);
 

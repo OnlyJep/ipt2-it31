@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Floor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class FloorController extends Controller
@@ -11,21 +12,40 @@ class FloorController extends Controller
     // Display a listing of floors
     public function index(Request $request)
     {
-        $deleted = $request->query('deleted', 'false');
+        $created_at_format = "DATE_FORMAT(floors.created_at, '%M %d, %Y')";
 
-        if ($deleted === 'only') {
-            $floors = Floor::onlyTrashed()->get();
-        } elseif ($deleted === 'true') {
-            $floors = Floor::withTrashed()->get();
+        $data = Floor::select([
+            '*',
+            DB::raw($created_at_format . ' as created_at_format'),
+        ]);
+
+        if ($request->has('search')) {
+            $data->where(function ($query) use ($request, $created_at_format,) {
+                $query->orWhere('floor_level', 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->status == 'Archived') {
+            $data->onlyTrashed();
+        }
+
+        if ($request->sort_field && $request->sort_order) {
+            $data = $data->orderBy($request->sort_field, $request->sort_order);
         } else {
-            $floors = Floor::all();
+            $data = $data->orderBy('id', 'desc');
         }
 
-        if ($floors->isEmpty()) {
-            return response()->json(['message' => 'No floors found'], 404);
+        if ($request->page_size) {
+            $data = $data->paginate($request->page_size, ['*'], 'page', $request->page)->toArray();
+        } else {
+            $data = $data->get();
         }
 
-        return response()->json($floors);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ], 200);
     }
 
     // Store a newly created floor in storage
@@ -80,7 +100,7 @@ class FloorController extends Controller
         if (!$floor) {
             return response()->json(['message' => 'Floor not found'], 404);
         }
-        
+
         $floor->delete();
         return response()->json(['message' => 'Floor deleted successfully']);
     }

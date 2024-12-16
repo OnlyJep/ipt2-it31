@@ -4,31 +4,49 @@ namespace App\Http\Controllers;
 
 use App\Models\Building;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class BuildingController extends Controller
 {
     // Display a listing of buildings
     public function index(Request $request)
-{
-    try {
-        $deleted = $request->query('deleted', 'false');
+    {
+        $created_at_format = "DATE_FORMAT(buildings.created_at, '%M %d, %Y')";
 
-        if ($deleted === 'only') {
-            $buildings = Building::onlyTrashed()->with('floor')->get(); // Eager load 'floor' relationship
-        } elseif ($deleted === 'true') {
-            $buildings = Building::withTrashed()->with('floor')->get(); // Eager load 'floor' relationship
-        } else {
-            $buildings = Building::with('floor')->get(); // Eager load 'floor' relationship
+        $data = Building::select([
+            '*',
+            DB::raw($created_at_format . ' as created_at_format'),
+        ]);
+
+        if ($request->has('search')) {
+            $data->where(function ($query) use ($request, $created_at_format,) {
+                $query->orWhere('building_name', 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
+            });
         }
 
-        // Return the buildings, including floor level
-        return response()->json($buildings);
-    } catch (\Exception $e) {
-        return response()->json([], 200); // Empty response when there's an error
-    }
-}
+        if ($request->status == 'Archived') {
+            $data->onlyTrashed();
+        }
 
+        if ($request->sort_field && $request->sort_order) {
+            $data = $data->orderBy($request->sort_field, $request->sort_order);
+        } else {
+            $data = $data->orderBy('id', 'desc');
+        }
+
+        if ($request->page_size) {
+            $data = $data->paginate($request->page_size, ['*'], 'page', $request->page)->toArray();
+        } else {
+            $data = $data->get();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ], 200);
+    }
 
 
     // Store a newly created building in storage
@@ -85,23 +103,60 @@ class BuildingController extends Controller
         if (!$building) {
             return response()->json(['message' => 'Building not found'], 404);
         }
-        
+
         $building->delete();
         return response()->json(['message' => 'Building deleted successfully']);
     }
 
     // Restore the specified soft-deleted building
     public function restore($id)
-{
-    $building = Building::withTrashed()->find($id); // Include soft-deleted buildings
+    {
+        $building = Building::withTrashed()->find($id); // Include soft-deleted buildings
 
-    if (!$building) {
-        return response()->json(['message' => 'Building not found'], 404);
+        if (!$building) {
+            return response()->json(['message' => 'Building not found'], 404);
+        }
+
+        $building->deleted_at = null; // Restore the building (set deleted_at to null)
+        $building->save();
+
+        return response()->json(['message' => 'Building restored successfully'], 200);
     }
 
-    $building->deleted_at = null; // Restore the building (set deleted_at to null)
-    $building->save();
+    public function building_archived(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required',
+            'status' => 'required',
+        ]);
 
-    return response()->json(['message' => 'Building restored successfully'], 200);
-}
+        $ids = $request->ids;
+
+        $find = Building::withTrashed()->whereIn('id', $ids)->get();
+
+        if ($request->status == 'Archived') {
+            foreach ($find as $room) {
+                $room->restore();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Building restored successfully',
+            ], 200);
+        } else {
+            foreach ($find as $room) {
+                $room->delete();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Building archived successfully',
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Building not found',
+        ], 404);
+    }
 }

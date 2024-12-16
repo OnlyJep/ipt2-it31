@@ -1,7 +1,7 @@
 // FloorModal.js
-import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, InputNumber, notification } from 'antd';
-import axios from 'axios'; 
+import React, { useState, useEffect } from "react";
+import { Modal, Form, Button, InputNumber, notification } from "antd";
+import axios from "axios";
 
 const FloorModal = ({
     isCreateModalVisible,
@@ -14,7 +14,7 @@ const FloorModal = ({
     modalData,
 }) => {
     const [form] = Form.useForm();
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(false);
 
     // Reset or set form fields based on modal visibility and modalData
     useEffect(() => {
@@ -30,38 +30,45 @@ const FloorModal = ({
     // Custom validator to check for duplicate floor levels
     const validateFloorLevel = (_, value) => {
         if (value === undefined || value === null) {
-            return Promise.reject('Please input the floor level');
+            return Promise.reject("Please input the floor level");
         }
 
         const floorLevelStr = String(value).toLowerCase().trim();
 
         // Exclude the current floor when editing
-        const duplicate = data.some(floor => 
-            String(floor.floor_level).toLowerCase().trim() === floorLevelStr && (isEditModalVisible ? floor.id !== modalData.id : true)
+        const duplicate = data.some(
+            (floor) =>
+                String(floor.floor_level).toLowerCase().trim() ===
+                    floorLevelStr &&
+                (isEditModalVisible ? floor.id !== modalData.id : true)
         );
 
         if (duplicate) {
-            return Promise.reject('A floor with this level already exists.');
+            return Promise.reject("A floor with this level already exists.");
         }
 
         return Promise.resolve();
     };
 
     const handleSave = () => {
-        form.validateFields().then(values => {
-            setLoading(true);
-            if (isEditModalVisible) {
-                // Call handleEditFloor with id and updated data
-                handleEditFloor(modalData.id, { floor_level: values.floor_level })
-                    .finally(() => setLoading(false));
-            } else {
-                // Call handleCreateFloor with new floor data
-                handleCreateFloor({ floor_level: values.floor_level })
-                    .finally(() => setLoading(false));
-            }
-        }).catch(info => {
-            console.log('Validate Failed:', info);
-        });
+        form.validateFields()
+            .then((values) => {
+                setLoading(true);
+                if (isEditModalVisible) {
+                    // Call handleEditFloor with id and updated data
+                    handleEditFloor(modalData.id, {
+                        floor_level: values.floor_level,
+                    }).finally(() => setLoading(false));
+                } else {
+                    // Call handleCreateFloor with new floor data
+                    handleCreateFloor({
+                        floor_level: values.floor_level,
+                    }).finally(() => setLoading(false));
+                }
+            })
+            .catch((info) => {
+                console.log("Validate Failed:", info);
+            });
     };
 
     const handleCancel = () => {
@@ -71,14 +78,19 @@ const FloorModal = ({
 
     return (
         <Modal
-            title={isEditModalVisible ? 'Edit Floor' : 'Create New Floor'}
-            visible={isCreateModalVisible || isEditModalVisible}
+            title={isEditModalVisible ? "Edit Floor" : "Create New Floor"}
+            open={isCreateModalVisible || isEditModalVisible}
             onCancel={handleCancel}
             footer={[
                 <Button key="cancel" onClick={handleCancel}>
                     Cancel
                 </Button>,
-                <Button key="save" type="primary" onClick={handleSave} loading={loading}>
+                <Button
+                    key="save"
+                    type="primary"
+                    onClick={handleSave}
+                    loading={loading}
+                >
                     Save
                 </Button>,
             ]}
@@ -88,8 +100,11 @@ const FloorModal = ({
                     name="floor_level"
                     label="Floor Level"
                     rules={[
-                        { required: true, message: 'Please input the floor level' },
-                        { validator: validateFloorLevel }, 
+                        {
+                            required: true,
+                            message: "Please input the floor level",
+                        },
+                        { validator: validateFloorLevel },
                     ]}
                 >
                     <InputNumber min={1} />

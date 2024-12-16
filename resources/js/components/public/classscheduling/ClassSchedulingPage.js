@@ -40,6 +40,39 @@ const ClassSchedulingPage = () => {
     const [tableLoading, setTableLoading] = useState(false);
     const [dataClassSchedule, setDataClassSchedule] = useState([]);
 
+    const [dataSubject, setDataSubject] = useState([]);
+    const [dataRoom, setDataRoom] = useState([]);
+    const [dataInstructor, setDataInstructor] = useState([]);
+
+    useEffect(() => {
+        const handleFetchSubject = async () => {
+            const apiUrl = window.location.origin;
+            try {
+                setTableLoading(true);
+                const response = await axios.get(
+                    `${apiUrl}/api/subject?${new URLSearchParams(tableFilter)}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "auth_token"
+                            )}`,
+                        },
+                    }
+                );
+
+                setDataSubject(response.data);
+            } catch (error) {
+                console.log("Error: ", error);
+            } finally {
+                //
+            }
+        };
+
+        handleFetchSubject();
+
+        return () => {};
+    }, []);
+
     const handleFetch = async () => {
         const apiUrl = window.location.origin;
         try {
