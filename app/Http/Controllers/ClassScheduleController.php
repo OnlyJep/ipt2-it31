@@ -12,9 +12,10 @@ class ClassScheduleController extends Controller
     // Display a listing of class schedules
     public function index(Request $request)
     {
-        $instructor = "(SELECT TRIM(CONCAT_WS(' ', lastname, IF(lastname IS NOT NULL, ', ', ''), firstname, IF(middlename='', NULL, middlename), IF(name_ext='', NULL, name_ext))) FROM profiles WHERE id = class_schedules.profile_id)";
+        $instructor = "(SELECT TRIM(CONCAT_WS(' ', last_name, IF(last_name IS NOT NULL, ', ', ''), first_name, IF(middle_initial='', NULL, middle_initial), IF(suffix='', NULL, suffix))) FROM profiles WHERE id = class_schedules.profile_id)";
         $subject = "(SELECT subject_name FROM subjects WHERE id = class_schedules.subject_id)";
         $section = "(SELECT (SELECT section_name FROM sections WHERE sections.id = classified_sections.section_id) FROM classified_sections WHERE id = class_schedules.classifiedsection_id)";
+        $room = "(SELECT room_code FROM rooms WHERE id = class_schedules.room_id)";
         $created_at_format = "DATE_FORMAT(class_schedules.created_at, '%M %d, %Y')";
 
         $data = ClassSchedule::select([
@@ -23,16 +24,18 @@ class ClassScheduleController extends Controller
             DB::raw($subject . ' as subject'),
             DB::raw($section . ' as section'),
             DB::raw($instructor . ' as instructor'),
+            DB::raw($room . ' as room'),
         ]);
 
         if ($request->has('search')) {
-            $data->where(function ($query) use ($request, $created_at_format, $section, $subject, $instructor) {
+            $data->where(function ($query) use ($request, $created_at_format, $section, $subject, $instructor, $room) {
                 $query->orWhere('start_time', 'like', '%' . $request->search . '%');
                 $query->orWhere('end_time', 'like', '%' . $request->search . '%');
                 $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
                 $query->orWhere(DB::raw($section), 'like', '%' . $request->search . '%');
                 $query->orWhere(DB::raw($subject), 'like', '%' . $request->search . '%');
                 $query->orWhere(DB::raw($instructor), 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw($room), 'like', '%' . $request->search . '%');
             });
         }
 
@@ -61,22 +64,30 @@ class ClassScheduleController extends Controller
     // Store a newly created class schedule in storage
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+        $request->validate([
+            'start_time' => 'required',
+            'end_time' => 'required',
             'day_of_week' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-            'classifiedsection_id' => 'required|exists:classified_sections,id',
-            'academicprogram_id' => 'required|exists:academic_programs,id',
-            'classroomscheduling_id' => 'required|exists:classroom_scheduling,id',
-            'profile_id' => 'nullable|exists:profiles,id',
+            'classifiedsection_id' => 'required',
+            // 'academicprogram_id' => 'required|exists:academic_programs,id',
+            // 'classroomscheduling_id' => 'required|exists:classroom_scheduling,id',
+            'profile_id' => 'required',
+            'room_id' => 'required',
+            'subject_id' => 'required',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+        $data = $request->all();
+
+        $data['academicprogram_id'] = 0;
+        $data['classroomscheduling_id'] = 0;
+
+        $classSchedule = ClassSchedule::updateOrCreate(['id' => $request->id ? $request->id : null], $data);
+
+        if ($classSchedule) {
+            return response()->json(['success' => true, 'message' => 'Class Schedule ' . ($request->id ? 'updated' : 'created'),], 200);
         }
 
-        $classSchedule = ClassSchedule::create($request->all());
-        return response()->json(['message' => 'Class Schedule created successfully', 'classSchedule' => $classSchedule], 201);
+        return response()->json(['success' => false, 'message' => 'Class Schedule not ' . ($request->id ? 'updated' : 'created'),], 201);
     }
 
     // Display the specified class schedule

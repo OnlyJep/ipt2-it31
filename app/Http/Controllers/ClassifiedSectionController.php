@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassifiedSection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ClassifiedSectionController extends Controller
@@ -13,12 +14,31 @@ class ClassifiedSectionController extends Controller
     {
         $deleted = $request->query('deleted', 'false');
 
+        $section = "(SELECT section_name FROM sections WHERE sections.id = classified_sections.section_id)";
+        $collegeprogram = "(SELECT college_programs FROM college_programs WHERE college_programs.id = classified_sections.collegeprogram_id)";
+        $yearlevel = "(SELECT year_level FROM year_levels WHERE year_levels.id = classified_sections.yearlevel_id)";
+
         if ($deleted === 'only') {
-            $classifiedSections = ClassifiedSection::onlyTrashed()->get();
+            $classifiedSections = ClassifiedSection::select([
+                '*',
+                DB::raw($section . ' as section'),
+                DB::raw($collegeprogram . ' as collegeprogram'),
+                DB::raw($yearlevel . ' as yearlevel'),
+            ])->onlyTrashed()->get();
         } elseif ($deleted === 'true') {
-            $classifiedSections = ClassifiedSection::withTrashed()->get();
+            $classifiedSections = ClassifiedSection::select([
+                '*',
+                DB::raw($section . ' as section'),
+                DB::raw($collegeprogram . ' as collegeprogram'),
+                DB::raw($yearlevel . ' as yearlevel'),
+            ])->withTrashed()->get();
         } else {
-            $classifiedSections = ClassifiedSection::all();
+            $classifiedSections = ClassifiedSection::select([
+                '*',
+                DB::raw($section . ' as section'),
+                DB::raw($collegeprogram . ' as collegeprogram'),
+                DB::raw($yearlevel . ' as yearlevel'),
+            ])->get();
         }
 
         if ($classifiedSections->isEmpty()) {
@@ -84,7 +104,7 @@ class ClassifiedSectionController extends Controller
         if (!$classifiedSection) {
             return response()->json(['message' => 'Classified Section not found'], 404);
         }
-        
+
         $classifiedSection->delete();
         return response()->json(['message' => 'Classified Section deleted successfully']);
     }

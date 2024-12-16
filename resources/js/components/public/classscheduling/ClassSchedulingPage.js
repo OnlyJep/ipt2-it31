@@ -13,7 +13,12 @@ import {
     Row,
     Col,
 } from "antd";
-import { PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import {
+    DeleteOutlined,
+    EditFilled,
+    PlusOutlined,
+    SaveOutlined,
+} from "@ant-design/icons";
 import MainDashboard from "../dashboard/components/MainDashboard";
 import ModalFormScheduling from "./components/ModalFormScheduling";
 
@@ -43,14 +48,56 @@ const ClassSchedulingPage = () => {
     const [dataSubject, setDataSubject] = useState([]);
     const [dataRoom, setDataRoom] = useState([]);
     const [dataInstructor, setDataInstructor] = useState([]);
+    const [dataSection, setDataSection] = useState([]);
 
     useEffect(() => {
         const handleFetchSubject = async () => {
             const apiUrl = window.location.origin;
             try {
-                setTableLoading(true);
+                const response = await axios.get(`${apiUrl}/api/subject`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "auth_token"
+                        )}`,
+                    },
+                });
+
+                setDataSubject(response.data.data);
+            } catch (error) {
+                console.log("Error: ", error);
+            } finally {
+                //
+            }
+        };
+
+        handleFetchSubject();
+
+        const handleFetchRoom = async () => {
+            const apiUrl = window.location.origin;
+            try {
+                const response = await axios.get(`${apiUrl}/api/room`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "auth_token"
+                        )}`,
+                    },
+                });
+
+                setDataRoom(response.data.data);
+            } catch (error) {
+                console.log("Error: ", error);
+            } finally {
+                //
+            }
+        };
+
+        handleFetchRoom();
+
+        const handleFetchFAculty = async () => {
+            const apiUrl = window.location.origin;
+            try {
                 const response = await axios.get(
-                    `${apiUrl}/api/subject?${new URLSearchParams(tableFilter)}`,
+                    `${apiUrl}/api/profiles?role_ids=3`,
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem(
@@ -60,7 +107,7 @@ const ClassSchedulingPage = () => {
                     }
                 );
 
-                setDataSubject(response.data);
+                setDataInstructor(response.data.data);
             } catch (error) {
                 console.log("Error: ", error);
             } finally {
@@ -68,7 +115,31 @@ const ClassSchedulingPage = () => {
             }
         };
 
-        handleFetchSubject();
+        handleFetchFAculty();
+
+        const handleFetchSection = async () => {
+            const apiUrl = window.location.origin;
+            try {
+                const response = await axios.get(
+                    `${apiUrl}/api/classifiedsection`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "auth_token"
+                            )}`,
+                        },
+                    }
+                );
+
+                setDataSection(response.data);
+            } catch (error) {
+                console.log("Error: ", error);
+            } finally {
+                //
+            }
+        };
+
+        handleFetchSection();
 
         return () => {};
     }, []);
@@ -110,13 +181,43 @@ const ClassSchedulingPage = () => {
 
     const columns = [
         {
+            title: "Actions",
+            key: "actions",
+            align: "center",
+            render: (_, record) => (
+                <Space>
+                    <Button
+                        type="link"
+                        onClick={() =>
+                            setToggleModalFormSchedule({
+                                open: true,
+                                data: record,
+                            })
+                        }
+                        icon={<EditFilled />}
+                    />
+                    <Button
+                        type="link"
+                        danger
+                        onClick={() => deleteSchedule(record.key)}
+                        icon={<DeleteOutlined />}
+                    />
+                </Space>
+            ),
+        },
+        {
+            title: "Created At",
+            dataIndex: "created_at_format",
+            key: "created_at_format",
+        },
+        {
             title: "Subject",
             dataIndex: "subject",
             key: "subject",
         },
         {
             title: "Classroom",
-            dataIndex: "classroom",
+            dataIndex: "section",
             key: "classroom",
         },
         {
@@ -125,32 +226,14 @@ const ClassSchedulingPage = () => {
             key: "instructor",
         },
         {
-            title: "Date",
-            dataIndex: "date",
-            key: "date",
+            title: "Time Start",
+            dataIndex: "start_time",
+            key: "start_time",
         },
         {
-            title: "Time",
-            dataIndex: "time",
-            key: "time",
-        },
-        {
-            title: "Actions",
-            key: "actions",
-            render: (_, record) => (
-                <Space>
-                    <Button type="link" onClick={() => editSchedule(record)}>
-                        Edit
-                    </Button>
-                    <Button
-                        type="link"
-                        danger
-                        onClick={() => deleteSchedule(record.key)}
-                    >
-                        Delete
-                    </Button>
-                </Space>
-            ),
+            title: "Time End",
+            dataIndex: "end_time",
+            key: "end_time",
         },
     ];
 
@@ -219,10 +302,15 @@ const ClassSchedulingPage = () => {
                     }}
                 />
 
-                {/* <ModalFormScheduling
+                <ModalFormScheduling
                     toggleModalForm={toggleModalFormSchedule}
                     setToggleModalForm={setToggleModalFormSchedule}
-                /> */}
+                    dataSubject={dataSubject}
+                    dataRoom={dataRoom}
+                    dataInstructor={dataInstructor}
+                    handleFetch={handleFetch}
+                    dataSection={dataSection}
+                />
             </Content>
         </MainDashboard>
     );

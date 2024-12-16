@@ -18,16 +18,18 @@ class ProfileController extends Controller
     {
         $department = "(SELECT department_name FROM departments WHERE id = profiles.department_id)";
         $created_at_format = "DATE_FORMAT(profiles.created_at, '%M %d, %Y')";
+        $fullname = "TRIM(CONCAT_WS(' ', last_name, IF(last_name IS NOT NULL, ', ', ''), first_name, IF(middle_initial='', NULL, middle_initial), IF(suffix='', NULL, suffix)))";
 
         $data = Profile::select([
             '*',
             DB::raw($created_at_format . ' as created_at_format'),
             DB::raw($department . ' as department'),
+            DB::raw($fullname . ' as fullname'),
         ])
             ->with(['user']);
 
         if ($request->has('search')) {
-            $data->where(function ($query) use ($request, $created_at_format, $department) {
+            $data->where(function ($query) use ($request, $created_at_format, $department, $fullname) {
                 $query->orWhere('first_name', 'like', '%' . $request->search . '%');
                 $query->orWhere('last_name', 'like', '%' . $request->search . '%');
                 $query->orWhere('middle_initial', 'like', '%' . $request->search . '%');
@@ -40,6 +42,7 @@ class ProfileController extends Controller
                 $query->orWhere('religion', 'like', '%' . $request->search . '%');
                 $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
                 $query->orWhere(DB::raw($department), 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw($fullname), 'like', '%' . $request->search . '%');
             });
         }
 
@@ -47,11 +50,14 @@ class ProfileController extends Controller
             $data->onlyTrashed();
         }
 
-        if ($request->profile_status == 'All Faculty') {
-            $data->whereIn('profile_status', ['Full-time', 'Part-time']);
-        } else {
-            $data->where('profile_status', $request->profile_status);
+        if ($request->profile_status) {
+            if ($request->profile_status == 'All Faculty') {
+                $data->whereIn('profile_status', ['Full-time', 'Part-time']);
+            } else {
+                $data->where('profile_status', $request->profile_status);
+            }
         }
+
 
         $data->whereHas('user', function ($query) use ($request) {
             if ($request->role_ids) {
