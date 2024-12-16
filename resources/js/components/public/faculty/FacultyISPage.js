@@ -415,6 +415,13 @@ const FacultyISPage = () => {
                             columns={columns}
                             rowKey="id"
                             loading={loading}
+                            onChange={(pagination, filters, sorter) => {
+                                setTableFilter((prevFilter) => ({
+                                    ...prevFilter,
+                                    sort_field: sorter.field,
+                                    sort_order: sorter.order,
+                                }));
+                            }}
                         />
                     </Col>
                 </Row>

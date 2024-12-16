@@ -184,8 +184,3 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('notification', NotificationController::class);
     Route::post('notification/{id}/restore', [NotificationController::class, 'restore']);
 });
-
-Route::middleware(['auth:api', 'token.expiry'])->group(function () {
-    Route::get('/user', [AuthController::class, 'user']);
-    // Add other protected routes here
-});

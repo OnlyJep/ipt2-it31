@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassSchedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ClassScheduleController extends Controller
@@ -11,21 +12,50 @@ class ClassScheduleController extends Controller
     // Display a listing of class schedules
     public function index(Request $request)
     {
-        $deleted = $request->query('deleted', 'false');
+        $instructor = "(SELECT TRIM(CONCAT_WS(' ', lastname, IF(lastname IS NOT NULL, ', ', ''), firstname, IF(middlename='', NULL, middlename), IF(name_ext='', NULL, name_ext))) FROM profiles WHERE id = class_schedules.profile_id)";
+        $subject = "(SELECT subject_name FROM subjects WHERE id = class_schedules.subject_id)";
+        $section = "(SELECT (SELECT section_name FROM sections WHERE sections.id = classified_sections.section_id) FROM classified_sections WHERE id = class_schedules.classifiedsection_id)";
+        $created_at_format = "DATE_FORMAT(class_schedules.created_at, '%M %d, %Y')";
 
-        if ($deleted === 'only') {
-            $classSchedules = ClassSchedule::onlyTrashed()->get();
-        } elseif ($deleted === 'true') {
-            $classSchedules = ClassSchedule::withTrashed()->get();
+        $data = ClassSchedule::select([
+            '*',
+            DB::raw($created_at_format . ' as created_at_format'),
+            DB::raw($subject . ' as subject'),
+            DB::raw($section . ' as section'),
+            DB::raw($instructor . ' as instructor'),
+        ]);
+
+        if ($request->has('search')) {
+            $data->where(function ($query) use ($request, $created_at_format, $section, $subject, $instructor) {
+                $query->orWhere('start_time', 'like', '%' . $request->search . '%');
+                $query->orWhere('end_time', 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw("$created_at_format"), 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw($section), 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw($subject), 'like', '%' . $request->search . '%');
+                $query->orWhere(DB::raw($instructor), 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->status == 'Archived') {
+            $data->onlyTrashed();
+        }
+
+        if ($request->sort_field && $request->sort_order) {
+            $data = $data->orderBy($request->sort_field, $request->sort_order);
         } else {
-            $classSchedules = ClassSchedule::all();
+            $data = $data->orderBy('id', 'desc');
         }
 
-        if ($classSchedules->isEmpty()) {
-            return response()->json(['message' => 'No class schedules found'], 404);
+        if ($request->page_size) {
+            $data = $data->paginate($request->page_size, ['*'], 'page', $request->page)->toArray();
+        } else {
+            $data = $data->get();
         }
 
-        return response()->json($classSchedules);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ], 200);
     }
 
     // Store a newly created class schedule in storage
@@ -92,7 +122,7 @@ class ClassScheduleController extends Controller
         if (!$classSchedule) {
             return response()->json(['message' => 'Class Schedule not found'], 404);
         }
-        
+
         $classSchedule->delete();
         return response()->json(['message' => 'Class Schedule deleted successfully']);
     }

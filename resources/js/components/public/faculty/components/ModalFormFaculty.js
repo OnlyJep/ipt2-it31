@@ -24,7 +24,7 @@ export default function ModalFormFaculty(props) {
     const [dataDepartment, setDataDepartment] = useState([]);
 
     useEffect(() => {
-        const handleFetch = async () => {
+        const handleFetchDep = async () => {
             const apiUrl = window.location.origin;
             try {
                 const response = await axios.get(`${apiUrl}/api/department`, {
@@ -42,7 +42,7 @@ export default function ModalFormFaculty(props) {
             }
         };
 
-        handleFetch();
+        handleFetchDep();
 
         return () => {};
     }, []);
@@ -123,7 +123,7 @@ export default function ModalFormFaculty(props) {
 
     return (
         <Modal
-            title="Add Multiple Schedules"
+            title="Faculty Form"
             open={toggleModalForm.open}
             onCancel={() => {
                 setToggleModalForm({
